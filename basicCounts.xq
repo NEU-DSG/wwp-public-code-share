@@ -17,7 +17,7 @@ let $listOfCounts :=  for $value in $distinctValues
                       order by $value
                       return 
                         (: Tab-delimited data within rows. :)
-                        concat($value, '&#9;', $count)
+                        concat($count, '&#9;', $value)
 return 
   (: Separate each row with a newline. :)
   string-join($listOfCounts,'&#13;')
