@@ -15,15 +15,15 @@ declare option output:method "text";
   declare variable $sortWithArticles := false();
 
 (: VARIABLES - QUERYING :)
-  (: Create variables referencing the files or folders you wish to query.   :)
-    (:  To get one file:       doc('file:///FILEPATH/FILENAME')             :)
-    (:  To get one directory:  collection('file:///FILEPATH/?select=*.xml') :)
-    (:  To get more than one:  ( DOC | DOC | DIR )                          :)
-  declare variable $NAME_ME_SOMETHING_DESCRIPTIVE := collection('file:///Users/ashleyclark/WWP/dev/reception/on_deck/?select=*.xml');
+  (: Create variables referencing the files or folders you wish to query. :)
+    (:  To get one file:       doc('FILEPATH/FILENAME')                   :)
+    (:  To get one directory:  collection('FILEPATH/?select=*.xml')       :)
+    (:  To get more than one:  ( DOC | DOC | DIR )                        :)
+  declare variable $DESCRIPTIVE_NAME := collection('file:///Users/ashleyclark/WWP/dev/reception/on_deck/?select=*.xml');
   
   (: Change this to your XPath query. (Or your XQuery!) :)
     (:  For example: $VARIABLE/XPATH                    :)
-  declare variable $query := $NAME_ME_SOMETHING_DESCRIPTIVE//tei:keywords/tei:term;
+  declare variable $query := $DESCRIPTIVE_NAME//tei:keywords/tei:term;
 
 (: FUNCTIONS :)
 (: ...documentation coming soon... :)
