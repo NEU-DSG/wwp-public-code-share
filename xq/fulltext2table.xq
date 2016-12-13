@@ -32,8 +32,11 @@ let $allRows :=
           concat( $date/@from/data(.), '-', $date/@to/data(.) )
         else $date/@when/data(.)
     (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := $text/wwp:text
-    let $fulltext := normalize-space(string-join(($ELEMENTS),' '))
+    let $ELEMENTS := $text/wwp:text//wwp:quote
+    let $fulltext := 
+      let $wordSeq := for $element in $ELEMENTS
+                      return $element/normalize-space(.)
+      return normalize-space(string-join(($wordSeq),' '))
     let $dataSeq := ( $idno, $author, $pubDate, $fulltext )
     return local:make-cells-in-row($dataSeq)
   )
