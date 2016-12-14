@@ -5,7 +5,7 @@ declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
 declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
 declare option output:method "text";
 
-  declare variable $ft-wwo := collection('./fulltext-wwo?select=*.xml');
+  declare variable $ft-wwo := collection('/Users/ashleyclark/WWP/fulltext-wwo?select=*.xml');
   
 (: Use tabs to separate cells within rows. :)
 declare function local:make-cells-in-row($sequence as xs:string*) {
@@ -38,6 +38,9 @@ let $allRows :=
                       return $element/normalize-space(.)
       return normalize-space(string-join(($wordSeq),' '))
     let $dataSeq := ( $idno, $author, $pubDate, $fulltext )
-    return local:make-cells-in-row($dataSeq)
+    return 
+      if ( $fulltext ne '' ) then 
+        local:make-cells-in-row($dataSeq)
+      else ()
   )
 return local:make-rows-in-table($allRows)
