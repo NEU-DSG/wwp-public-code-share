@@ -19,13 +19,21 @@
   
   <!-- PARAMETERS -->
   
-  <!-- Parameter option to keep/remove WWP-created content within <text>, such as 
-    <note type="WWP"> and <figDesc>. The default is to keep WWP content. -->
-  <xsl:param name="keep-wwp-text"               as="xs:boolean" select="true()"/>
-  
   <!-- Parameter option to keep/remove <lb>s and <cb>s from output. The default is 
     to keep them. -->
   <xsl:param name="keep-line-and-column-breaks" as="xs:boolean" select="true()"/>
+  
+  <!-- Parameter option to keep/remove text around page breaks, such as catchwords
+    and signatures. As part of this transform, text nodes in <mw> will always be 
+    removed and their content placed in an @read on their parent. This parameter 
+    determines whether the text content will be reconstituted from @read when their 
+    inclusion won't mess up soft hyphen handling. The default is to remove the text 
+    content of <mw>. -->
+  <xsl:param name="keep-metawork-text"          as="xs:boolean" select="false()"/>
+  
+  <!-- Parameter option to keep/remove modern, WWP-authored content within <text>, 
+    such as <figDesc> and <note type="WWP">. The default is to keep WWP content. -->
+  <xsl:param name="keep-wwp-text"               as="xs:boolean" select="true()"/>
   
   
   <!-- FUNCTIONS -->
@@ -327,10 +335,24 @@
   </xsl:template>
   
   <!-- Add blank lines around pbGroups, to aid readability. -->
-  <xsl:template match="ab[@type eq 'pbGroup']" mode="unifier">
+  <xsl:template match="ab[@type eq 'pbGroup'][not($keep-metawork-text)]" mode="unifier">
     <xsl:text>&#xa;</xsl:text>
     <xsl:copy-of select="."/>
-    <xsl:text>&#xa;&#xa;</xsl:text>
+    <xsl:text>&#xa;</xsl:text>
+  </xsl:template>
+  
+  <!-- If $keep-metawork-text is toggled on, remove <ab> wrappers around pbGroups. -->
+  <xsl:template match="ab[@type eq 'pbGroup'][$keep-metawork-text]" mode="unifier">
+    <xsl:apply-templates mode="#current"/>
+  </xsl:template>
+  
+  <!-- If $keep-metawork-text is toggled on, text nodes should be reconstituted from 
+    @read appearing on the members of a pbGroup. -->
+  <xsl:template match="ab[@type eq 'pbGroup'][$keep-metawork-text]//*[@read]" mode="unifier">
+    <xsl:copy>
+      <xsl:copy-of select="@* except @read"/>
+      <xsl:value-of select="@read"/>
+    </xsl:copy>
   </xsl:template>
   
 </xsl:stylesheet>
