@@ -4,6 +4,7 @@
   xmlns:wwp="http://www.wwp.northeastern.edu/ns/textbase"
   xmlns:wf="http://www.wwp.northeastern.edu/ns/functions"
   exclude-result-prefixes="xs xsl wwp wf"
+  xmlns="http://www.wwp.northeastern.edu/ns/textbase"
   xpath-default-namespace="http://www.wwp.northeastern.edu/ns/textbase"
   version="2.0">
   
@@ -13,6 +14,11 @@
     might be useful. 
     
     Author: Ashley M. Clark
+    
+    Changelog:
+      2017-04-13: Added templates to include whitespace around elements which imply 
+        some sort of spacing. Added @type to <seg>s to allow tracking of 
+        intervention types.
   -->
   
   <xsl:output indent="no"/>
@@ -90,20 +96,40 @@
     </xsl:copy>
   </xsl:template>
   
-  <!-- OPTIONAL: remove WWP text content. -->
-  
-  <!-- If requested, remove the content of WWP notes and <figDesc>s. -->
+  <!-- OPTIONAL: remove the content of WWP notes and <figDesc>s. -->
   <xsl:template match="note[@type eq 'WWP'][not($keep-wwp-text)]
                      | figDesc             [not($keep-wwp-text)]">
     <xsl:call-template name="not-as-shallow-copy"/>
   </xsl:template>
   
-  <!-- OPTIONAL: remove <lb>s and <cb>s. Add a single space. -->
+  <!-- Add a single space after any element that implies some kind of whitespace 
+    separator. This is likely to be incomplete. -->
+  <xsl:template match="ab | div | head | l | lg | p | speaker | spGrp | sp 
+                      | table | row | cell">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
+    <xsl:call-template name="make-whitespace-explicit"/>
+  </xsl:template>
+  
+  <!-- OPTIONAL: remove <lb>s and <cb>s. Add a single space if there is no 
+    whitespace around the element. -->
   <xsl:template match="lb | cb">
     <xsl:if test="$keep-line-and-column-breaks">
       <xsl:call-template name="not-as-shallow-copy"/>
     </xsl:if>
-    <xsl:text> </xsl:text>
+    <xsl:call-template name="make-whitespace-explicit"/>
+  </xsl:template>
+  
+  <!-- Test if the current element has whitespace following it explicitly. If the 
+    current element is <lb> or <cb> (read: empty), then test the following node for 
+    whitespace too. Add a single space as needed. -->
+  <xsl:template name="make-whitespace-explicit">
+    <xsl:if test="following-sibling::node()[1][not(matches(.,'^\s+'))]
+                  and (self::lb | self::cb)[preceding-sibling::node()[1][not(matches(.,'\s+$'))]]">
+      <seg type="implicit-whitespace" read=""><xsl:text> </xsl:text></seg>
+    </xsl:if>
   </xsl:template>
   
   <!-- MODE: #default -->
@@ -160,9 +186,9 @@
     </xsl:variable>
     <xsl:choose>
       <xsl:when test="$replacement ne .">
-        <xsl:element name="seg">
+        <seg type="DIC">
           <xsl:attribute name="read" select="data(.)"/>
-        </xsl:element>
+        </seg>
       </xsl:when>
       <xsl:otherwise>
         <xsl:copy/>
@@ -207,7 +233,7 @@
       element's related siblings. If there are other pbGroup candidates before this 
       one, nothing happens. -->
     <xsl:if test="not(preceding-sibling::*[1][wf:is-pbGroup-candidate(.)])">
-      <ab xmlns="http://www.wwp.northeastern.edu/ns/textbase" type="pbGroup">
+      <ab type="pbGroup">
         <xsl:variable name="my-position" select="position()"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="pbSubsequencer">
@@ -298,10 +324,10 @@
     <xsl:if test="matches(.,'@\s*$')">
       <xsl:variable name="text-after" select="following::text()[not(normalize-space(.) eq '')][1]"/>
       <xsl:variable name="wordpart-two" select="if ( $text-after ) then wf:get-first-word($text-after) else ''"/>
-      <xsl:element name="seg" namespace="http://www.wwp.northeastern.edu/ns/textbase">
+      <seg type="implicit-shy">
         <xsl:attribute name="read" select="''"/>
         <xsl:value-of select="wf:remove-shy($wordpart-two)"/>
-      </xsl:element>
+      </seg>
     </xsl:if>
   </xsl:template>
   
@@ -313,9 +339,9 @@
         <xsl:text> </xsl:text>
       </xsl:if>
       <xsl:variable name="wordpart" select="wf:get-first-word(.)"/>
-      <xsl:element name="seg" namespace="http://www.wwp.northeastern.edu/ns/textbase">
+      <seg type="explicit-shy">
         <xsl:attribute name="read" select="$wordpart"/>
-      </xsl:element>
+      </seg>
     </xsl:if>
   </xsl:template>
   
