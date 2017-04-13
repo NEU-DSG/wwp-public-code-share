@@ -1,8 +1,12 @@
 xquery version "3.0";
 
+(: NAMESPACES :)
+
+declare default element namespace="http://www.wwp.northeastern.edu/ns/textbase";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
 declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
+
 declare option output:method "text";
 
 (: VARIABLES - SORTING :)
