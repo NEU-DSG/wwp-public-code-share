@@ -11,11 +11,15 @@
   <!-- 
     This stylesheet creates a version of a WWO text suitable for full-text indexing, 
     and any other activity where having access to semi-regularized, complete words 
-    might be useful. 
+    might be useful.
     
     Author: Ashley M. Clark
     
     Changelog:
+      2017-04-14: Added @subtypes to <seg>s, and filled out the list of elements 
+        which imply whitespace delimiters. Ensured that the <teiHeader> is not 
+        processed but copied forward. Put deleted soft hyphens in @read where 
+        appropriate.
       2017-04-13: Added templates to include whitespace around elements which imply 
         some sort of spacing. Added @type to <seg>s to allow tracking of 
         intervention types.
@@ -38,7 +42,8 @@
   <xsl:param name="keep-metawork-text"          as="xs:boolean" select="false()"/>
   
   <!-- Parameter option to keep/remove modern, WWP-authored content within <text>, 
-    such as <figDesc> and <note type="WWP">. The default is to keep WWP content. -->
+    such as <figDesc> and <note type="WWP">. The default is to keep WWP content. If 
+    WWP content is removed, no @read is used to capture deleted content. -->
   <xsl:param name="keep-wwp-text"               as="xs:boolean" select="true()"/>
   
   
@@ -72,7 +77,18 @@
   
   <!-- TEMPLATES -->
   
-  <xsl:template match="/">
+  <xsl:template match="/TEI">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template match="TEI/teiHeader">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="TEI/text">
     <xsl:variable name="first-pass">
       <xsl:apply-templates/>
     </xsl:variable>
@@ -96,39 +112,47 @@
     </xsl:copy>
   </xsl:template>
   
-  <!-- OPTIONAL: remove the content of WWP notes and <figDesc>s. -->
+  <!-- OPTIONAL: completely remove the content of WWP notes and <figDesc>s. -->
   <xsl:template match="note[@type eq 'WWP'][not($keep-wwp-text)]
-                     | figDesc             [not($keep-wwp-text)]">
+                     | figDesc             [not($keep-wwp-text)]" priority="30">
     <xsl:call-template name="not-as-shallow-copy"/>
   </xsl:template>
   
-  <!-- Add a single space after any element that implies some kind of whitespace 
-    separator. This is likely to be incomplete. -->
-  <xsl:template match="ab | div | head | l | lg | p | speaker | spGrp | sp 
-                      | table | row | cell">
+  <!-- Add a single space before any element that implies some kind of whitespace 
+    separator. This implementation may be incomplete. -->
+  <xsl:template match="ab | argument | castGroup | castItem | castList | closer 
+                      | dateline | div | docEdition | docImprint | docSale | epigraph 
+                      | figDesc | figure | head | imprimatur | item | l | lg | list 
+                      | note | opener | p | respLine | salute | signed | sp | speaker 
+                      | stage | titleBlock | titlePart | trailer 
+                      | table | row | cell
+                      | *[@rend][matches(@rend,'break\(\s*yes\s*\)')]">
+    <xsl:call-template name="make-whitespace-explicit"/>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates/>
     </xsl:copy>
-    <xsl:call-template name="make-whitespace-explicit"/>
   </xsl:template>
   
-  <!-- OPTIONAL: remove <lb>s and <cb>s. Add a single space if there is no 
-    whitespace around the element. -->
+  <!-- Add a single space if there is no whitespace around <lb>s or <cb>s.
+     OPTIONAL: remove <lb>s and <cb>s. -->
   <xsl:template match="lb | cb">
+    <xsl:call-template name="make-whitespace-explicit"/>
     <xsl:if test="$keep-line-and-column-breaks">
       <xsl:call-template name="not-as-shallow-copy"/>
     </xsl:if>
-    <xsl:call-template name="make-whitespace-explicit"/>
   </xsl:template>
   
-  <!-- Test if the current element has whitespace following it explicitly. If the 
+  <!-- Test if the current element has whitespace preceding it explicitly. If the 
     current element is <lb> or <cb> (read: empty), then test the following node for 
     whitespace too. Add a single space as needed. -->
   <xsl:template name="make-whitespace-explicit">
-    <xsl:if test="following-sibling::node()[1][not(matches(.,'^\s+'))]
-                  and (self::lb | self::cb)[preceding-sibling::node()[1][not(matches(.,'\s+$'))]]">
-      <seg type="implicit-whitespace" read=""><xsl:text> </xsl:text></seg>
+    <xsl:if test="preceding-sibling::node()[1][not(matches(.,'\s+$'))]
+                  and self::*[not(@rend) or not(matches(@rend,'break\(\s*no\s*\)'))]">
+      <xsl:if test="not((self::lb | self::cb)) 
+                    or (self::lb | self::cb)[following-sibling::node()[1][not(matches(.,'^\s+'))]]">
+        <seg type="implicit-whitespace" subtype="add" read=""><xsl:text> </xsl:text></seg>
+      </xsl:if>
     </xsl:if>
   </xsl:template>
   
@@ -180,22 +204,6 @@
     </xsl:copy>
   </xsl:template>
   
-  <xsl:template match="hi[@rend][contains(@rend,'class(#DIC)')]//text()" priority="15">
-    <xsl:variable name="replacement">
-      <xsl:call-template name="normalizeText"/>
-    </xsl:variable>
-    <xsl:choose>
-      <xsl:when test="$replacement ne .">
-        <seg type="DIC">
-          <xsl:attribute name="read" select="data(.)"/>
-        </seg>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:copy/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-  
   <!-- Replace <vuji>'s content with its regularized character. -->
   <xsl:template match="vuji">
     <xsl:variable name="text" select="normalize-space(.)"/>
@@ -233,7 +241,7 @@
       element's related siblings. If there are other pbGroup candidates before this 
       one, nothing happens. -->
     <xsl:if test="not(preceding-sibling::*[1][wf:is-pbGroup-candidate(.)])">
-      <ab type="pbGroup">
+      <ab type="pbGroup" subtype="add">
         <xsl:variable name="my-position" select="position()"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="pbSubsequencer">
@@ -307,6 +315,7 @@
   <!-- The members of a pbGroup are copied through, retaining their attributes but 
     none of their children. -->
   <xsl:template match="mw | pb | milestone" mode="#default pbGrouper" priority="-10">
+    <xsl:call-template name="make-whitespace-explicit"/>
     <xsl:call-template name="read-as-copy"/>
   </xsl:template>
   
@@ -324,8 +333,8 @@
     <xsl:if test="matches(.,'@\s*$')">
       <xsl:variable name="text-after" select="following::text()[not(normalize-space(.) eq '')][1]"/>
       <xsl:variable name="wordpart-two" select="if ( $text-after ) then wf:get-first-word($text-after) else ''"/>
-      <seg type="implicit-shy">
-        <xsl:attribute name="read" select="''"/>
+      <seg type="shy-part" subtype="mod">
+        <xsl:attribute name="read" select="'­'"/>
         <xsl:value-of select="wf:remove-shy($wordpart-two)"/>
       </seg>
     </xsl:if>
@@ -339,7 +348,7 @@
         <xsl:text> </xsl:text>
       </xsl:if>
       <xsl:variable name="wordpart" select="wf:get-first-word(.)"/>
-      <seg type="explicit-shy">
+      <seg type="shy-part" subtype="del">
         <xsl:attribute name="read" select="$wordpart"/>
       </seg>
     </xsl:if>
@@ -360,7 +369,8 @@
     <xsl:call-template name="wordpart-end"/>
   </xsl:template>
   
-  <!-- Add blank lines around pbGroups, to aid readability. -->
+  <!-- Add blank lines around pbGroups, to aid readability. This is done silently, 
+    without the usual <seg> markers. -->
   <xsl:template match="ab[@type eq 'pbGroup'][not($keep-metawork-text)]" mode="unifier">
     <xsl:text>&#xa;</xsl:text>
     <xsl:copy-of select="."/>
