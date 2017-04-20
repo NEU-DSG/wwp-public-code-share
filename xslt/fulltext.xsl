@@ -19,7 +19,7 @@
       2017-04-14: Added @subtypes to <seg>s, and filled out the list of elements 
         which imply whitespace delimiters. Ensured that the <teiHeader> is not 
         processed but copied forward. Put deleted soft hyphens in @read where 
-        appropriate.
+        appropriate. Replaced processing instructions.
       2017-04-13: Added templates to include whitespace around elements which imply 
         some sort of spacing. Added @type to <seg>s to allow tracking of 
         intervention types.
@@ -27,7 +27,14 @@
   
   <xsl:output indent="no"/>
   
-  <!-- PARAMETERS -->
+<!-- PARAMETERS -->
+  
+  <!-- Parameter option to include/disinclude explanatory attributes (@resp, @type, 
+    @subtype) when an element's textual content is added, deleted, or modified. Such 
+    signposts might be useful in determining the provenance of interventions made by 
+    this stylesheet, or for debugging, or for tracking types of normally-implicit 
+    behavior. The default is to include these attributes. -->
+  <xsl:param name="include-provenance-attributes" as="xs:boolean" select="true()"/>
   
   <!-- Parameter option to keep/remove <lb>s and <cb>s from output. The default is 
     to keep them. -->
@@ -47,7 +54,12 @@
   <xsl:param name="keep-wwp-text"               as="xs:boolean" select="true()"/>
   
   
-  <!-- FUNCTIONS -->
+<!-- VARIABLES -->
+  
+  <xsl:variable name="fulltextBot" select="'fulltextBot'"/>
+  
+  
+<!-- FUNCTIONS -->
   
   <xsl:function name="wf:get-first-word" as="xs:string">
     <xsl:param name="text" as="xs:string"/>
@@ -75,30 +87,43 @@
   </xsl:function>
   
   
-  <!-- TEMPLATES -->
+<!-- TEMPLATES -->
   
-  <xsl:template match="/TEI">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
+  <xsl:template match="/">
+    <xsl:for-each select="processing-instruction()">
+      <xsl:text>&#x0A;</xsl:text>
+      <xsl:copy-of select="."/>
+    </xsl:for-each>
+    <xsl:text>&#x0A;</xsl:text>
+    <xsl:apply-templates/>
   </xsl:template>
   
-  <xsl:template match="TEI/teiHeader">
-    <xsl:copy-of select="."/>
-  </xsl:template>
-  
-  <xsl:template match="TEI/text">
-    <xsl:variable name="first-pass">
-      <xsl:apply-templates/>
-    </xsl:variable>
-    <xsl:apply-templates select="$first-pass" mode="unifier"/>
+  <!-- Test if the current element has whitespace preceding it explicitly. If the 
+    current element is <lb> or <cb> (read: empty), then test the following node for 
+    whitespace too. Add a single space as needed. -->
+  <xsl:template name="make-whitespace-explicit">
+    <xsl:if test="preceding-sibling::node()[1][not(matches(.,'\s+$'))]
+                  and self::*[not(@rend) or not(matches(@rend,'break\(\s*no\s*\)'))]">
+      <xsl:if test="not((self::lb | self::cb)) 
+                    or (self::lb | self::cb)[following-sibling::node()[1][not(matches(.,'^\s+'))]]">
+        <seg read="">
+          <xsl:call-template name="set-provenance-attributes">
+            <xsl:with-param name="type" select="'implicit-whitespace'"/>
+            <xsl:with-param name="subtype" select="'add'"/>
+          </xsl:call-template>
+          <xsl:text> </xsl:text>
+        </seg>
+      </xsl:if>
+    </xsl:if>
   </xsl:template>
   
   <!-- Copy the element and its attributes, but none of its descendants. -->
   <xsl:template name="not-as-shallow-copy">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
+      <xsl:if test="not(self::lb) and not(self::cb)">
+        <xsl:call-template name="set-provenance-attributes"/>
+      </xsl:if>
     </xsl:copy>
   </xsl:template>
   
@@ -109,6 +134,53 @@
       <xsl:if test="node()">
         <xsl:attribute name="read" select="data(.)"/>
       </xsl:if>
+      <xsl:call-template name="set-provenance-attributes"/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template name="set-provenance-attributes">
+    <xsl:param name="type" as="xs:string" select="''"/>
+    <xsl:param name="subtype" as="xs:string" select="''"/>
+    <xsl:if test="$include-provenance-attributes">
+      <xsl:if test="$type ne ''">
+        <xsl:attribute name="type" select="$type"/>
+      </xsl:if>
+      <xsl:if test="$subtype ne ''">
+        <xsl:attribute name="type" select="$subtype"/>
+      </xsl:if>
+      <xsl:attribute name="resp" select="$fulltextBot"/>
+    </xsl:if>
+  </xsl:template>
+  
+<!-- MODE: #default -->
+  
+  <!-- Copy the <teiHeader>. -->
+  <xsl:template match="teiHeader">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <!-- Run default mode on the descendants of <text>, then resolve soft hyphens. -->
+  <xsl:template match="text">
+    <xsl:variable name="first-pass">
+      <xsl:apply-templates/>
+    </xsl:variable>
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates select="$first-pass" mode="unifier"/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <!-- Normalize 'ſ' to 's' and (temporarily) turn soft hyphens into '@'. Whitespace 
+    after a soft hyphen is dropped. -->
+  <xsl:template match="text()" name="normalizeText">
+    <xsl:value-of select="replace(translate(.,'ſ­','s@'),'@\s*','@')"/>
+  </xsl:template>
+  
+  <!-- By default when matching elements, copy it and apply templates to its children. -->
+  <xsl:template match="*" mode="#default unifier" priority="-40">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates select="*|text()" mode="#current"/>
     </xsl:copy>
   </xsl:template>
   
@@ -126,7 +198,7 @@
                       | note | opener | p | respLine | salute | signed | sp | speaker 
                       | stage | titleBlock | titlePart | trailer 
                       | table | row | cell
-                      | *[@rend][matches(@rend,'break\(\s*yes\s*\)')]">
+                      | *[@rend][matches(@rend,'break\(\s*yes\s*\)')]" priority="-15">
     <xsl:call-template name="make-whitespace-explicit"/>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
@@ -143,35 +215,6 @@
     </xsl:if>
   </xsl:template>
   
-  <!-- Test if the current element has whitespace preceding it explicitly. If the 
-    current element is <lb> or <cb> (read: empty), then test the following node for 
-    whitespace too. Add a single space as needed. -->
-  <xsl:template name="make-whitespace-explicit">
-    <xsl:if test="preceding-sibling::node()[1][not(matches(.,'\s+$'))]
-                  and self::*[not(@rend) or not(matches(@rend,'break\(\s*no\s*\)'))]">
-      <xsl:if test="not((self::lb | self::cb)) 
-                    or (self::lb | self::cb)[following-sibling::node()[1][not(matches(.,'^\s+'))]]">
-        <seg type="implicit-whitespace" subtype="add" read=""><xsl:text> </xsl:text></seg>
-      </xsl:if>
-    </xsl:if>
-  </xsl:template>
-  
-  <!-- MODE: #default -->
-  
-  <!-- Normalize 'ſ' to 's' and (temporarily) turn soft hyphens into '@'. Whitespace 
-    after a soft hyphen is dropped. -->
-  <xsl:template match="text()" name="normalizeText">
-    <xsl:value-of select="replace(translate(.,'ſ­','s@'),'@\s*','@')"/>
-  </xsl:template>
-  
-  <!-- By default when matching elements, copy it and apply templates to its children. -->
-  <xsl:template match="*" mode="#default unifier" priority="-40">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates select="*|text()" mode="#current"/>
-    </xsl:copy>
-  </xsl:template>
-  
   <!-- Favor <expan>, <reg> and <corr> within <choice>. -->
   <xsl:template match="choice">
     <xsl:copy>
@@ -182,6 +225,7 @@
   <xsl:template match="abbr | sic | orig" mode="choice">
     <xsl:copy>
       <xsl:attribute name="read" select="text()"/>
+      <xsl:call-template name="set-provenance-attributes"/>
     </xsl:copy>
   </xsl:template>
   <xsl:template match="expan | corr | reg" mode="choice">
@@ -199,6 +243,7 @@
       <xsl:copy-of select="@*"/>
       <xsl:if test="not(*) and $up ne data(.)">
         <xsl:attribute name="read" select="text()"/>
+        <xsl:call-template name="set-provenance-attributes"/>
       </xsl:if>
       <xsl:copy-of select="$up"/>
     </xsl:copy>
@@ -209,6 +254,7 @@
     <xsl:variable name="text" select="normalize-space(.)"/>
     <xsl:copy>
       <xsl:attribute name="read" select="text()"/>
+      <xsl:call-template name="set-provenance-attributes"/>
       <xsl:value-of select="if ( $text eq 'VV' ) then 'W'
                        else if ( $text eq 'vv' ) then 'w'
                        else translate($text,'vujiVUJI','uvijUVIJ')"/>
@@ -241,7 +287,12 @@
       element's related siblings. If there are other pbGroup candidates before this 
       one, nothing happens. -->
     <xsl:if test="not(preceding-sibling::*[1][wf:is-pbGroup-candidate(.)])">
-      <ab type="pbGroup" subtype="add">
+      <ab type="pbGroup">
+        <!-- It is useful to provide @type="pbGroup" even if 
+          $include-provenance-attributes is turned off. -->
+        <xsl:call-template name="set-provenance-attributes">
+          <xsl:with-param name="subtype" select="'add'"/>
+        </xsl:call-template>
         <xsl:variable name="my-position" select="position()"/>
         <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="pbSubsequencer">
@@ -303,7 +354,7 @@
                           [preceding-sibling::*[1][wf:is-pbGroup-candidate(.)]]"/>
   
   
-  <!-- MODE: pbGrouper -->
+<!-- MODE: pbGrouper -->
   
   <!-- Any non-whitespace content of a pbGroup is ignored. -->
   <xsl:template match="text()" mode="pbGrouper">
@@ -320,7 +371,7 @@
   </xsl:template>
   
   
-  <!-- MODE: unifier -->
+<!-- MODE: unifier -->
   
   <!-- Copy whitespace forward. -->
   <xsl:template match="text()[normalize-space(.) eq '']" mode="unifier" priority="10">
@@ -333,8 +384,12 @@
     <xsl:if test="matches(.,'@\s*$')">
       <xsl:variable name="text-after" select="following::text()[not(normalize-space(.) eq '')][1]"/>
       <xsl:variable name="wordpart-two" select="if ( $text-after ) then wf:get-first-word($text-after) else ''"/>
-      <seg type="shy-part" subtype="mod">
+      <seg>
         <xsl:attribute name="read" select="'­'"/>
+        <xsl:call-template name="set-provenance-attributes">
+          <xsl:with-param name="type" select="'shy-part'"/>
+          <xsl:with-param name="subtype" select="'mod'"/>
+        </xsl:call-template>
         <xsl:value-of select="wf:remove-shy($wordpart-two)"/>
       </seg>
     </xsl:if>
@@ -348,8 +403,12 @@
         <xsl:text> </xsl:text>
       </xsl:if>
       <xsl:variable name="wordpart" select="wf:get-first-word(.)"/>
-      <seg type="shy-part" subtype="del">
+      <seg>
         <xsl:attribute name="read" select="$wordpart"/>
+        <xsl:call-template name="set-provenance-attributes">
+          <xsl:with-param name="type" select="'shy-part'"/>
+          <xsl:with-param name="subtype" select="'del'"/>
+        </xsl:call-template>
       </seg>
     </xsl:if>
   </xsl:template>
