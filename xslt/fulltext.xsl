@@ -16,6 +16,12 @@
     Author: Ashley M. Clark
     
     Changelog:
+      2017-04-25: Added function to test if an element has mixed content. Created 
+        'text2attr' mode so that when content is turned into an @read, the XML tree 
+        isn't flattened unnecessarily. @read propagates to descendant elements, and 
+        wrapper <seg>s are created to hold @read in the case of mixed content. 
+        Expanded intervention subtypes to make clear when they occur on the contents 
+        of an element, versus when an element is itself added.
       2017-04-14: Added @subtypes to <seg>s, and filled out the list of elements 
         which imply whitespace delimiters. Ensured that the <teiHeader> is not 
         processed but copied forward. Put deleted soft hyphens in @read where 
@@ -38,7 +44,7 @@
   
   <!-- Parameter option to keep/remove <lb>s and <cb>s from output. The default is 
     to keep them. -->
-  <xsl:param name="keep-line-and-column-breaks" as="xs:boolean" select="true()"/>
+  <xsl:param name="keep-line-and-column-breaks"   as="xs:boolean" select="true()"/>
   
   <!-- Parameter option to keep/remove text around page breaks, such as catchwords
     and signatures. As part of this transform, text nodes in <mw> will always be 
@@ -46,12 +52,12 @@
     determines whether the text content will be reconstituted from @read when their 
     inclusion won't mess up soft hyphen handling. The default is to remove the text 
     content of <mw>. -->
-  <xsl:param name="keep-metawork-text"          as="xs:boolean" select="false()"/>
+  <xsl:param name="keep-metawork-text"            as="xs:boolean" select="false()"/>
   
   <!-- Parameter option to keep/remove modern, WWP-authored content within <text>, 
     such as <figDesc> and <note type="WWP">. The default is to keep WWP content. If 
     WWP content is removed, no @read is used to capture deleted content. -->
-  <xsl:param name="keep-wwp-text"               as="xs:boolean" select="true()"/>
+  <xsl:param name="keep-wwp-text"                 as="xs:boolean" select="true()"/>
   
   
 <!-- VARIABLES -->
@@ -68,6 +74,11 @@
       <xsl:text>^\s*([\w'-]+[\.,;:!?”/)\]]?)((\s+|[―—]*|-{2,}).*)?$</xsl:text>
     </xsl:variable>
     <xsl:value-of select="replace($slim-text, $pattern, '$1')"/>
+  </xsl:function>
+  
+  <xsl:function name="wf:has-mixed-content" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:value-of select="exists($element[*][text()])"/>
   </xsl:function>
   
   <xsl:function name="wf:is-pbGroup-candidate" as="xs:boolean">
@@ -109,7 +120,7 @@
         <seg read="">
           <xsl:call-template name="set-provenance-attributes">
             <xsl:with-param name="type" select="'implicit-whitespace'"/>
-            <xsl:with-param name="subtype" select="'add'"/>
+            <xsl:with-param name="subtype" select="'add-content add-element'"/>
           </xsl:call-template>
           <xsl:text> </xsl:text>
         </seg>
@@ -131,13 +142,13 @@
   <xsl:template name="read-as-copy">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
-      <xsl:if test="node()">
-        <xsl:attribute name="read" select="data(.)"/>
-      </xsl:if>
-      <xsl:call-template name="set-provenance-attributes"/>
+      <xsl:apply-templates mode="text2attr"/>
     </xsl:copy>
   </xsl:template>
   
+  <!-- Include explanatory attributes about the types of interventions occurring on 
+    the element and its content.
+    OPTIONAL: Do not add any provenance information. -->
   <xsl:template name="set-provenance-attributes">
     <xsl:param name="type" as="xs:string" select="''"/>
     <xsl:param name="subtype" as="xs:string" select="''"/>
@@ -146,7 +157,7 @@
         <xsl:attribute name="type" select="$type"/>
       </xsl:if>
       <xsl:if test="$subtype ne ''">
-        <xsl:attribute name="type" select="$subtype"/>
+        <xsl:attribute name="subtype" select="$subtype"/>
       </xsl:if>
       <xsl:attribute name="resp" select="$fulltextBot"/>
     </xsl:if>
@@ -176,8 +187,9 @@
     <xsl:value-of select="replace(translate(.,'ſ­','s@'),'@\s*','@')"/>
   </xsl:template>
   
-  <!-- By default when matching elements, copy it and apply templates to its children. -->
-  <xsl:template match="*" mode="#default unifier" priority="-40">
+  <!-- By default when matching an element, copy it and apply templates to its 
+    children. -->
+  <xsl:template match="*" mode="#default text2attr unifier" priority="-40">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates select="*|text()" mode="#current"/>
@@ -215,7 +227,7 @@
     </xsl:if>
   </xsl:template>
   
-  <!-- Favor <expan>, <reg> and <corr> within <choice>. -->
+  <!-- Favor <expan>, <reg>, and <corr> within <choice>. -->
   <xsl:template match="choice">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
@@ -224,12 +236,15 @@
   </xsl:template>
   <xsl:template match="abbr | sic | orig" mode="choice">
     <xsl:copy>
-      <xsl:attribute name="read" select="text()"/>
-      <xsl:call-template name="set-provenance-attributes"/>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="text2attr">
+        <xsl:with-param name="intervention-type" select="'choice'" tunnel="yes"/>
+      </xsl:apply-templates>
     </xsl:copy>
   </xsl:template>
   <xsl:template match="expan | corr | reg" mode="choice">
     <xsl:copy>
+      <xsl:copy-of select="@*"/>
       <xsl:apply-templates mode="#default"/>
     </xsl:copy>
   </xsl:template>
@@ -242,7 +257,7 @@
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:if test="not(*) and $up ne data(.)">
-        <xsl:attribute name="read" select="text()"/>
+        <xsl:attribute name="read" select="data(.)"/>
         <xsl:call-template name="set-provenance-attributes"/>
       </xsl:if>
       <xsl:copy-of select="$up"/>
@@ -254,7 +269,9 @@
     <xsl:variable name="text" select="normalize-space(.)"/>
     <xsl:copy>
       <xsl:attribute name="read" select="text()"/>
-      <xsl:call-template name="set-provenance-attributes"/>
+      <xsl:call-template name="set-provenance-attributes">
+        <xsl:with-param name="subtype" select="'mod-content'"/>
+      </xsl:call-template>
       <xsl:value-of select="if ( $text eq 'VV' ) then 'W'
                        else if ( $text eq 'vv' ) then 'w'
                        else translate($text,'vujiVUJI','uvijUVIJ')"/>
@@ -263,7 +280,9 @@
   
   <!-- Remove the content of <ref type="pageNum">s. -->
   <xsl:template match="ref[@type][@type eq 'pageNum']">
-    <xsl:call-template name="read-as-copy"/>
+    <xsl:call-template name="read-as-copy">
+      <xsl:with-param name="intervention-type" select="'pageNum'" tunnel="yes"/>
+    </xsl:call-template>
   </xsl:template>
   
   <!-- Working assumptions:
@@ -291,7 +310,7 @@
         <!-- It is useful to provide @type="pbGroup" even if 
           $include-provenance-attributes is turned off. -->
         <xsl:call-template name="set-provenance-attributes">
-          <xsl:with-param name="subtype" select="'add'"/>
+          <xsl:with-param name="subtype" select="'add-element'"/>
         </xsl:call-template>
         <xsl:variable name="my-position" select="position()"/>
         <xsl:text>&#xa;</xsl:text>
@@ -354,6 +373,37 @@
                           [preceding-sibling::*[1][wf:is-pbGroup-candidate(.)]]"/>
   
   
+<!-- MODE: text2attr -->
+  
+  <!-- Create @read and provenance attributes from text nodes. This template will 
+    only work if the matched text node is the first or only child of its parent, 
+    since attributes cannot be inserted after an element's child nodes. -->
+  <xsl:template name="read-text-node" match="text()" mode="text2attr">
+    <xsl:param name="intervention-type" select="''" as="xs:string" tunnel="yes"/>
+    <xsl:param name="adding-element" select="false()" as="xs:boolean"/>
+    <xsl:attribute name="read" select="."/>
+    <xsl:call-template name="set-provenance-attributes">
+      <xsl:with-param name="type" select="$intervention-type"/>
+      <xsl:with-param name="subtype">
+        <xsl:text>del-content</xsl:text>
+        <xsl:if test="$adding-element">
+          <xsl:text> add-element</xsl:text>
+        </xsl:if>
+      </xsl:with-param>
+    </xsl:call-template>
+  </xsl:template>
+  
+  <!-- If a text node is not the only child of its parent element, create a wrapper 
+    <seg> to house the generated @read and provenance attributes. -->
+  <xsl:template match="text()[parent::*[wf:has-mixed-content(.)]]" mode="text2attr" priority="35">
+    <seg>
+      <xsl:call-template name="read-text-node">
+        <xsl:with-param name="adding-element" select="true()"/>
+      </xsl:call-template>
+    </seg>
+  </xsl:template>
+  
+  
 <!-- MODE: pbGrouper -->
   
   <!-- Any non-whitespace content of a pbGroup is ignored. -->
@@ -388,7 +438,7 @@
         <xsl:attribute name="read" select="'­'"/>
         <xsl:call-template name="set-provenance-attributes">
           <xsl:with-param name="type" select="'shy-part'"/>
-          <xsl:with-param name="subtype" select="'mod'"/>
+          <xsl:with-param name="subtype" select="'add-element mod-content'"/>
         </xsl:call-template>
         <xsl:value-of select="wf:remove-shy($wordpart-two)"/>
       </seg>
@@ -407,7 +457,7 @@
         <xsl:attribute name="read" select="$wordpart"/>
         <xsl:call-template name="set-provenance-attributes">
           <xsl:with-param name="type" select="'shy-part'"/>
-          <xsl:with-param name="subtype" select="'del'"/>
+          <xsl:with-param name="subtype" select="'add-element del-content'"/>
         </xsl:call-template>
       </seg>
     </xsl:if>
