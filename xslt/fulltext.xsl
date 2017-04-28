@@ -31,7 +31,8 @@
         intervention types.
   -->
   
-  <xsl:output indent="no"/>
+  <xsl:output encoding="UTF-8" indent="no"/>
+  <xsl:preserve-space elements="*"/>
   
 <!-- PARAMETERS -->
   
@@ -313,7 +314,7 @@
           <xsl:with-param name="subtype" select="'add-element'"/>
         </xsl:call-template>
         <xsl:variable name="my-position" select="position()"/>
-        <xsl:text>&#xa;</xsl:text>
+        <!--<xsl:text>&#xa;</xsl:text>-->
         <xsl:call-template name="pbSubsequencer">
           <xsl:with-param name="start-position" select="$my-position"/>
         </xsl:call-template>
@@ -481,9 +482,9 @@
   <!-- Add blank lines around pbGroups, to aid readability. This is done silently, 
     without the usual <seg> markers. -->
   <xsl:template match="ab[@type eq 'pbGroup'][not($keep-metawork-text)]" mode="unifier">
-    <xsl:text>&#xa;</xsl:text>
+    <!--<xsl:text>&#xa;</xsl:text>-->
     <xsl:copy-of select="."/>
-    <xsl:text>&#xa;</xsl:text>
+    <!--<xsl:text>&#xa;</xsl:text>-->
   </xsl:template>
   
   <!-- If $keep-metawork-text is toggled on, remove <ab> wrappers around pbGroups. -->
