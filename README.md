@@ -13,5 +13,5 @@ if a particular license is causing you trouble, send us
 
 Brought to you by the [Women Writers
 Project](http://www.wwp.northeastern.edu/), part of the [Digital
-Scholarship Group](http://www.wwp.northeastern.edu/), [Northesatern
+Scholarship Group](http://www.dsg.northeastern.edu/), [Northeastern
 University Libraries](http://library.northeastern.edu/).
