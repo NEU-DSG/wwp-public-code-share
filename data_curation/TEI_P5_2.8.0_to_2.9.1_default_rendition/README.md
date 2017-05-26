@@ -2,11 +2,11 @@
 
 Some time ago the TEI-C created a new mechanism for indicating default rendition. It (the new <tt>@selector</tt> mechanism) became available in 2.9.1, and the old (<tt>@render</tt>) mechanism will be withdrawn in the next release (probably 3.2.0 in summer 2017).
 
-Here are two routines for converting from the old to the new. There is no need to have two of them, the reason for separation is purely pedagogical. The first stylesheet exists to show how easy this conversion can be in the simple case. For a simple TEI file that has a single <tt>&lt;TEI></tt> element and only has default renditions for elements in the TEI namespace this is _really easy_. It only takes 2 templates (in addition to the identity transform): 1 to add <tt>@selector</tt> to <tt>&lt;rendition></tt> and another to delete <tt>namespace</tt>.
+Here are two routines for converting from the old to the new. There is no need to have two of them, the reason for separation is purely pedagogical. The <tt>_simple</tt> stylesheet exists to show how easy this conversion can be in the simple case. For a simple TEI file that has a single <tt>&lt;TEI></tt> element and only has default renditions for elements in the TEI namespace this is _really easy_. It only takes 2 templates (in addition to the identity transform): 1 to add <tt>@selector</tt> to <tt>&lt;rendition></tt> and another to delete <tt>namespace</tt>.
 
 Doing this for the general case, in which there may be multiple <tt>&lt;TEI></tt> elements, each with multiple <tt>&lt;namespace></tt> elements (from various namespaces), which namespaces may or may not also be in scope turns out to be _very hard_ (IMHO), and even then I had to concede the point that there may be a prefix definition used somewhere in the file that we can’t find.
 
-So I have left the simple version here for those who want to puzzle through what it does and how it does it. I have left the second, more complicated version here for general use, and for XSLT programmers to puzzle through and improve. 
+So I have left the simple version here for those who want to puzzle through what it does and how it does it. I have left the more complicated version here for general use, and for XSLT programmers to puzzle through and improve. 
 
 ## Warnings for Simple Version
 
