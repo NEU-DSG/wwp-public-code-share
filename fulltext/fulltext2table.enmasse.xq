@@ -26,7 +26,7 @@ let $allRows :=
     let $idno := $header//wwp:publicationStmt/wwp:idno[@type eq 'WWP']/data(.)
     let $author := $header//wwp:titleStmt/wwp:author[1]/wwp:persName[@ref][1]/@ref/substring-after(data(.),'p:')
     let $pubDate := 
-      let $date := $header//wwp:sourceDesc[@n][1]//wwp:date[1]
+      let $date := $header//wwp:sourceDesc[@n][1]//wwp:imprint[1]/wwp:date[1]
       return 
         if ( $date[@from][@to] ) then
           concat( $date/@from/data(.), '-', $date/@to/data(.) )
