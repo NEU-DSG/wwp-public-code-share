@@ -26,6 +26,10 @@ xquery version "3.0";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @version 1.0
+ :
+ :  2017-06-30: v1.0. Added ctab:get-intersection-of-reports(), 
+ :    ctab:create-row-match-pattern(), and this header.
+ :  2017-05-05: Created.
  :)
 
 (: NAMESPACES :)

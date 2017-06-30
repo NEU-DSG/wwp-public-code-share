@@ -8,7 +8,7 @@ xquery version "3.0";
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @version 1.0
  :
- :  2017-06-30: Added this header and changelog.
+ :  2017-06-30: v1.0. Added this header and changelog.
  :  2017-04-28: Moved script from Gist to wwp-public-code-share git repository.
  :  2017-04-13: Added default element namespace declaration.
  :  2016-05-24: Added $sortWithArticles toggle.
