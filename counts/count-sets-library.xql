@@ -1,11 +1,37 @@
 xquery version "3.0";
 
+(:~
+ : A library of XQuery functions for manipulating the tab-delimited text output of 
+ : the counting robot (counting-robot.xq), using naive set theory.
+ :
+ : The main functions are:
+ :
+ :   * ctab:get-union-of-reports( ($filenameA, $filenameB, $ETC) )
+ :     - the union of reports A through N in a sequence (including adding up the counts)
+ :   * ctab:get-union-of-rows( ($rowA1, $rowB1, $ETC) )
+ :     - the union of all rows in a sequence (including adding up the counts)
+ :
+ :   * ctab:get-intersection-of-reports( ($filenameA, $filenameB, $ETC) )
+ :     - the intersection of reports A through N, or, only the data values which 
+ :        occur once per report (including adding up the counts)
+ :
+ :   * ctab:get-set-difference-of-reports($filenameA, $filenameB)
+ :     - all data values in report(s) A where there isn't a corresponding value in 
+ :        report(s) B
+ :     - both A and B can be a sequence of filenames rather than a single string; 
+ :        the union of those sequences will be applied automatically
+ :   * ctab:get-set-difference-of-rows( ($rowA1, $rowA2, $ETC), ($rowB1, $rowB2, $ETC) )
+ :     - all data values in the sequence of rows A where there isn't a corresponding 
+ :        value in sequence of rows B
+ :
+ : @author Ashley M. Clark
+ : @version 1.0
+ :)
+
 (: NAMESPACES :)
 module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
 declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
-(: OPTIONS :)
-(:declare option output:item-separator "";
-declare option output:method "text";:)
+
 
 (: VARIABLES :)
 declare variable $ctab:tabChar      := '&#9;';
@@ -13,6 +39,13 @@ declare variable $ctab:newlineChar  := '&#13;';
 
 
 (: FUNCTIONS :)
+
+(:~ Given a number of string values, create a regular expression pattern to match 
+  rows which contain those cell values. :)
+declare function ctab:create-row-match-pattern($values as xs:string+) as xs:string {
+  let $match := string-join($values,'|')
+  return concat('\t(',$match,')(\t.*)?$')
+};
 
 (:~ From a string representing a tab-delimited row of data, get the 'cell' data at a 
   given column number. :)
@@ -35,7 +68,7 @@ declare function ctab:get-report-by-rows($filepath as xs:string) as xs:string* {
 };
 
 (:~ Return only the rows of data for which values appear in both fileset A and 
-  fileset B. The counts are added up for each of these values. :)
+  fileset B. The counts are added up for each of these values.  :)
 declare function ctab:get-intersection-of-reports($filenames as xs:string+) as xs:string* {
   let $countReports := count($filenames)
   let $allRows :=
@@ -48,16 +81,13 @@ declare function ctab:get-intersection-of-reports($filenames as xs:string+) as x
   let $intersectValues :=
     for $value in $distinctValues
     return
-      (: We're only interested in the cell values which occur the same number of 
-        times as the number of reports. :)
+      (: We're only interested in the cell values which occur once per report. :)
       if ( count(index-of($allValues, $value)) eq $countReports ) then
         $value
       else ()
-  let $regex :=
-    let $match := string-join($intersectValues,'|')
-    return concat('\t(',$match,')(\t|$)')
+  let $regex := ctab:create-row-match-pattern($intersectValues)
   let $intersectRows := $allRows[matches(., $regex)]
-  return ctab:get-union-of-rows($intersectRows) (:$intersectValues:)
+  return ctab:get-union-of-rows($intersectRows)
 };
 
 (:~ Return rows of data from fileset A only if their corresponding values don't 
@@ -86,9 +116,7 @@ declare function ctab:get-set-difference-of-rows($tabbed-rows as xs:string+, $ro
     return
       for $row in $rowsExcluded
       return ctab:get-cell($row,2)
-  let $regex :=
-    let $match := string-join($valuesExcluded,'|')
-    return concat('\t(',$match,')(\t|$)')
+  let $regex := ctab:create-row-match-pattern($valuesExcluded)
   return
     $rowsWithTabs[not(matches(.,$regex))]
 };
