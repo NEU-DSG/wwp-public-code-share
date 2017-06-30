@@ -24,7 +24,7 @@ xquery version "3.0";
  :     - all data values in the sequence of rows A where there isn't a corresponding 
  :        value in sequence of rows B
  :
- : @author Ashley M. Clark
+ : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @version 1.0
  :)
 
