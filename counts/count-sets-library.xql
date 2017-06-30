@@ -34,9 +34,31 @@ declare function ctab:get-report-by-rows($filepath as xs:string) as xs:string* {
   else () (: error :)
 };
 
-(:declare function ctab:get-intersection-of-reports($filenames as xs:string+) {
-  
-};:)
+(:~ Return only the rows of data for which values appear in both fileset A and 
+  fileset B. The counts are added up for each of these values. :)
+declare function ctab:get-intersection-of-reports($filenames as xs:string+) as xs:string* {
+  let $countReports := count($filenames)
+  let $allRows :=
+    for $filename in $filenames
+    return ctab:get-report-by-rows($filename)
+  let $allValues :=
+    for $row in $allRows
+    return ctab:get-cell($row,2)
+  let $distinctValues := distinct-values($allValues)
+  let $intersectValues :=
+    for $value in $distinctValues
+    return
+      (: We're only interested in the cell values which occur the same number of 
+        times as the number of reports. :)
+      if ( count(index-of($allValues, $value)) eq $countReports ) then
+        $value
+      else ()
+  let $regex :=
+    let $match := string-join($intersectValues,'|')
+    return concat('\t(',$match,')(\t|$)')
+  let $intersectRows := $allRows[matches(., $regex)]
+  return ctab:get-union-of-rows($intersectRows) (:$intersectValues:)
+};
 
 (:~ Return rows of data from fileset A only if their corresponding values don't 
   appear in fileset B. If more than one filename is provided for a set, the union of 
@@ -66,7 +88,7 @@ declare function ctab:get-set-difference-of-rows($tabbed-rows as xs:string+, $ro
       return ctab:get-cell($row,2)
   let $regex :=
     let $match := string-join($valuesExcluded,'|')
-    return concat('\t(',$match,')')
+    return concat('\t(',$match,')(\t|$)')
   return
     $rowsWithTabs[not(matches(.,$regex))]
 };
