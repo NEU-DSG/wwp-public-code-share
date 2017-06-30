@@ -38,11 +38,11 @@ The XQuery script contains a declared variable called `$DESCRIPTIVE_NAME`, which
 
 Here is an example section with multiple variables:
 
-  declare variable $blazingWorld := doc('file:/Users/ashleyclark/WWP/textbase/distribution/cavendish.blazing.xml');
-  declare variable $wwo := collection('file:///Users/ashleyclark/WWP/textbase/distribution?select=*.xml');
-  declare variable $wwo_ondeck := collection('file:///Users/ashleyclark/WWP/textbase/on_deck?select=*.xml');
-  declare variable $wwo_construction := collection('file:///Users/ashleyclark/WWP/textbase/under_construction?select=*.xml');
-  declare variable $wwo_all := ( $wwo | $wwo_ondeck | $wwo_construction );
+    declare variable $blazingWorld := doc('file:/Users/ashleyclark/WWP/textbase/distribution/cavendish.blazing.xml');
+    declare variable $wwo := collection('file:///Users/ashleyclark/WWP/textbase/distribution?select=*.xml');
+    declare variable $wwo_ondeck := collection('file:///Users/ashleyclark/WWP/textbase/on_deck?select=*.xml');
+    declare variable $wwo_construction := collection('file:///Users/ashleyclark/WWP/textbase/under_construction?select=*.xml');
+    declare variable $wwo_all := ( $wwo | $wwo_ondeck | $wwo_construction );
 
 Each line contains a uniquely named variable (e.g. `$wwo`), defined as an XML document, a collection of documents, or a union of documents/collections:
 
@@ -57,7 +57,7 @@ When the Counting Robot starts working,`$query` is the variable which stores the
 
 For example, the default `$query` defined in the XQuery script is:
 
-  declare variable $query := $DESCRIPTIVE_NAME//text//title;
+    declare variable $query := $DESCRIPTIVE_NAME//text//title;
 
 This translates to: "From the XML documents defined in the variable `$DESCRIPTIVE_NAME`, get all `<title>`s within `<text>`, and store them as a variable named `$query`."
 
@@ -69,27 +69,27 @@ Namespaces are unique identifiers which specify the flavor of XML being used. Fo
 
 The TEI namespace declaration looks like this in an XML document:
 
-  <TEI xmlns="http://www.tei-c.org/ns/1.0">
-      <!-- ... -->
-  </TEI>
+    <TEI xmlns="http://www.tei-c.org/ns/1.0">
+        <!-- ... -->
+    </TEI>
 
 The TEI namespace declaration looks like this in the XQuery script:
 
-  declare namespace tei="http://www.tei-c.org/ns/1.0";
+    declare namespace tei="http://www.tei-c.org/ns/1.0";
 
 With this last declaration present, you can use the namespace prefix `tei` in your `$query` XPath to refer to any element within the TEI namespace, such as `tei:TEI`.
 
 The Counting Robot defines the TEI and WWP namespace prefixes for you, but it also includes a special namespace declaration:
 
-  declare default element namespace "http://www.wwp.northeastern.edu/ns/textbase";
+    declare default element namespace "http://www.wwp.northeastern.edu/ns/textbase";
 
 This tells the Robot that whenever it sees a prefix-less element name in an XPath, to assume that the element is supposed to be in the WWP namespace. So, this XPath:
 
-  $query := $testDoc//text//title;
+    $query := $testDoc//text//title;
 
 is functionally the same as this XPath:
 
-  $query := $testDoc//wwp:text//wwp:title;
+    $query := $testDoc//wwp:text//wwp:title;
 
 And neither will match any `<title>`s within an XML document that has any other namespace declaration, or no namespace at all.
 
