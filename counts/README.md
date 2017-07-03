@@ -1,4 +1,4 @@
-<!-- Last updated 2017-06-30 -->
+<!-- Last updated 2017-07-03 -->
 # The Counting Robot
 
 The "Counting Robot" is a simple tool for getting counts of phenomena in documents encoded with XML. This script creates tab-delimited reports from any selection of XML content, using an XPath you provide. These reports are easily read in any text editor or spreadsheet software.
@@ -97,23 +97,20 @@ is functionally the same as this XPath:
 
     $query := $testDoc//wwp:text//wwp:title;
 
-And neither will match any `<title>`s within an XML document that has any other namespace declaration, or no namespace at all.
+And neither will match any `<title>`s within an XML document that has any other namespace declaration, or that declares no namespace at all.
 
-You should feel free to change the default namespace or add namespace prefix declarations.
+You should feel free to change the default namespace and/or add namespace prefix declarations.
 
 ## Setting up
 
-Unfortunately, setting up the Counting Robot is the most complicated part of working with the script. Fortunately, you only have to do it once.
-
-### With oXygen
-
-### Via the command line
+The Counting Robot uses XQuery version 3.0, and is known to work with Saxon HE/PE/EE, eXist-DB, and BaseX. See our [XQuery documentation](docs/setup-xquery.md) for details on setting up a general XQuery transformation.
 
 ### Adding variables
+
+
 
 ## The set theory library
 
 ### Importing the library
-
 
 
