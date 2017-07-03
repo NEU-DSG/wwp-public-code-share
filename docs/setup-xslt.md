@@ -11,7 +11,17 @@ Our XSLT stylesheets are very likely to include optional parameters. Check the R
 
 ## Transforming through the command line
 
+To use XSLT 2.0+ on the command line, you will need a copy of the Saxon HE processor. Download the latest ZIP file from [Sourceforge](https://sourceforge.net/projects/saxon/files/Saxon-HE/) and decompress it somewhere you can easily find it. Inside the unzipped folder is a file called something like "saxon9he.jar". This JAR file is your Saxon processor.
 
+Before you continue, navigate to the JAR file in your command line interface and make sure that you can execute it.
+
+This command will process an input XML document using an XSLT stylesheet: 
+
+    java -jar "/PATH/TO/saxon9he.jar" -expand:off -s:"/PATH/TO/INPUTFILE.xml" -xsl:"/PATH/TO/FILENAME.xslt" -o:"/PATH/TO/OUTPUTFILE"
+
+If you need to add/modify any parameters, append your choices to the command, using the format `NAME=VALUE`.
+
+See the Saxonica documentation for other options. http://www.saxonica.com/documentation/#!using-xsl/commandline
 
 ## Transforming with eXist-DB
 

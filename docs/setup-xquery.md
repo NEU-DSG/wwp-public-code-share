@@ -29,7 +29,7 @@ Now that your preferences and scenario are configured, you can re-run your count
 
 <h2 id="cli">Querying with the command line</h2>
 
-To run an XQuery on the command line, you will need a copy of the Saxon HE processor. Download the latest ZIP file from [Sourceforge](https://sourceforge.net/projects/saxon/files/Saxon-HE/) and decompress it somewhere you can easily find it. Inside the unzipped folder is a file called something like "saxon9he.jar". This JAR file is your Saxon processor.
+To use an XQuery on the command line, you will need a copy of the Saxon HE processor. Download the latest ZIP file from [Sourceforge](https://sourceforge.net/projects/saxon/files/Saxon-HE/) and decompress it somewhere you can easily find it. Inside the unzipped folder is a file called something like "saxon9he.jar". This JAR file is your Saxon processor.
 
 Before you continue, navigate to the JAR file in your command line interface and make sure that you can execute it.
 
@@ -44,6 +44,6 @@ See the Saxonica documentation for other options. http://www.saxonica.com/docume
 <h2 id="exist">Querying with eXist-DB</h2>
 
 
-<!--<h2 id="basex">Querying with BaseX</h2>-->
 
+<!--<h2 id="basex">Querying with BaseX</h2>-->
 

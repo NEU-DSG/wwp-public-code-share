@@ -50,6 +50,7 @@ Each line contains a uniquely named variable (e.g. `$wwo`), defined as an XML do
 * `collection('DIRECTORY-PATH')`
 * `( $VARIABLE-1 | $VARIABLE-2 | doc('FILE-PATH') | collection('DIRECTORY-PATH') )`
 
+Paths can be [relative to the XQuery, absolute](https://en.wikipedia.org/wiki/Path_%28computing%29#Absolute_and_relative_paths), or URLs. Each space in file or directory names should be replaced with its hexadecimal form "%20" (e.g. "hello world.xml" should be referenced as "hello%20world.xml"). 
 
 ### Your XPath `$query`
 
@@ -101,16 +102,28 @@ And neither will match any `<title>`s within an XML document that has any other 
 
 You should feel free to change the default namespace and/or add namespace prefix declarations.
 
+
 ## Setting up
 
-The Counting Robot uses XQuery version 3.0, and is known to work with Saxon HE/PE/EE, eXist-DB, and BaseX. See our [XQuery documentation](docs/setup-xquery.md) for details on setting up a general XQuery transformation.
-
-### Adding variables
-
+The Counting Robot uses XQuery version 3.0. Since it is assumed you'll be working extensively in the declared variables, the XQuery script has no external parameters to set. See our general documentation for details on [setting up an XQuery transformation](../docs/setup-xquery.md).
 
 
 ## The set theory library
 
-### Importing the library
+Unlike the Counting Robot, `count-sets-library.xql` is library of XQuery functions, rather than a standalone XQuery. The functions can be used to combine and manipulate multiple reports from the Counting Robot:
+
+* `ctab:get-union-of-reports( ($filenameA, $filenameB, $ETC) )`
+  * the union of reports A through N in a sequence (including adding up the counts)
+* `ctab:get-union-of-rows( ($rowA1, $rowB1, $ETC) )`
+  * the union of all rows in a sequence (including adding up the counts)
+* `ctab:get-intersection-of-reports( ($filenameA, $filenameB, $ETC) )`
+  * the intersection of reports A through N, or, only the data values which occur once per report (including adding up the counts)
+* `ctab:get-set-difference-of-reports($filenameA, $filenameB)`
+  * all data values in report(s) A where there isn't a corresponding value in report(s) B
+  * both A and B can be a sequence of filenames rather than a single string; the union of those sequences will be applied automatically
+* `ctab:get-set-difference-of-rows( ($rowA1, $rowA2, $ETC), ($rowB1, $rowB2, $ETC) )`
+  * all data values in the sequence of rows A where there isn't a corresponding value in sequence of rows B
+
+<!--### Importing the library-->
 
 
