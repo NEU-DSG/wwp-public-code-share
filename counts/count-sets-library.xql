@@ -25,8 +25,10 @@ xquery version "3.0";
  :        value in sequence of rows B
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @version 1.0
+ : @version 1.1
  :
+ :  2017-07-25: v1.1. Made ctab:join-rows() permissive of an empty sequence of rows 
+ :    (a blank report).
  :  2017-06-30: v1.0. Added ctab:get-intersection-of-reports(), 
  :    ctab:create-row-match-pattern(), and this header.
  :  2017-05-05: Created.
@@ -160,6 +162,8 @@ declare function ctab:get-union-of-rows($tabbed-rows as xs:string+) as xs:string
 };
 
 (:~ Turn a sequence of strings into a single string by inserting newlines. :)
-declare function ctab:join-rows($rows as xs:string+) as xs:string {
-  string-join($rows, $ctab:newlineChar)
+declare function ctab:join-rows($rows as xs:string*) as xs:string {
+  if ( count($rows) gt 0 ) then
+    string-join($rows, $ctab:newlineChar)
+  else ''
 };
