@@ -13,6 +13,9 @@ xquery version "3.0";
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @version 1.1
  :
+ :  2017-08-01: Removed duplicate results when morphadorned XML includes split 
+ :              tokens. Only unbroken tokens and the first split tokens are 
+ :              processed  (`//w[not(@part) or @part[data(.) = ('N', 'I')]`).
  :  2017-07-12: v1.1. Added Morphadorner control, this header, and this changelog.
  :  2017-06-09: Fixed XPaths used to derive documents' publication date and author.
  :              Thanks to Thanasis for finding these bugs!
@@ -48,6 +51,10 @@ declare function local:get-morphadorned-text($element as node(), $type as xs:str
       let $strings :=
         if ( $element[self::wwp:lb] ) then
           ' '
+        (: Since Morphadorner will place the same value on both parts of the same 
+          word, we will only process the first split token, and unbroken tokens. :)
+        else if ( $element[@part[data(.) = ('M', 'F')]] ) then
+          ()
         else if ( $element[self::wwp:c] ) then
           $element/data(.)
         else if ( $element[@lem or @pos or @reg or @spe] ) then
