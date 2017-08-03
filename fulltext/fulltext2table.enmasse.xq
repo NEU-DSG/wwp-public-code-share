@@ -14,6 +14,9 @@ xquery version "3.0";
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @version 1.1
  :
+ :  2017-08-03: Added function omit-descendants() to remove given named elements 
+ :              from output. Used the full path for `/TEI/text` to solve doubling 
+ :              when the file has a <group> of <text>s.
  :  2017-08-01: Removed duplicate results when morphadorned XML includes split 
  :              tokens. Only unbroken tokens and the first split tokens are 
  :              processed  (`//w[not(@part) or @part[data(.) = ('N', 'I')]`).
@@ -80,6 +83,19 @@ declare function local:make-rows-in-table($sequence as xs:string*) {
   string-join($sequence, '&#13;')
 };
 
+(: Remove certain named elements from within an XML fragment. :)
+declare function local:omit-descendants($element as node(), $element-names as xs:string*) {
+  if ( empty($element-names) or $element[self::text()] ) then $element
+  else if ( $element[self::*]/local-name() = $element-names ) then ()
+  else
+    element { $element/name() } {
+      $element/@*,
+      for $child in $element/node()
+      return local:omit-descendants($child, $element-names)
+    }
+};
+
+
 (:  MAIN QUERY  :)
 let $headerRow := ('filename', 'tr #', 'author pid', 'pub date', 'full text')
 let $allRows := 
@@ -87,23 +103,29 @@ let $allRows :=
     local:make-cells-in-row($headerRow),
     
     let $file := tokenize(./base-uri(),'/')[last()]
-    let $header := //wwp:teiHeader
-    let $idno := $header//wwp:publicationStmt/wwp:idno[@type eq 'WWP']/data(.)
-    let $author := $header//wwp:titleStmt/wwp:author[1]/wwp:persName[@ref][1]/@ref/substring-after(data(.),'p:')
+    let $header := /wwp:TEI/wwp:teiHeader
+    let $idno := $header/wwp:fileDesc/wwp:publicationStmt/wwp:idno[@type eq 'WWP']/data(.)
+    let $author := $header/wwp:fileDesc/wwp:titleStmt/wwp:author[1]/wwp:persName[@ref][1]/@ref/substring-after(data(.),'p:')
     let $pubDate := 
-      let $date := $header//wwp:sourceDesc[@n][1]//wwp:imprint[1]/wwp:date[1]
+      let $date := $header/wwp:fileDesc/wwp:sourceDesc[@n][1]//wwp:imprint[1]/wwp:date[1]
       return 
         if ( $date[@from][@to] ) then
           concat( $date/@from/data(.), '-', $date/@to/data(.) )
         else $date/@when/data(.)
     (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := //wwp:text
+    let $ELEMENTS := /wwp:TEI/wwp:text
+    (: Add the names of elements that you wish to remove from within $ELEMENTS.
+     : For example, 
+     :    ('castList', 'elision', 'figDesc', 'label', 'speaker')
+     :)
+    let $ELEMENTS2OMIT := ()
     let $fulltext := 
       let $wordSeq := for $element in $ELEMENTS
+                      let $abridged := local:omit-descendants($element, $ELEMENTS2OMIT)
                       return 
                         if ( $isMorphadorned ) then
-                          local:get-morphadorned-text($element, $morphadornerTextType)
-                        else local:get-text($element)
+                          local:get-morphadorned-text($abridged, $morphadornerTextType)
+                        else local:get-text($abridged)
       let $wordSeparator := ' '
       return normalize-space(string-join(($wordSeq), $wordSeparator))
     let $dataSeq := ( $file, $idno, $author, $pubDate, $fulltext )

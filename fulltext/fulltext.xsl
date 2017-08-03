@@ -16,6 +16,8 @@
     Author: Ashley M. Clark
     
     Changelog:
+      2017-08-03: Set `//note[@type eq 'temp']` to be removed when $keep-wwp-text is 
+        toggled off.
       2017-04-25: Added function to test if an element has mixed content. Created 
         'text2attr' mode so that when content is turned into an @read, the XML tree 
         isn't flattened unnecessarily. @read propagates to descendant elements, and 
@@ -198,8 +200,9 @@
   </xsl:template>
   
   <!-- OPTIONAL: completely remove the content of WWP notes and <figDesc>s. -->
-  <xsl:template match="note[@type eq 'WWP'][not($keep-wwp-text)]
-                     | figDesc             [not($keep-wwp-text)]" priority="30">
+  <xsl:template match="note[@type eq 'WWP'] [not($keep-wwp-text)]
+                     | note[@type eq 'temp'][not($keep-wwp-text)]
+                     | figDesc              [not($keep-wwp-text)]" priority="30">
     <xsl:call-template name="not-as-shallow-copy"/>
   </xsl:template>
   
