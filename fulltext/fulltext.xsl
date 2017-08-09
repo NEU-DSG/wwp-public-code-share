@@ -16,6 +16,9 @@
     Author: Ashley M. Clark
     
     Changelog:
+      2017-08-09: Added $move-notes-to-anchors parameter. When toggled on, notes 
+        will be copied next to their anchors, and deleted from their original 
+        positions.
       2017-08-03: Set `//note[@type eq 'temp']` to be removed when $keep-wwp-text is 
         toggled off.
       2017-04-25: Added function to test if an element has mixed content. Created 
@@ -62,8 +65,13 @@
     WWP content is removed, no @read is used to capture deleted content. -->
   <xsl:param name="keep-wwp-text"                 as="xs:boolean" select="true()"/>
   
+  <!-- Parameter option to move notes from the <hyperDiv> or endnotes section, to 
+    their anchorpoint. This could be useful for proximity-based text analysis. The 
+    default is to keep the notes where they appeared in the input XML. -->
+  <xsl:param name="move-notes-to-anchors"         as="xs:boolean" select="false()"/>
   
-<!-- VARIABLES -->
+  
+<!-- VARIABLES and KEYS -->
   
   <xsl:variable name="fulltextBot" select="'fulltextBot'"/>
   
@@ -116,7 +124,10 @@
     current element is <lb> or <cb> (read: empty), then test the following node for 
     whitespace too. Add a single space as needed. -->
   <xsl:template name="make-whitespace-explicit">
-    <xsl:if test="preceding-sibling::node()[1][not(matches(.,'\s+$'))]
+    <xsl:variable name="has-preceding-sibling" select="exists(preceding-sibling::node())"/>
+    <xsl:if test="( ( $has-preceding-sibling and preceding-sibling::node()[1][not(matches(.,'\s+$'))] )
+                    or ( not($has-preceding-sibling) and not(exists(parent::*/preceding-sibling::node())) )
+                  )
                   and self::*[not(@rend) or not(matches(@rend,'break\(\s*no\s*\)'))]">
       <xsl:if test="not((self::lb | self::cb)) 
                     or (self::lb | self::cb)[following-sibling::node()[1][not(matches(.,'^\s+'))]]">
@@ -218,7 +229,7 @@
     <xsl:call-template name="make-whitespace-explicit"/>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
+      <xsl:apply-templates mode="#current"/>
     </xsl:copy>
   </xsl:template>
   
@@ -502,6 +513,50 @@
       <xsl:copy-of select="@* except @read"/>
       <xsl:value-of select="@read"/>
     </xsl:copy>
+  </xsl:template>
+  
+  <!-- If $move-notes-to-anchors is toggled on, elements with @corresp get copies of 
+    any matching notes placed immediately after them. -->
+  <xsl:template match="*[@corresp][$move-notes-to-anchors]" mode="unifier">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="#current"/>
+    </xsl:copy>
+    <xsl:variable name="idref" select="@corresp/data(.)"/>
+    <xsl:variable name="matchedNote" select="//note[concat('#',@xml:id) eq $idref]"/>
+    <xsl:apply-templates select="$matchedNote" mode="#current">
+      <xsl:with-param name="is-anchored" select="true()"/>
+    </xsl:apply-templates>
+  </xsl:template>
+  
+  <!-- If $move-notes-to-anchors is toggled on, anchored notes are suppressed where 
+    they appeared in the XML, and copied alongside their referencing context. -->
+  <xsl:template match="note[@xml:id][@target][$move-notes-to-anchors]" mode="unifier">
+    <xsl:param name="is-anchored" select="false()" as="xs:boolean"/>
+    <xsl:choose>
+      <xsl:when test="$is-anchored">
+        <xsl:copy>
+          <!-- The copy of the note does not get the @xml:id. Instead, it points to 
+            its original by using @sameAs. -->
+          <xsl:copy-of select="@* except @xml:id"/>
+          <xsl:attribute name="read" select="''"/>
+          <xsl:attribute name="sameAs" select="concat('#',@xml:id)"/>
+          <xsl:call-template name="set-provenance-attributes">
+            <xsl:with-param name="subtype" select="'add-content add-element'"/>
+          </xsl:call-template>
+          <xsl:apply-templates select="*|text()" mode="#current"/>
+        </xsl:copy>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:copy-of select="@*"/>
+          <xsl:call-template name="set-provenance-attributes">
+            <xsl:with-param name="subtype" select="'del-content'"/>
+          </xsl:call-template>
+          <xsl:apply-templates select="*|text()" mode="text2attr"/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
 </xsl:stylesheet>
