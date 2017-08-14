@@ -16,6 +16,8 @@
     Author: Ashley M. Clark
     
     Changelog:
+      2017-08-14: Ensured that anchors will always have at least one space 
+        separating it from a moved note.
       2017-08-09: Added $move-notes-to-anchors parameter. When toggled on, notes 
         will be copied next to their anchors, and deleted from their original 
         positions.
@@ -524,6 +526,22 @@
     </xsl:copy>
     <xsl:variable name="idref" select="@corresp/data(.)"/>
     <xsl:variable name="matchedNote" select="//note[concat('#',@xml:id) eq $idref]"/>
+    <xsl:variable name="hasSpacing" 
+      select=" matches($matchedNote/data(.), '^\s') 
+            or matches(data(.), '\s$') 
+            or (
+                normalize-space() eq '' 
+            and matches(preceding-sibling::node()[self::text() or self::*[text()]][1], '\s$') 
+            )"/>
+    <xsl:if test="not($hasSpacing)">
+      <seg read="">
+        <xsl:call-template name="set-provenance-attributes">
+          <xsl:with-param name="type" select="'implicit-whitespace'"/>
+          <xsl:with-param name="subtype" select="'add-content add-element'"/>
+        </xsl:call-template>
+        <xsl:text> </xsl:text>
+      </seg>
+    </xsl:if>
     <xsl:apply-templates select="$matchedNote" mode="#current">
       <xsl:with-param name="is-anchored" select="true()"/>
     </xsl:apply-templates>
