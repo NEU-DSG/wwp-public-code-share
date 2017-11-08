@@ -1,5 +1,7 @@
 # oXygen Cheat Sheet
 
+[Instructions for handling Subversion conflicts](https://docs.google.com/document/d/1iIPO-1C_xBF2wpVVsHlLA5dzz0M7hmvcnnRp0SOwlgo/edit?usp=sharing)
+
 ## Keyboard shortcuts
 
 ### Basic editing:
