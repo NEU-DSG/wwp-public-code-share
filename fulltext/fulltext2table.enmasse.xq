@@ -7,13 +7,18 @@ xquery version "3.0";
  : change the context node.
  :
  : The $ELEMENTS variable gives control over which TEI elements should be output via 
- : XPath. To use morphadorned XML, change $isMorphadorned to true().
+ : XPath. To use morphadorned XML, change $is-morphadorned to true().
  :
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @version 1.1
+ : @version 1.2
  :
+ :  2018-05-04: v.1.2. With Sarah Connell, added the external variable 
+ :              $return-only-words for use when the header row and file metadata are 
+ :              unnecessary. Added a default namespace and deleted "wwp:" prefixed 
+ :              XPaths. Switched the Morphadorner variables from camel-cased words 
+ :              to hyphen-separated.
  :  2017-08-03: Added function omit-descendants() to remove given named elements 
  :              from output. Used the full path for `/TEI/text` to solve doubling 
  :              when the file has a <group> of <text>s.
@@ -27,6 +32,7 @@ xquery version "3.0";
  :)
 
 (:  NAMESPACES  :)
+declare default element namespace "http://www.wwp.northeastern.edu/ns/textbase";
 declare namespace tei="http://www.tei-c.org/ns/1.0";
 declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
 declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
@@ -36,29 +42,32 @@ declare option output:method "text";
   declare context item external;
 
 (:  VARIABLES  :)
+  (: Set $return-only-words to 'true()' to remove the header row and file metadata 
+    entirely. Only that file's words are returned. :)
+  declare variable $return-only-words as xs:boolean external := false();
   (: Morphadorner-specific control :)
-  declare variable $isMorphadorned as xs:boolean external := false();
-  declare variable $morphadornerTextType as xs:string external := 'reg';
-  declare variable $validMorphadornerTypes := ('lem', 'pos', 'reg', 'spe', 'text');
+  declare variable $is-morphadorned as xs:boolean external := false();
+  declare variable $morphadorner-text-type as xs:string external := 'reg';
+  declare variable $valid-morphadorner-types := ('lem', 'pos', 'reg', 'spe', 'text');
 
 
 (:  FUNCTIONS  :)
 (: Given a type of text output and an element, create a plain text version of the 
   morphadorned TEI. :)
 declare function local:get-morphadorned-text($element as node(), $type as xs:string) {
-  let $useType := if ( $type = $validMorphadornerTypes ) then $type else 'text'
+  let $useType := if ( $type = $valid-morphadorner-types ) then $type else 'text'
   return
     if ( $type eq 'text') then
       local:get-text($element)
     else 
       let $strings :=
-        if ( $element[self::wwp:lb] ) then
+        if ( $element[self::lb] ) then
           ' '
         (: Since Morphadorner will place the same value on both parts of the same 
           word, we will only process the first split token, and unbroken tokens. :)
         else if ( $element[@part[data(.) = ('M', 'F')]] ) then
           ()
-        else if ( $element[self::wwp:c] ) then
+        else if ( $element[self::c] ) then
           $element/data(.)
         else if ( $element[@lem or @pos or @reg or @spe] ) then
           $element/@*[local-name(.) eq $type]/data(.)
@@ -100,21 +109,22 @@ declare function local:omit-descendants($element as node(), $element-names as xs
 let $headerRow := ('filename', 'tr #', 'author pid', 'pub date', 'full text')
 let $allRows := 
   (
-    local:make-cells-in-row($headerRow),
+    if ( $return-only-words ) then ()
+    else local:make-cells-in-row($headerRow),
     
     let $file := tokenize(./base-uri(),'/')[last()]
-    let $header := /wwp:TEI/wwp:teiHeader
-    let $idno := $header/wwp:fileDesc/wwp:publicationStmt/wwp:idno[@type eq 'WWP']/data(.)
-    let $author := $header/wwp:fileDesc/wwp:titleStmt/wwp:author[1]/wwp:persName[@ref][1]/@ref/substring-after(data(.),'p:')
+    let $header := /TEI/teiHeader
+    let $idno := $header/fileDesc/publicationStmt/idno[@type eq 'WWP']/data(.)
+    let $author := $header/fileDesc/titleStmt/author[1]/persName[@ref][1]/@ref/substring-after(data(.),'p:')
     let $pubDate := 
-      let $date := $header/wwp:fileDesc/wwp:sourceDesc[@n][1]//wwp:imprint[1]/wwp:date[1]
+      let $date := $header/fileDesc/sourceDesc[@n][1]//imprint[1]/date[1]
       return 
         if ( $date[@from][@to] ) then
           concat( $date/@from/data(.), '-', $date/@to/data(.) )
         else $date/@when/data(.)
     (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := /wwp:TEI/wwp:text
-    (: Add the names of elements that you wish to remove from within $ELEMENTS.
+    let $ELEMENTS := /TEI/text
+    (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
      : For example, 
      :    ('castList', 'elision', 'figDesc', 'label', 'speaker')
      :)
@@ -123,12 +133,17 @@ let $allRows :=
       let $wordSeq := for $element in $ELEMENTS
                       let $abridged := local:omit-descendants($element, $ELEMENTS2OMIT)
                       return 
-                        if ( $isMorphadorned ) then
-                          local:get-morphadorned-text($abridged, $morphadornerTextType)
+                        if ( $is-morphadorned ) then
+                          local:get-morphadorned-text($abridged, $morphadorner-text-type)
                         else local:get-text($abridged)
       let $wordSeparator := ' '
       return normalize-space(string-join(($wordSeq), $wordSeparator))
-    let $dataSeq := ( $file, $idno, $author, $pubDate, $fulltext )
+    let $dataSeq := 
+      ( 
+        if ( $return-only-words ) then ()
+        else ( $file, $idno, $author, $pubDate ),
+        $fulltext
+      )
     return 
       if ( $fulltext ne '' ) then 
         local:make-cells-in-row($dataSeq)
