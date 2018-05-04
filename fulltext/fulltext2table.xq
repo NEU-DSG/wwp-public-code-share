@@ -17,7 +17,9 @@ xquery version "3.0";
  :              $return-only-words for use when the header row and file metadata are 
  :              unnecessary. Added a default namespace and deleted "wwp:" prefixed 
  :              XPaths. Switched the Morphadorner variables from camel-cased words 
- :              to hyphen-separated.
+ :              to hyphen-separated. Fixed bug which eats text nodes that are all 
+ :              whitespace. The bug occurs when $ELEMENTS2OMIT is used with Saxon 
+ :              9.7+ (Oxygen XML Editor 19.0+).
  :  2017-08-03: Added function omit-descendants() to remove given named elements 
  :              from output.
  :  2017-08-01: Removed duplicate results when morphadorned XML includes split 
@@ -41,7 +43,7 @@ declare option output:method "text";
 
 
 (:  VARIABLES  :)
-  declare variable $ft-wwo := collection('../../fulltext-wwo?select=ft_askew.*.xml');
+  declare variable $ft-wwo := collection('../../fulltext-wwo?select=*.xml');
   declare variable $use-docs external := $ft-wwo;
   (: Set $return-only-words to 'true()' to remove the header row and file metadata 
     entirely. Only that file's words are returned. :)
@@ -94,13 +96,14 @@ declare function local:make-rows-in-table($sequence as xs:string*) {
 };
 
 (: Remove certain named elements from within an XML fragment. :)
-declare function local:omit-descendants($element as node(), $element-names as xs:string*) {
-  if ( empty($element-names) or $element[self::text()] ) then $element
-  else if ( $element[self::*]/local-name() = $element-names ) then ()
+declare function local:omit-descendants($node as node(), $element-names as xs:string*) as node()? {
+  if ( empty($element-names) ) then $node
+  else if ( $node[self::text()] ) then text { $node }
+  else if ( $node[self::*]/local-name() = $element-names ) then ()
   else
-    element { $element/name() } {
-      $element/@*,
-      for $child in $element/node()
+    element { $node/name() } {
+      $node/@*,
+      for $child in $node/node()
       return local:omit-descendants($child, $element-names)
     }
 };
@@ -115,15 +118,20 @@ let $allRows :=
     
     for $text in $use-docs/TEI
     let $file := tokenize($text/base-uri(),'/')[last()]
-    let $header := $text/teiHeader
-    let $idno := $header/fileDesc/publicationStmt/idno[@type eq 'WWP']/data(.)
-    let $author := $header/fileDesc/titleStmt/author[1]/persName[@ref][1]/@ref/substring-after(data(.),'p:')
-    let $pubDate := 
-      let $date := $header/fileDesc/sourceDesc[@n][1]//imprint[1]/date[1]
-      return 
-        if ( $date[@from][@to] ) then
-          concat( $date/@from/data(.), '-', $date/@to/data(.) )
-        else $date/@when/data(.)
+    let $optionalMetadata :=
+      if ( $return-only-words ) then ()
+      else
+        let $header := $text/TEI/teiHeader
+        let $idno := $header/fileDesc/publicationStmt/idno[@type eq 'WWP']/data(.)
+        let $author := $header/fileDesc/titleStmt/author[1]/persName[@ref][1]/@ref/substring-after(data(.),'p:')
+        let $pubDate := 
+          let $date := $header/fileDesc/sourceDesc[@n][1]//imprint[1]/date[1]
+          return 
+            if ( $date[@from][@to] ) then
+              concat( $date/@from/data(.), '-', $date/@to/data(.) )
+            else $date/@when/data(.)
+        return 
+          ( $file, $idno, $author, $pubDate )
     (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
     let $ELEMENTS := $text/text
     (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
@@ -140,12 +148,9 @@ let $allRows :=
                         else local:get-text($abridged)
       let $wordSeparator := ' '
       return normalize-space(string-join(($wordSeq), $wordSeparator))
-    let $dataSeq := 
-      ( 
-        if ( $return-only-words ) then ()
-        else ( $file, $idno, $author, $pubDate ),
-        $fulltext
-      )
+    (: The variable $optionalMetadata will be empty if $return-only-words is 'true()'. :)
+    let $dataSeq := ( $optionalMetadata, $fulltext )
+    order by $file
     return 
       if ( $fulltext ne '' ) then 
         local:make-cells-in-row($dataSeq)
