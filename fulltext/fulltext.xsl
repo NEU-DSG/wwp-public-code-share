@@ -16,6 +16,11 @@
     Author: Ashley M. Clark
     
     Changelog:
+      2018-04-04: When $move-notes-to-anchors is toggled on, notes in the <hyperDiv>
+        are run through 'unifier' mode, then tunnelled through to the anchors. 
+        (Since the first pass returns a sequence of nodes, getting to the <hyperDiv> 
+        from an anchoring element in <body> is non-trivial—they no longer share an 
+        ancestor.)
       2017-08-14: Ensured that anchors will always have at least one space 
         separating it from a moved note.
       2017-08-09: Added $move-notes-to-anchors parameter. When toggled on, notes 
@@ -188,12 +193,23 @@
   
   <!-- Run default mode on the descendants of <text>, then resolve soft hyphens. -->
   <xsl:template match="text">
-    <xsl:variable name="first-pass">
+    <xsl:variable name="first-pass" as="node()*">
       <xsl:apply-templates/>
+    </xsl:variable>
+    <!-- If $move-notes-to-anchors is toggled on, pre-process soft hyphens for notes 
+      in the <hyperDiv>. These notes will be tunnelled to anchors. -->
+    <xsl:variable name="notes" as="node()*">
+      <xsl:if test="$move-notes-to-anchors">
+        <xsl:apply-templates select="$first-pass[self::hyperDiv]//note" mode="unifier">
+          <xsl:with-param name="is-anchored" select="true()"/>
+        </xsl:apply-templates>
+      </xsl:if>
     </xsl:variable>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
-      <xsl:apply-templates select="$first-pass" mode="unifier"/>
+      <xsl:apply-templates select="$first-pass" mode="unifier">
+        <xsl:with-param name="processed-notes" select="$notes" as="node()*" tunnel="yes"/>
+      </xsl:apply-templates>
     </xsl:copy>
   </xsl:template>
   
@@ -459,6 +475,7 @@
         </xsl:call-template>
         <xsl:value-of select="wf:remove-shy($wordpart-two)"/>
       </seg>
+      <xsl:text>&#xa;</xsl:text>
     </xsl:if>
   </xsl:template>
   
@@ -520,12 +537,13 @@
   <!-- If $move-notes-to-anchors is toggled on, elements with @corresp get copies of 
     any matching notes placed immediately after them. -->
   <xsl:template match="*[@corresp][$move-notes-to-anchors]" mode="unifier">
+    <xsl:param name="processed-notes" as="node()*" tunnel="yes"/>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates mode="#current"/>
     </xsl:copy>
     <xsl:variable name="idref" select="@corresp/data(.)"/>
-    <xsl:variable name="matchedNote" select="//note[concat('#',@xml:id) eq $idref]"/>
+    <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref]"/>
     <xsl:variable name="hasSpacing" 
       select=" matches($matchedNote/data(.), '^\s') 
             or matches(data(.), '\s$') 
@@ -542,9 +560,7 @@
         <xsl:text> </xsl:text>
       </seg>
     </xsl:if>
-    <xsl:apply-templates select="$matchedNote" mode="#current">
-      <xsl:with-param name="is-anchored" select="true()"/>
-    </xsl:apply-templates>
+    <xsl:copy-of select="$matchedNote"/>
   </xsl:template>
   
   <!-- If $move-notes-to-anchors is toggled on, anchored notes are suppressed where 
@@ -562,7 +578,7 @@
           <xsl:call-template name="set-provenance-attributes">
             <xsl:with-param name="subtype" select="'add-content add-element'"/>
           </xsl:call-template>
-          <xsl:apply-templates select="*|text()" mode="#current"/>
+          <xsl:apply-templates mode="#current"/>
         </xsl:copy>
       </xsl:when>
       <xsl:otherwise>
@@ -571,7 +587,7 @@
           <xsl:call-template name="set-provenance-attributes">
             <xsl:with-param name="subtype" select="'del-content'"/>
           </xsl:call-template>
-          <xsl:apply-templates select="*|text()" mode="text2attr"/>
+          <!--<xsl:apply-templates select="*|text()" mode="text2attr"/>-->
         </xsl:copy>
       </xsl:otherwise>
     </xsl:choose>
