@@ -16,6 +16,13 @@
     Author: Ashley M. Clark
     
     Changelog:
+      2018-06-20: Began fixing soft hyphen handling by partially walking back the 
+        previous workflow of moving wordparts from one side of a break tag to the 
+        other. Instead, any intermediate whitespace is deleted between the soft 
+        hyphen and its following wordparts. One consequence of this is that break 
+        tags such as <lb> can no longer imply whitespace once this transformation 
+        has been run. But since whitespace was explicitly added around those tags,
+        this is not a hardship.
       2018-04-04: When $move-notes-to-anchors is toggled on, notes in the <hyperDiv>
         are run through 'unifier' mode, then tunnelled through to the anchors. 
         (Since the first pass returns a sequence of nodes, getting to the <hyperDiv> 
@@ -81,6 +88,8 @@
 <!-- VARIABLES and KEYS -->
   
   <xsl:variable name="fulltextBot" select="'fulltextBot'"/>
+  <xsl:variable name="shyDelimiter" select="'@'"/>
+  <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
   
   
 <!-- FUNCTIONS -->
@@ -112,7 +121,7 @@
   
   <xsl:function name="wf:remove-shy" as="xs:string">
     <xsl:param name="text" as="xs:string"/>
-    <xsl:value-of select="replace($text,'@\s*','')"/>
+    <xsl:value-of select="replace($text, $shyEndingPattern, '')"/>
   </xsl:function>
   
   
@@ -216,7 +225,8 @@
   <!-- Normalize 'ſ' to 's' and (temporarily) turn soft hyphens into '@'. Whitespace 
     after a soft hyphen is dropped. -->
   <xsl:template match="text()" name="normalizeText">
-    <xsl:value-of select="replace(translate(.,'ſ­','s@'),'@\s*','@')"/>
+    <xsl:variable name="replaceStr" select="concat('s',$shyDelimiter)"/>
+    <xsl:value-of select="replace(translate(., 'ſ­', $replaceStr), $shyEndingPattern, $shyDelimiter)"/>
   </xsl:template>
   
   <!-- By default when matching an element, copy it and apply templates to its 
@@ -459,17 +469,38 @@
   <!-- Copy whitespace forward. -->
   <xsl:template match="text()[normalize-space(.) eq '']" mode="unifier" priority="10">
     <xsl:choose>
-      <xsl:when test="normalize-space(.) eq '' and preceding::text()[not(normalize-space(.) eq '')][1][matches(.,'@\s*$')]"/>
+      <xsl:when test="normalize-space(.) eq '' and preceding::text()[not(normalize-space(.) eq '')][1][matches(., $shyEndingPattern)]"/>
       <xsl:otherwise>
         <xsl:copy/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
   
+  <!-- Remove soft hyphen delimiters from text nodes which contain other characters 
+    besides whitespace ones. -->
+  <xsl:template match="text()" mode="unifier">
+    <!-- If the preceding non-whitespace text node ended with a soft hyphen, remove 
+      any leading whitespace. -->
+    <xsl:variable name="mungedStart" as="xs:string">
+      <xsl:choose>
+        <xsl:when test="preceding::text()[not(normalize-space(.) eq '')][1][matches(., $shyEndingPattern)]">
+          <xsl:value-of select="replace(., '^\s+', '')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="."/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <!-- If the soft hyphen delimiter occurs at the end of the text node, remove it 
+      and mark where it was. -->
+    <xsl:value-of select="wf:remove-shy($mungedStart)"/>
+    <xsl:call-template name="wordpart-end"/>
+  </xsl:template>
+  
   <!-- If text has a soft-hyphen delimiter at the end, grab the next part of the 
     word from the next non-whitespace text node. -->
   <xsl:template name="wordpart-end">
-    <xsl:if test="matches(.,'@\s*$')">
+    <xsl:if test="matches(., $shyEndingPattern)">
       <xsl:variable name="text-after" select="following::text()[not(normalize-space(.) eq '')][1]"/>
       <xsl:variable name="wordpart-two" select="if ( $text-after ) then wf:get-first-word($text-after) else ''"/>
       <seg>
@@ -482,39 +513,6 @@
       </seg>
       <!--<xsl:text>&#xa;</xsl:text>-->
     </xsl:if>
-  </xsl:template>
-  
-  <!-- If the preceding non-whitespace text node ends with a soft-hyphen delimiter, 
-    create a <seg> placeholder for the part of the word drawn out. -->
-  <xsl:template name="wordpart-start">
-    <xsl:if test="preceding::text()[not(normalize-space(.) eq '')][1][matches(.,'@\s*$')]">
-      <!--<xsl:if test="preceding::text()[1][matches(.,'\s*$')]">
-        <xsl:text> </xsl:text>
-      </xsl:if>-->
-      <xsl:variable name="wordpart" select="wf:get-first-word(.)"/>
-      <xsl:value-of select="$wordpart"/>
-      <!--<seg>
-        <xsl:attribute name="read" select="$wordpart"/>
-        <xsl:call-template name="set-provenance-attributes">
-          <xsl:with-param name="type" select="'shy-part'"/>
-          <xsl:with-param name="subtype" select="'add-element del-content'"/>
-        </xsl:call-template>
-      </seg>-->
-    </xsl:if>
-  </xsl:template>
-  
-  <!-- Remove '@' delimiters from text. If the preceding non-whitespace node ended 
-    with an '@', remove the initial word fragment. If the delimiter occurs at the 
-    end of the text node, fold in the next part of the fragmented word. -->
-  <xsl:template match="text()" mode="unifier">
-    <xsl:variable name="wordpartStart" as="xs:string?">
-      <xsl:call-template name="wordpart-start"/>
-    </xsl:variable>
-    <xsl:variable name="munged" select="if ( $wordpartStart ) then
-                                          replace(., '^\s+', '')
-                                        else ."/>
-    <xsl:value-of select="wf:remove-shy($munged)"/>
-    <xsl:call-template name="wordpart-end"/>
   </xsl:template>
   
   <!-- If metawork will not be reconstituted, keep <ab> wrappers around pbGroups. -->
