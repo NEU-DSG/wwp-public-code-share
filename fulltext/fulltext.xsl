@@ -458,7 +458,12 @@
   
   <!-- Copy whitespace forward. -->
   <xsl:template match="text()[normalize-space(.) eq '']" mode="unifier" priority="10">
-    <xsl:copy/>
+    <xsl:choose>
+      <xsl:when test="normalize-space(.) eq '' and preceding::text()[not(normalize-space(.) eq '')][1][matches(.,'@\s*$')]"/>
+      <xsl:otherwise>
+        <xsl:copy/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <!-- If text has a soft-hyphen delimiter at the end, grab the next part of the 
@@ -473,9 +478,9 @@
           <xsl:with-param name="type" select="'shy-part'"/>
           <xsl:with-param name="subtype" select="'add-element mod-content'"/>
         </xsl:call-template>
-        <xsl:value-of select="wf:remove-shy($wordpart-two)"/>
+        <!--<xsl:value-of select="wf:remove-shy($wordpart-two)"/>-->
       </seg>
-      <xsl:text>&#xa;</xsl:text>
+      <!--<xsl:text>&#xa;</xsl:text>-->
     </xsl:if>
   </xsl:template>
   
@@ -483,17 +488,18 @@
     create a <seg> placeholder for the part of the word drawn out. -->
   <xsl:template name="wordpart-start">
     <xsl:if test="preceding::text()[not(normalize-space(.) eq '')][1][matches(.,'@\s*$')]">
-      <xsl:if test="preceding::text()[1][matches(.,'\s*$')]">
+      <!--<xsl:if test="preceding::text()[1][matches(.,'\s*$')]">
         <xsl:text> </xsl:text>
-      </xsl:if>
+      </xsl:if>-->
       <xsl:variable name="wordpart" select="wf:get-first-word(.)"/>
-      <seg>
+      <xsl:value-of select="$wordpart"/>
+      <!--<seg>
         <xsl:attribute name="read" select="$wordpart"/>
         <xsl:call-template name="set-provenance-attributes">
           <xsl:with-param name="type" select="'shy-part'"/>
           <xsl:with-param name="subtype" select="'add-element del-content'"/>
         </xsl:call-template>
-      </seg>
+      </seg>-->
     </xsl:if>
   </xsl:template>
   
@@ -501,23 +507,22 @@
     with an '@', remove the initial word fragment. If the delimiter occurs at the 
     end of the text node, fold in the next part of the fragmented word. -->
   <xsl:template match="text()" mode="unifier">
-    <xsl:variable name="wordpartStart" as="node()*">
+    <xsl:variable name="wordpartStart" as="xs:string?">
       <xsl:call-template name="wordpart-start"/>
     </xsl:variable>
-    <xsl:copy-of select="$wordpartStart"/>
     <xsl:variable name="munged" select="if ( $wordpartStart ) then
-                                          substring-after(., $wordpartStart/@read)
+                                          replace(., '^\s+', '')
                                         else ."/>
     <xsl:value-of select="wf:remove-shy($munged)"/>
     <xsl:call-template name="wordpart-end"/>
   </xsl:template>
   
-  <!-- Add blank lines around pbGroups, to aid readability. This is done silently, 
-    without the usual <seg> markers. -->
+  <!-- If metawork will not be reconstituted, keep <ab> wrappers around pbGroups. -->
   <xsl:template match="ab[@type eq 'pbGroup'][not($keep-metawork-text)]" mode="unifier">
-    <!--<xsl:text>&#xa;</xsl:text>-->
-    <xsl:copy-of select="."/>
-    <!--<xsl:text>&#xa;</xsl:text>-->
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="#current"/>
+    </xsl:copy>
   </xsl:template>
   
   <!-- If $keep-metawork-text is toggled on, remove <ab> wrappers around pbGroups. -->
