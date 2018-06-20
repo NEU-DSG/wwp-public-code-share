@@ -16,13 +16,15 @@
     Author: Ashley M. Clark
     
     Changelog:
-      2018-06-20: Began fixing soft hyphen handling by partially walking back the 
-        previous workflow of moving wordparts from one side of a break tag to the 
-        other. Instead, any intermediate whitespace is deleted between the soft 
+      2018-06-20, v2.0: Began fixing soft hyphen handling by partially walking back 
+        the previous workflow of moving wordparts from one side of a break tag to 
+        the other. Instead, any intermediate whitespace is deleted between the soft 
         hyphen and its following wordparts. One consequence of this is that break 
         tags such as <lb> can no longer imply whitespace once this transformation 
-        has been run. But since whitespace was explicitly added around those tags,
-        this is not a hardship.
+        has been run.
+        The soft hyphen delimiter "@" has been changed back to "­", and made into a
+        global parameter.
+        "Vv" is allowed as the content of <vuji>.
       2018-04-04: When $move-notes-to-anchors is toggled on, notes in the <hyperDiv>
         are run through 'unifier' mode, then tunnelled through to the anchors. 
         (Since the first pass returns a sequence of nodes, getting to the <hyperDiv> 
@@ -88,7 +90,7 @@
 <!-- VARIABLES and KEYS -->
   
   <xsl:variable name="fulltextBot" select="'fulltextBot'"/>
-  <xsl:variable name="shyDelimiter" select="'@'"/>
+  <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
   
   
@@ -226,7 +228,7 @@
     after a soft hyphen is dropped. -->
   <xsl:template match="text()" name="normalizeText">
     <xsl:variable name="replaceStr" select="concat('s',$shyDelimiter)"/>
-    <xsl:value-of select="replace(translate(., 'ſ­', $replaceStr), $shyEndingPattern, $shyDelimiter)"/>
+    <xsl:value-of select="translate(., 'ſ­', $replaceStr)"/>
   </xsl:template>
   
   <!-- By default when matching an element, copy it and apply templates to its 
@@ -315,8 +317,8 @@
       <xsl:call-template name="set-provenance-attributes">
         <xsl:with-param name="subtype" select="'mod-content'"/>
       </xsl:call-template>
-      <xsl:value-of select="if ( $text eq 'VV' ) then 'W'
-                       else if ( $text eq 'vv' ) then 'w'
+      <xsl:value-of select="if ( $text = ('VV', 'Vv') ) then 'W'
+                       else if ( $text eq 'vv' )        then 'w'
                        else translate($text,'vujiVUJI','uvijUVIJ')"/>
     </xsl:copy>
   </xsl:template>
@@ -466,18 +468,19 @@
   
 <!-- MODE: unifier -->
   
-  <!-- Copy whitespace forward. -->
+  <!-- Copy whitespace-only text nodes forward, unless they occur between a soft 
+    hyphen and a subsequent wordpart. -->
   <xsl:template match="text()[normalize-space(.) eq '']" mode="unifier" priority="10">
     <xsl:choose>
-      <xsl:when test="normalize-space(.) eq '' and preceding::text()[not(normalize-space(.) eq '')][1][matches(., $shyEndingPattern)]"/>
+      <xsl:when test="preceding::text() [not(normalize-space(.) eq '')][1]
+                                        [matches(., $shyEndingPattern)]" />
       <xsl:otherwise>
         <xsl:copy/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
   
-  <!-- Remove soft hyphen delimiters from text nodes which contain other characters 
-    besides whitespace ones. -->
+  <!-- Remove soft hyphen delimiters from text nodes. -->
   <xsl:template match="text()" mode="unifier">
     <!-- If the preceding non-whitespace text node ended with a soft hyphen, remove 
       any leading whitespace. -->
@@ -501,17 +504,13 @@
     word from the next non-whitespace text node. -->
   <xsl:template name="wordpart-end">
     <xsl:if test="matches(., $shyEndingPattern)">
-      <xsl:variable name="text-after" select="following::text()[not(normalize-space(.) eq '')][1]"/>
-      <xsl:variable name="wordpart-two" select="if ( $text-after ) then wf:get-first-word($text-after) else ''"/>
       <seg>
         <xsl:attribute name="read" select="'­'"/>
         <xsl:call-template name="set-provenance-attributes">
           <xsl:with-param name="type" select="'shy-part'"/>
           <xsl:with-param name="subtype" select="'add-element mod-content'"/>
         </xsl:call-template>
-        <!--<xsl:value-of select="wf:remove-shy($wordpart-two)"/>-->
       </seg>
-      <!--<xsl:text>&#xa;</xsl:text>-->
     </xsl:if>
   </xsl:template>
   
