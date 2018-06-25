@@ -11,8 +11,12 @@ xquery version "3.0";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @version 1.2
+ : @version 1.3
  :
+ :  2018-06-21: v.1.3. Added the external variable $preserve-space, which determines 
+ :              whether whitespace is respected in the input XML document (the 
+ :              default), or if steps are taken to normalize whitespace and add 
+ :              whitespace where it is implied (e.g. <lb>).
  :  2018-05-04: v.1.2. With Sarah Connell, added the external variable 
  :              $return-only-words for use when the header row and file metadata are 
  :              unnecessary. Added a default namespace and deleted "wwp:" prefixed 
@@ -48,6 +52,11 @@ declare option output:method "text";
   (: Set $return-only-words to 'true()' to remove the header row and file metadata 
     entirely. Only that file's words are returned. :)
   declare variable $return-only-words as xs:boolean external := false();
+  (: The "preserve-space" parameter determines whether whitespace is introduced 
+    around elements that normally imply whitespace, such as <lb>. The default is to 
+    preserve whitespace as it appears in the input XML. :)
+  declare variable $preserve-space as xs:boolean external := true();
+  
   (: Morphadorner-specific control :)
   declare variable $is-morphadorned as xs:boolean external := false();
   declare variable $morphadorner-text-type as xs:string external := 'reg';
@@ -64,7 +73,7 @@ declare function local:get-morphadorned-text($element as node(), $type as xs:str
       local:get-text($element)
     else 
       let $strings :=
-        if ( $element[self::lb] ) then
+        if ( $element[self::lb][not($preserve-space)] ) then
           ' '
         (: Since Morphadorner will place the same value on both parts of the same 
           word, we will only process the first split token, and unbroken tokens. :)
@@ -83,7 +92,7 @@ declare function local:get-morphadorned-text($element as node(), $type as xs:str
 
 (: Get the normalized text content of an element. :)
 declare function local:get-text($element as node()) as xs:string {
-  $element/normalize-space(.)
+  replace($element, '\s+', ' ')
 };
 
 (: Use tabs to separate cells within rows. :)
