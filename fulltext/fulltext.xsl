@@ -494,9 +494,12 @@
     </xsl:choose>
   </xsl:template>
   
-  <!-- Delete the results of the 'make-whitespace-explicit' template, iff they occur 
-    between a soft hyphen and following wordparts. -->
-  <xsl:template match="seg[@type eq 'implicit-whitespace'][wf:is-splitting-a-word(.)]" mode="unifier"/>
+  <!-- Delete the results of the 'make-whitespace-explicit' template, if (1) they 
+    occur between a soft hyphen and following wordparts, or (2) they are the first 
+    child of a pbGroup that has preceding whitespace. -->
+  <xsl:template match="seg[@type eq 'implicit-whitespace'][wf:is-splitting-a-word(.)]
+    | ab[@type eq 'pbGroup'][preceding::node()[self::text() and matches(., '\s+$')]]
+      /*[1][self::seg[@type eq 'implicit-whitespace']]" mode="unifier"/>
   
   <!-- Remove soft hyphen delimiters from text nodes. -->
   <xsl:template match="text()" mode="unifier">
