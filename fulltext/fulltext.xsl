@@ -121,6 +121,12 @@
                                        or self::text()[normalize-space() eq ''] ] )"/>
   </xsl:function>
   
+  <xsl:function name="wf:is-splitting-a-word" as="xs:boolean">
+    <xsl:param name="node" as="node()"/>
+    <xsl:value-of select="exists($node/preceding::text()[not(normalize-space(.) eq '')][1]
+                                                        [matches(., $shyEndingPattern)])"/>
+  </xsl:function>
+  
   <xsl:function name="wf:remove-shy" as="xs:string">
     <xsl:param name="text" as="xs:string"/>
     <xsl:value-of select="replace($text, $shyEndingPattern, '')"/>
@@ -149,9 +155,10 @@
                   and self::*[not(@rend) or not(matches(@rend,'break\(\s*no\s*\)'))]">
       <xsl:if test="not((self::lb | self::cb)) 
                     or (self::lb | self::cb)[following-sibling::node()[1][not(matches(.,'^\s+'))]]">
-        <seg read="">
+        <seg read="" type="implicit-whitespace">
+          <!-- It is useful to provide @type="implicit-whitespace" even if 
+            $include-provenance-attributes is turned off. -->
           <xsl:call-template name="set-provenance-attributes">
-            <xsl:with-param name="type" select="'implicit-whitespace'"/>
             <xsl:with-param name="subtype" select="'add-content add-element'"/>
           </xsl:call-template>
           <xsl:text> </xsl:text>
@@ -224,8 +231,9 @@
     </xsl:copy>
   </xsl:template>
   
-  <!-- Normalize 'ſ' to 's' and (temporarily) turn soft hyphens into '@'. Whitespace 
-    after a soft hyphen is dropped. -->
+  <!-- Normalize 'ſ' to 's'. Soft hyphens are replaced with $shyDelimiter, which is 
+    by default just a soft hyphen. For debugging purposes, it may be useful to 
+    change $shyDelimiter to something more visible. -->
   <xsl:template match="text()" name="normalizeText">
     <xsl:variable name="replaceStr" select="concat('s',$shyDelimiter)"/>
     <xsl:value-of select="translate(., 'ſ­', $replaceStr)"/>
@@ -414,7 +422,7 @@
   <!-- Delete whitespace and certain types of <mw> when they trail along with a pbGroup. -->
   <xsl:template match="mw [@type = ('border', 'border-ornamental', 'border-rule', 'other', 'pressFig', 'unknown')]
                           [preceding-sibling::*[1][wf:is-pbGroup-candidate(.)]]
-                      | text()[normalize-space(.) eq ''] 
+                      | text()[normalize-space(.) eq '']
                           [preceding-sibling::*[1][wf:is-pbGroup-candidate(.)]]"/>
   
   
@@ -472,13 +480,23 @@
     hyphen and a subsequent wordpart. -->
   <xsl:template match="text()[normalize-space(.) eq '']" mode="unifier" priority="10">
     <xsl:choose>
-      <xsl:when test="preceding::text() [not(normalize-space(.) eq '')][1]
-                                        [matches(., $shyEndingPattern)]" />
+      <xsl:when test="wf:is-splitting-a-word(.)" >
+        <seg read="\s+">
+          <xsl:call-template name="set-provenance-attributes">
+            <xsl:with-param name="type" select="'explicit-whitespace'"/>
+            <xsl:with-param name="subtype" select="'add-element mod-content'"/>
+          </xsl:call-template>
+        </seg>
+      </xsl:when>
       <xsl:otherwise>
         <xsl:copy/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+  
+  <!-- Delete the results of the 'make-whitespace-explicit' template, iff they occur 
+    between a soft hyphen and following wordparts. -->
+  <xsl:template match="seg[@type eq 'implicit-whitespace'][wf:is-splitting-a-word(.)]" mode="unifier"/>
   
   <!-- Remove soft hyphen delimiters from text nodes. -->
   <xsl:template match="text()" mode="unifier">
@@ -504,8 +522,11 @@
     word from the next non-whitespace text node. -->
   <xsl:template name="wordpart-end">
     <xsl:if test="matches(., $shyEndingPattern)">
+      <xsl:variable name="endingWhitespace" 
+        select="if ( matches(., '\s+$') ) then '\s+'
+                else ''"/>
       <seg>
-        <xsl:attribute name="read" select="'­'"/>
+        <xsl:attribute name="read" select="concat('­',$endingWhitespace)"/>
         <xsl:call-template name="set-provenance-attributes">
           <xsl:with-param name="type" select="'shy-part'"/>
           <xsl:with-param name="subtype" select="'add-element mod-content'"/>
