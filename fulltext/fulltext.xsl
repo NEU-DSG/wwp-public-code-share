@@ -16,6 +16,11 @@
     Author: Ashley M. Clark
     
     Changelog:
+      2018-06-27, v2.1: Ensured that any whitespace deleted during shy handling is
+        represented in @read, either on the soft hyphen, or by adding a <seg> with a
+        @type of 'explicit-whitespace'. Added function to test if a node occurs 
+        after an unresolved soft hyphen. During unifier mode, the results of the 
+        'make-whitespace-explicit' template are removed if they prove unnecessary.
       2018-06-20, v2.0: Began fixing soft hyphen handling by partially walking back 
         the previous workflow of moving wordparts from one side of a break tag to 
         the other. Instead, any intermediate whitespace is deleted between the soft 
@@ -156,8 +161,9 @@
       <xsl:if test="not((self::lb | self::cb)) 
                     or (self::lb | self::cb)[following-sibling::node()[1][not(matches(.,'^\s+'))]]">
         <seg read="" type="implicit-whitespace">
-          <!-- It is useful to provide @type="implicit-whitespace" even if 
-            $include-provenance-attributes is turned off. -->
+          <!-- It is useful to provide @type="implicit-whitespace" even when 
+            $include-provenance-attributes is turned off. The attribute will be 
+            removed during 'unifier' mode if necessary. -->
           <xsl:call-template name="set-provenance-attributes">
             <xsl:with-param name="subtype" select="'add-content add-element'"/>
           </xsl:call-template>
@@ -494,12 +500,20 @@
     </xsl:choose>
   </xsl:template>
   
+  <!-- OPTIONAL: remove the auto-generated @type of 'implicit-whitespace'. -->
+  <xsl:template match="seg[@type eq 'implicit-whitespace'][not($include-provenance-attributes)]" mode="unifier">
+    <xsl:copy>
+      <xsl:copy-of select="@* except @type"/>
+      <xsl:apply-templates mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
+  
   <!-- Delete the results of the 'make-whitespace-explicit' template, if (1) they 
     occur between a soft hyphen and following wordparts, or (2) they are the first 
     child of a pbGroup that has preceding whitespace. -->
   <xsl:template match="seg[@type eq 'implicit-whitespace'][wf:is-splitting-a-word(.)]
     | ab[@type eq 'pbGroup'][preceding::node()[self::text() and matches(., '\s+$')]]
-      /*[1][self::seg[@type eq 'implicit-whitespace']]" mode="unifier"/>
+      /*[1][self::seg[@type eq 'implicit-whitespace']]"  priority="15" mode="unifier"/>
   
   <!-- Remove soft hyphen delimiters from text nodes. -->
   <xsl:template match="text()" mode="unifier">
