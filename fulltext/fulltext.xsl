@@ -21,6 +21,7 @@
         @type of 'explicit-whitespace'. Added function to test if a node occurs 
         after an unresolved soft hyphen. During unifier mode, the results of the 
         'make-whitespace-explicit' template are removed if they prove unnecessary.
+        Appended this XSLT's version number to the $fulltextBot variable. 
       2018-06-20, v2.0: Began fixing soft hyphen handling by partially walking back 
         the previous workflow of moving wordparts from one side of a break tag to 
         the other. Instead, any intermediate whitespace is deleted between the soft 
@@ -94,7 +95,8 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBot" select="'fulltextBot'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.1'"/>
+  <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
   
