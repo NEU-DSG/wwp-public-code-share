@@ -10,8 +10,9 @@ xquery version "3.0";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @version 1.0
+ : @version 1.1
  :
+ :  2018-08-01: v1.1. Added some nonsortable articles.
  :  2017-11-16: Created using counting-robot.xq v1.0.
  :)
 
@@ -55,7 +56,7 @@ declare option output:method "text";
   It also lower-cases the string, since capital letters will have an effect on 
   sort order. :)
 declare function local:get-sortable-string($str as xs:string) {
-  replace(lower-case(normalize-space($str)), '^(the|an|a|la|le|el|lo|las|los) ','')
+  replace(lower-case(normalize-space($str)), '^(the|an|a|la|le|de|del|el|lo|las|los) ','')
 };
 
 (: THE COUNTING ROBOT :)
