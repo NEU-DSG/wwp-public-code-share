@@ -2,7 +2,7 @@
 
 Some time ago the TEI-C created a new mechanism for indicating default rendition. It (the new <tt>@selector</tt> mechanism) became available in 2.9.1, and the old (<tt>@render</tt>) mechanism was withdrawn as of the _Telstar_ release (version 3.2.0 of 2017-07-10).
 
-Here are two routines for converting from the old to the new. There is no need to have two of them, the reason for separation is purely pedagogical. The <tt>simple</tt> stylesheet exists to show how easy this conversion can be in the simple case. For a simple TEI file that has a single <tt>&lt;TEI></tt> element and only has default renditions for elements in the TEI namespace this is _really easy_. It only takes 2 templates (in addition to the identity transform): 1 to add <tt>@selector</tt> to <tt>&lt;rendition></tt> and another to delete <tt>namespace</tt>.
+Here are two routines for converting from the old to the new. There is no need to have two of them, the reason for separation is purely pedagogical. The <tt>simple</tt> stylesheet exists to show how easy this conversion can be in the simple case. For a simple TEI file that has a single <tt>&lt;TEI></tt> element and only has default renditions for elements in the TEI namespace this is _really easy_. It only takes 2 templates (in addition to the identity transform): 1 to add <tt>@selector</tt> to <tt>&lt;rendition></tt> and another to delete <tt>&lt;namespace></tt>.
 
 Doing this for the general case, in which there may be multiple <tt>&lt;TEI></tt> elements, each with multiple <tt>&lt;namespace></tt> elements (from various namespaces), which namespaces may or may not also be in scope turns out to be _very hard_ (IMHO), and even then I had to concede the point that there may be a prefix definition used somewhere in the file that we can’t find.
 
@@ -15,3 +15,15 @@ So I have left the simple version here for those who want to puzzle through what
 2. Deletes any existing <tt>@selector</tt> attributes, so **do not** run it on files that already use the new mechanism.
 
 3. Does not take into account that there may be whitespace around the value of an <tt>@xml:id</tt> or <tt>@gi</tt>.
+
+# validating the values of <tt>@selector</tt> attributes
+
+The value of <tt>@selector</tt> is supposed to be in CSS (unless a
+different language is specified on the <tt>@scheme</tt> attribute).
+The TEI Guidelines (as of version 3.5.0a, last updated on 23 Jul 18,
+revision 206c146) ...
+
+
+
+
+
