@@ -11,8 +11,10 @@ xquery version "3.0";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @version 1.3
+ : @version 1.4
  :
+ :  2018-10-11: v.1.4. Add (one possible method of) support for outermost element
+ :              of <teiCorpus>.
  :  2018-06-21: v.1.3. Added the external variable $preserve-space, which determines 
  :              whether whitespace is respected in the input XML document (the 
  :              default), or if steps are taken to normalize whitespace and add 
@@ -125,7 +127,7 @@ let $allRows :=
     if ( $return-only-words ) then ()
     else local:make-cells-in-row($headerRow),
     
-    for $text in $use-docs/TEI
+    for $text in $use-docs/TEI|$use-docs/teiCorpus/TEI
     let $file := tokenize($text/base-uri(),'/')[last()]
     let $optionalMetadata :=
       if ( $return-only-words ) then ()
@@ -141,7 +143,12 @@ let $allRows :=
             else $date/@when/data(.)
         return 
           ( $file, $idno, $author, $pubDate )
-    (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
+    (: 
+     : Change $ELEMENTS to reflect the elements of which you want
+     : full-text representations. E.g., use
+     :    let $ELEMENTS := $text/text/body
+     : to ignore all <front> and <back> elements.
+     :)
     let $ELEMENTS := $text/text
     (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
      : For example, 

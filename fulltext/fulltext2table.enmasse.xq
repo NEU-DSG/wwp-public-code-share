@@ -12,8 +12,9 @@ xquery version "3.0";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @version 1.3
+ : @version 1.4
  :
+ :  2018-10-11: v.1.4. Add support for outermost element of <teiCorpus>.
  :  2018-06-21: v.1.3. Added the external variable $preserve-space, which determines 
  :              whether whitespace is respected in the input XML document (the 
  :              default), or if steps are taken to normalize whitespace and add 
@@ -128,7 +129,7 @@ let $allRows :=
     let $optionalMetadata :=
       if ( $return-only-words ) then ()
       else
-        let $header := /TEI/teiHeader
+        let $header := /*/teiHeader
         let $idno := $header/fileDesc/publicationStmt/idno[@type eq 'WWP']/data(.)
         let $author := $header/fileDesc/titleStmt/author[1]/persName[@ref][1]/@ref/substring-after(data(.),'p:')
         let $pubDate := 
@@ -139,8 +140,14 @@ let $allRows :=
             else $date/@when/data(.)
         return 
           ( $file, $idno, $author, $pubDate )
-    (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := /TEI/text|/teiCorpus/TEI/text
+    let $texts := /TEI/text|/teiCorpus/TEI/text
+    (: 
+     : Change $ELEMENTS to reflect the elements of which you want
+     : full-text representations. E.g., use
+     :    let $ELEMENTS := $text/body
+     : to ignore all <front> and <back> elements.
+     :)
+    let $ELEMENTS := $texts
     (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
      : For example, 
      :    ('castList', 'elision', 'figDesc', 'label', 'speaker')
