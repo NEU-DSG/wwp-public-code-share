@@ -40,14 +40,14 @@ xquery version "3.0";
  :)
 
 (: NAMESPACES :)
-module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
-declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
+  module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
+  declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
 
 
 (: VARIABLES :)
-declare variable $ctab:tabChar      := '&#9;';
-declare variable $ctab:newlineChar  := '&#13;';
-declare variable $ctab:nonsortRegex := '^(the|an|a|la|le|de|del|el|lo|las|los) ';
+  declare variable $ctab:tabChar      := '&#9;';
+  declare variable $ctab:newlineChar  := '&#13;';
+  declare variable $ctab:nonsortRegex := '^(the|an|a|la|le|de|del|el|lo|las|los) ';
 
 
 (: FUNCTIONS :)
@@ -173,9 +173,11 @@ declare function ctab:get-set-difference-of-rows($tabbed-rows as xs:string+, $ro
     $rowsWithTabs[not(matches(.,$regex))]
 };
 
-(:~  :)
+(:~ Given a string, create a version for alphabetical sorting. Spaces are 
+  normalized, characters are lower-cased, and non-sorting articles from 
+  $ctab:nonsortRegex are removed. :)
 declare function ctab:get-sortable-string($str as xs:string) {
-  replace(lower-case(normalize-space($str)), $ctab:nonsortRegex,'')
+  replace(lower-case(normalize-space($str)), $ctab:nonsortRegex, '')
 };
 
 (:~ Combine the counts for all values in N tab-delimited reports. :)
