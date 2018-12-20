@@ -6,8 +6,10 @@ xquery version "3.0";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counts
  : @version 1.1
  :
+ :  2018-12-20: Added link to GitHub.
  :  2018-08-01: v1.1. Added some nonsortable articles.
  :  2017-06-30: v1.0. Added this header and changelog.
  :  2017-04-28: Moved script from Gist to wwp-public-code-share git repository.

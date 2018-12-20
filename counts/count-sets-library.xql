@@ -25,8 +25,10 @@ xquery version "3.0";
  :        value in sequence of rows B
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counts
  : @version 1.2
  :
+ :  2018-12-20: Added link to GitHub.
  :  2018-08-01: v1.2. Added ctab:get-counts(), three function versions of 
  :    counting-robot.xq. Also added ctab:get-sortable-string() to support 
  :    ctab:get-counts().
