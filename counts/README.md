@@ -108,21 +108,45 @@ You should feel free to change the default namespace and/or add namespace prefix
 The Counting Robot uses XQuery version 3.0. Since it is assumed you'll be working extensively in the declared variables, the XQuery script has no external parameters to set. See our general documentation for details on [setting up an XQuery transformation](../docs/setup-xquery.md).
 
 
-## The set theory library
+## The counting sets library
 
-Unlike the Counting Robot, `count-sets-library.xql` is library of XQuery functions, rather than a standalone XQuery. The functions can be used to combine and manipulate multiple reports from the Counting Robot:
+Unlike the Counting Robot, `count-sets-library.xql` is library of XQuery functions, rather than a standalone XQuery. It contains functions that replicate the behavior of the standalone XQueries, as well as functions that can be used to combine and manipulate multiple reports from the Counting Robot.
+
+### Available functions
+
+#### TSV manipulation
+
+* `ctab:create-row-match-pattern( ($value1, $value2, $value3) )`
+  * Given a sequence of string values, returns a string regular expression which can be used to match a subset of rows.
+* `ctab:get-cell( $row, $cell-number )`
+  * Get the contents of the requested cell from the given TSV row.
+* `ctab:get-report-by-lines( $filepath )`
+  * Get a TSV file and return the lines containing a tab character.
+  * This is a convenience function for `fn:unparsed-text-lines()`.
+* `ctab:join-rows( ($row1, $row2, $ETC) )`
+  * Given a sequence of strings, joins them with a newline character in order to form a single report.
+
+#### Counting
+
+* `ctab:get-counts( ($results) )`
+  * Given a sequence of results from a prior XQuery, returns a tab-delimited report of the distinct values and their counts.
+  * By default, the rows of the report are sorted by count, then alphabetically by value.
+* `ctab:get-sortable-string( "String" )`
+  * Use the given string to create a version optimized for sorting alphabetically. Some non-sorting articles ("the", "an", etc.) are removed.
+
+#### Set theory
 
 * `ctab:get-union-of-reports( ($filenameA, $filenameB, $ETC) )`
-  * the union of reports A through N in a sequence (including adding up the counts)
+  * Get the union of reports A through N in a sequence (including adding up the counts).
 * `ctab:get-union-of-rows( ($rowA1, $rowB1, $ETC) )`
-  * the union of all rows in a sequence (including adding up the counts)
+  * Get the union of all rows in a sequence (including adding up the counts).
 * `ctab:get-intersection-of-reports( ($filenameA, $filenameB, $ETC) )`
-  * the intersection of reports A through N, or, only the data values which occur once per report (including adding up the counts)
+  * Get the intersection of reports A through N, or, only the data values which occur once per report (including adding up the counts).
 * `ctab:get-set-difference-of-reports($filenameA, $filenameB)`
-  * all data values in report(s) A where there isn't a corresponding value in report(s) B
-  * both A and B can be a sequence of filenames rather than a single string; the union of those sequences will be applied automatically
+  * Get all data values in report(s) A where there isn't a corresponding value in report(s) B.
+  * Both A and B can be a sequence of filenames rather than a single string; the union of those sequences will be applied automatically.
 * `ctab:get-set-difference-of-rows( ($rowA1, $rowA2, $ETC), ($rowB1, $rowB2, $ETC) )`
-  * all data values in the sequence of rows A where there isn't a corresponding value in sequence of rows B
+  * Get all data values in the sequence of rows A where there isn't a corresponding value in sequence of rows B.
 
 <!--### Importing the library-->
 
