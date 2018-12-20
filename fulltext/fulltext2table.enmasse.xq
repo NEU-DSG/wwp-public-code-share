@@ -12,8 +12,10 @@ xquery version "3.0";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @version 1.3
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
+ : @version 1.4
  :
+ :  2018-12-20: v.1.4. Added link to GitHub.
  :  2018-11-29: Examine all <text> elements except those that are a
  :              child of <group>. Add change-log comments. --Syd
  :  2018-10-08: Allow a root element of <teiCorpus> as well as <TEI>.

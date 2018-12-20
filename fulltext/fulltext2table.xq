@@ -11,8 +11,10 @@ xquery version "3.0";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @version 1.3
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
+ : @version 1.4
  :
+ :  2018-12-20: v.1.4. Added link to GitHub.
  :  2018-12-01: Allow for outermost element of input document to be
  :              <teiCorpus> in addition to <TEI>. Thus the sequence of
  :              elements in $text may contain both <TEI> and
