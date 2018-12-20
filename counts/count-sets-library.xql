@@ -25,8 +25,13 @@ xquery version "3.0";
  :        value in sequence of rows B
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @version 1.1
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counts
+ : @version 1.2
  :
+ :  2018-12-20: Added link to GitHub.
+ :  2018-08-01: v1.2. Added ctab:get-counts(), three function versions of 
+ :    counting-robot.xq. Also added ctab:get-sortable-string() to support 
+ :    ctab:get-counts().
  :  2017-07-25: v1.1. Made ctab:join-rows() permissive of an empty sequence of rows 
  :    (a blank report).
  :  2017-06-30: v1.0. Added ctab:get-intersection-of-reports(), 
@@ -35,16 +40,57 @@ xquery version "3.0";
  :)
 
 (: NAMESPACES :)
-module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
-declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
+  module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
+  declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
 
 
 (: VARIABLES :)
-declare variable $ctab:tabChar      := '&#9;';
-declare variable $ctab:newlineChar  := '&#13;';
+  declare variable $ctab:tabChar      := '&#9;';
+  declare variable $ctab:newlineChar  := '&#13;';
+  declare variable $ctab:nonsortRegex := '^(the|an|a|la|le|de|del|el|lo|las|los) ';
 
 
 (: FUNCTIONS :)
+
+(:~ Given a sequence of values, return the number of times each distinct value 
+  occurs. The result is a tab-delimited report. By default, the rows of the report 
+  are sorted by count, then alphabetically by value (with any nonsorting articles 
+  removed). :)
+declare function ctab:get-counts($query as item()+) {
+  ctab:get-counts($query, true())
+};
+
+(:~ Given a sequence of values, return the number of times each distinct value 
+  occurs. The result is a tab-delimited report, sorted either by count, or 
+  alphabetically by value. By default, any leading articles are removed from values. :)
+declare function ctab:get-counts($query as item()+, $sort-by-count as xs:boolean) {
+  ctab:get-counts($query, $sort-by-count, true())
+};
+
+(:~ Given a sequence of values, return the number of times each distinct value 
+  occurs. The result is a tab-delimited report, sorted either by count, or 
+  alphabetically by value. By default, any leading articles are removed from values, 
+  which presumes that the value is a string of text. The $remove-unsortable-articles 
+  parameter allows sorting with leading articles included. :)
+declare function ctab:get-counts($query as item()+, $sort-by-count as xs:boolean, $remove-unsortable-articles as xs:boolean) {
+  let $distinctValues := distinct-values($query)
+  let $listOfCounts :=  for $value in $distinctValues
+                        let $count := count($query[. eq $value])
+                        let $sortVal := if ( $remove-unsortable-articles and $value castable as xs:string ) then 
+                                          ctab:get-sortable-string(xs:string($value))
+                                        else $value
+                        order by
+                          if ( $sort-by-count ) then () else $sortVal,
+                          $count descending, 
+                          $sortVal
+                        return 
+                          (: Tab-delimited data within rows. :)
+                          concat($count, $ctab:tabChar, $value)
+  return 
+    (: Separate each row with a newline. :)
+    ctab:join-rows($listOfCounts)
+};
+
 
 (:~ Given a number of string values, create a regular expression pattern to match 
   rows which contain those cell values. :)
@@ -125,6 +171,13 @@ declare function ctab:get-set-difference-of-rows($tabbed-rows as xs:string+, $ro
   let $regex := ctab:create-row-match-pattern($valuesExcluded)
   return
     $rowsWithTabs[not(matches(.,$regex))]
+};
+
+(:~ Given a string, create a version for alphabetical sorting. Spaces are 
+  normalized, characters are lower-cased, and non-sorting articles from 
+  $ctab:nonsortRegex are removed. :)
+declare function ctab:get-sortable-string($str as xs:string) {
+  replace(lower-case(normalize-space($str)), $ctab:nonsortRegex, '')
 };
 
 (:~ Combine the counts for all values in N tab-delimited reports. :)
