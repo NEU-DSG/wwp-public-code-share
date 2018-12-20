@@ -13,6 +13,23 @@ xquery version "3.0";
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @version 1.3
  :
+ :  2018-12-01: Allow for outermost element of input document to be
+ :              <teiCorpus> in addition to <TEI>. Thus the sequence of
+ :              elements in $text may contain both <TEI> and
+ :              <teiCorpus>, and to look for the non-metadata bits
+ :              themselves we want to look for all <text> desendants,
+ :              not just child of outermost element. However, we don't
+ :              want to count a <text> more than once, so avoid nested
+ :              <text> elements by ignoring those that are within a
+ :              <group>. (Since <group> is definitionally a descendant
+ :              of <text>, all those will aready be collected by
+ :              catching the <text> that is the ancestor of the
+ :              <group>.)
+ :  2018-11-29: Bug fix (by SB on phone w/ AC): fix assignment of
+ :              $header (to the <teiHeader> child of the outermost
+ :              element, recorded in $text, rather than to the
+ :              non-existant <teiHeader> child of the <TEI> child of
+ :              the element recorded in $text).
  :  2018-06-21: v.1.3. Added the external variable $preserve-space, which determines 
  :              whether whitespace is respected in the input XML document (the 
  :              default), or if steps are taken to normalize whitespace and add 
@@ -125,12 +142,12 @@ let $allRows :=
     if ( $return-only-words ) then ()
     else local:make-cells-in-row($headerRow),
     
-    for $text in $use-docs/TEI
+    for $text in $use-docs/TEI | $use-docs/teiCorpus
     let $file := tokenize($text/base-uri(),'/')[last()]
     let $optionalMetadata :=
       if ( $return-only-words ) then ()
       else
-        let $header := $text/TEI/teiHeader
+        let $header := $text/teiHeader
         let $idno := $header/fileDesc/publicationStmt/idno[@type eq 'WWP']/data(.)
         let $author := $header/fileDesc/titleStmt/author[1]/persName[@ref][1]/@ref/substring-after(data(.),'p:')
         let $pubDate := 
@@ -142,7 +159,7 @@ let $allRows :=
         return 
           ( $file, $idno, $author, $pubDate )
     (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := $text/text
+    let $ELEMENTS := $text//text[not(parent::group)]
     (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
      : For example, 
      :    ('castList', 'elision', 'figDesc', 'label', 'speaker')
