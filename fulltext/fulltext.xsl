@@ -576,14 +576,8 @@
     </xsl:copy>
   </xsl:template>
   
-  <!-- If $move-notes-to-anchors is toggled on, elements with @corresp get copies of 
-    any matching notes placed immediately after them. -->
-  <xsl:template match="*[@corresp][$move-notes-to-anchors]" mode="unifier">
+  <xsl:template name="insert-preprocessed-note">
     <xsl:param name="processed-notes" as="node()*" tunnel="yes"/>
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="#current"/>
-    </xsl:copy>
     <xsl:variable name="idref" select="@corresp/data(.)"/>
     <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref]"/>
     <xsl:variable name="hasSpacing" 
@@ -603,6 +597,20 @@
       </seg>
     </xsl:if>
     <xsl:copy-of select="$matchedNote"/>
+  </xsl:template>
+  
+  <!-- If $move-notes-to-anchors is toggled on, elements with @corresp get copies of 
+    any matching notes placed immediately after them. -->
+  <xsl:template match="*[@corresp][$move-notes-to-anchors]" mode="unifier">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="#current"/>
+    </xsl:copy>
+    <!-- Only copy the matching note if the current element is in the middle of a 
+      word separated by a soft hyphen. -->
+    <xsl:if test="not(wf:is-splitting-a-word(.))">
+      <xsl:call-template name="insert-preprocessed-note"/>
+    </xsl:if>
   </xsl:template>
   
   <!-- If $move-notes-to-anchors is toggled on, anchored notes are suppressed where 
