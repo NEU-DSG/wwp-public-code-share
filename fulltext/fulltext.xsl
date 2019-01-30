@@ -261,10 +261,6 @@
           that could not be inserted (because they break up a word), do another pass 
           using the normalized word boundaries created in "unified" mode. -->
         <xsl:when test="$move-notes-to-anchors and exists($unmoved-notes)">
-          <!--<xsl:message>
-            <xsl:value-of select="count($unmoved-notes)"/>
-            <xsl:text> unmoved notes</xsl:text>
-          </xsl:message>-->
           <!-- Create groups of nodes, each ending with a <note>-less anchor. -->
           <xsl:for-each-group select="$unified/descendant-or-self::node()" 
               group-ending-with="*[@corresp[data(.) = $unmoved-notes/@sameAs/data(.)]]">
@@ -274,7 +270,7 @@
             <xsl:variable name="matchedNote" 
               select="$notes[@sameAs = current-group()[last()]/@corresp]"/>
             <xsl:variable name="lastSpacedNode" 
-              select="(current-group()[self::text()][matches(., '\s')])[last()]"/>
+              select="( current-group()[self::text()][matches(., '\s')] )[last()]"/>
             <!-- Apply "noted" mode for the current group, passing along the 
               previously-identified nodes. -->
             <xsl:for-each select="current-group()[. is root()]">
@@ -716,6 +712,17 @@
           <xsl:matching-substring>
             <xsl:value-of select="regex-group(1)"/>
             <xsl:copy-of select="$matched-note"/>
+            <xsl:if test="matches(string-join($matched-note//text(), ''), '\S+$')">
+              <seg read="">
+                <xsl:if test="$include-provenance-attributes">
+                  <xsl:call-template name="set-provenance-attributes">
+                    <xsl:with-param name="type" select="'implicit-whitespace'"/>
+                    <xsl:with-param name="subtype" select="'add-content add-element'"/>
+                  </xsl:call-template>
+                </xsl:if>
+                <xsl:text> </xsl:text>
+              </seg>
+            </xsl:if>
             <xsl:value-of select="regex-group(2)"/>
           </xsl:matching-substring>
           <xsl:non-matching-substring>
