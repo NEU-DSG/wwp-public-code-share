@@ -221,6 +221,13 @@
     <xsl:copy-of select="."/>
   </xsl:template>
   
+  <xsl:template match="text[group]" priority="5">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
+  </xsl:template>
+  
   <!-- Run default mode on the descendants of <text>, then resolve soft hyphens. -->
   <xsl:template match="text">
     <xsl:variable name="first-pass" as="node()*">
@@ -240,24 +247,32 @@
         <xsl:with-param name="processed-notes" select="$notes" as="node()*" tunnel="yes"/>
       </xsl:apply-templates>
     </xsl:variable>
+    <!-- Check for and copy any <note>s that haven't been moved into the text yet. -->
+    <xsl:variable name="unmoved-notes" as="node()*">
+      <xsl:if test="$move-notes-to-anchors">
+        <xsl:variable name="moved-notes" select="$unified//note[@sameAs]/@sameAs/data(.)"/>
+        <xsl:copy-of select="$notes[@sameAs[not(data(.) = $moved-notes)]]"/>
+      </xsl:if>
+    </xsl:variable>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:choose>
         <!-- If $move-notes-to-anchors is toggled on and there are anchored notes 
           that could not be inserted (because they break up a word), do another pass 
           using the normalized word boundaries created in "unified" mode. -->
-        <xsl:when test="$move-notes-to-anchors
-                    and exists($unified//*[@corresp]
-                                          [following-sibling::node()[1][not(self::note)]])">
+        <xsl:when test="$move-notes-to-anchors and exists($unmoved-notes)">
+          <!--<xsl:message>
+            <xsl:value-of select="count($unmoved-notes)"/>
+            <xsl:text> unmoved notes</xsl:text>
+          </xsl:message>-->
           <!-- Create groups of nodes, each ending with a <note>-less anchor. -->
           <xsl:for-each-group select="$unified/descendant-or-self::node()" 
-              group-ending-with="*[@corresp]
-                                  [following-sibling::node()[1][not(self::note)]]">
+              group-ending-with="*[@corresp[data(.) = $unmoved-notes/@sameAs/data(.)]]">
             <!-- Identify the note that the anchor matches, and the last text node 
               containing whitespace (read: the text node which contains the first 
               wordpart. -->
             <xsl:variable name="matchedNote" 
-              select="$notes[@sameAs = current-group()[last()]/@corresp[substring-after(.,'#')]]"/>
+              select="$notes[@sameAs = current-group()[last()]/@corresp]"/>
             <xsl:variable name="lastSpacedNode" 
               select="(current-group()[self::text()][matches(., '\s')])[last()]"/>
             <!-- Apply "noted" mode for the current group, passing along the 
@@ -270,6 +285,8 @@
             </xsl:for-each>
           </xsl:for-each-group>
         </xsl:when>
+        <!-- If a third pass isn't needed, just copy the results from applying 
+          "unified" mode. -->
         <xsl:otherwise>
           <xsl:copy-of select="$unified"/>
         </xsl:otherwise>
@@ -694,7 +711,7 @@
       <!-- If this whitespace-containing text node is the last before the note's 
         anchor, insert the note after the last instance of whitespace. -->
       <xsl:when test=". is $target-node">
-        <xsl:message select="."/>
+        <!--<xsl:message select="."/>-->
         <xsl:analyze-string select="." regex="(\s+)(\S*)$">
           <xsl:matching-substring>
             <xsl:value-of select="regex-group(1)"/>
