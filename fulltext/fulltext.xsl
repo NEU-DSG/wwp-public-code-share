@@ -231,11 +231,45 @@
         </xsl:apply-templates>
       </xsl:if>
     </xsl:variable>
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
+    <xsl:variable name="unified" as="node()*">
       <xsl:apply-templates select="$first-pass" mode="unifier">
         <xsl:with-param name="processed-notes" select="$notes" as="node()*" tunnel="yes"/>
       </xsl:apply-templates>
+    </xsl:variable>
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:choose>
+        <!-- If $move-notes-to-anchors is toggled on and there are anchored notes 
+          that could not be inserted (because they break up a word), do another pass 
+          using the normalized word boundaries created in "unified" mode. -->
+        <xsl:when test="$move-notes-to-anchors
+                    and exists($unified//*[@corresp]
+                                          [following-sibling::node()[1][not(self::note)]])">
+          <!-- Create groups of nodes, each ending with a <note>-less anchor. -->
+          <xsl:for-each-group select="$unified/descendant-or-self::node()" 
+              group-ending-with="*[@corresp]
+                                  [following-sibling::node()[1][not(self::note)]]">
+            <!-- Identify the note that the anchor matches, and the last text node 
+              containing whitespace (read: the text node which contains the first 
+              wordpart. -->
+            <xsl:variable name="matchedNote" 
+              select="$notes[@sameAs = current-group()[last()]/@corresp[substring-after(.,'#')]]"/>
+            <xsl:variable name="lastSpacedNode" 
+              select="(current-group()[self::text()][matches(., '\s')])[last()]"/>
+            <!-- Apply "noted" mode for the current group, passing along the 
+              previously-identified nodes. -->
+            <xsl:for-each select="current-group()[. is root()]">
+              <xsl:apply-templates select="." mode="noted">
+                <xsl:with-param name="matched-note" select="$matchedNote" as="node()?" tunnel="yes"/>
+                <xsl:with-param name="target-node" select="$lastSpacedNode" as="text()?" tunnel="yes"/>
+              </xsl:apply-templates>
+            </xsl:for-each>
+          </xsl:for-each-group>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:copy-of select="$unified"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:copy>
   </xsl:template>
   
@@ -249,7 +283,7 @@
   
   <!-- By default when matching an element, copy it and apply templates to its 
     children. -->
-  <xsl:template match="*" mode="#default text2attr unifier" priority="-40">
+  <xsl:template match="*" mode="#default text2attr unifier noted" priority="-40">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates select="*|text()" mode="#current"/>
@@ -606,8 +640,8 @@
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates mode="#current"/>
     </xsl:copy>
-    <!-- Only copy the matching note if the current element is in the middle of a 
-      word separated by a soft hyphen. -->
+    <!-- Do not copy the matching note if the current element appears in the middle 
+      of a word. -->
     <xsl:if test="not(wf:is-splitting-a-word(.))">
       <xsl:call-template name="insert-preprocessed-note"/>
     </xsl:if>
@@ -639,6 +673,38 @@
           </xsl:call-template>
           <!--<xsl:apply-templates select="*|text()" mode="text2attr"/>-->
         </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  
+<!-- MODE: noted -->
+  
+  <!-- OPTIONAL: if $move-notes-to-anchor is toggled on, and one of the notes 
+    would break up a word, the note should instead be inserted before the first 
+    wordpart. -->
+  <xsl:template match="text()[matches(., '\s')]" mode="noted">
+    <xsl:param name="matched-note" as="node()?" tunnel="yes"/>
+    <xsl:param name="target-node" as="text()" tunnel="yes"/>
+    <xsl:choose>
+      <!-- If this whitespace-containing text node is the last before the note's 
+        anchor, insert the note after the last instance of whitespace. -->
+      <xsl:when test=". is $target-node">
+        <xsl:message select="."/>
+        <xsl:analyze-string select="." regex="(\s+)(\S*)$">
+          <xsl:matching-substring>
+            <xsl:value-of select="regex-group(1)"/>
+            <xsl:copy-of select="$matched-note"/>
+            <xsl:value-of select="regex-group(2)"/>
+          </xsl:matching-substring>
+          <xsl:non-matching-substring>
+            <xsl:copy/>
+          </xsl:non-matching-substring>
+        </xsl:analyze-string>
+      </xsl:when>
+      <!-- If this node is not the target text node, simply copy it. -->
+      <xsl:otherwise>
+        <xsl:copy/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
