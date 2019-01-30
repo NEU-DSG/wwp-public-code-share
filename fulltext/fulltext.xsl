@@ -16,6 +16,10 @@
     Author: Ashley M. Clark
     
     Changelog:
+      2019-01-30, v2.2: Added "noted" mode to ensure that <note>s will not breaking 
+        up words. Instead of being resolved in "unifier" mode, these interrupting 
+        <note>s are withheld and resolved in a third pass, during which each <note> 
+        is inserted before the first wordpart.
       2018-06-27, v2.1: Ensured that any whitespace deleted during shy handling is
         represented in @read, either on the soft hyphen, or by adding a <seg> with a
         @type of 'explicit-whitespace'. Added function to test if a node occurs 
@@ -95,7 +99,7 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.1'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.2'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
