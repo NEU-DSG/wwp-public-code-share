@@ -14,7 +14,10 @@ xquery version "3.0";
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @version 1.4
  :
- :  2018-11-29: Examine all <text> elements except those that are a
+ :  2019-01-31: Use an easier XPath to select <text> elements (since
+ :              all those that are not a child of <group> is the same
+ :              set as all those that are a child of <TEI>).
+ :  2018-11-29: v.1.4. Examine all <text> elements except those that are a
  :              child of <group>. Add change-log comments. --Syd
  :  2018-10-08: Allow a root element of <teiCorpus> as well as <TEI>.
  :              Note that nested corpora are not searched through.
@@ -146,7 +149,7 @@ let $allRows :=
         return 
           ( $file, $idno, $author, $pubDate )
     (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := //text[not(parent::group)]
+    let $ELEMENTS := //TEI/text
     (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
      : For example, 
      :    ('castList', 'elision', 'figDesc', 'label', 'speaker')
