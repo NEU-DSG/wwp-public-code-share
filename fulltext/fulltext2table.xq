@@ -13,6 +13,9 @@ xquery version "3.0";
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @version 1.4
  :
+ :  2019-01-31: Use an easier XPath to select <text> elements (since
+ :              all those that are not a child of <group> is the same
+ :              set as all those that are a child of <TEI>).
  :  2018-12-01: Allow for outermost element of input document to be
  :              <teiCorpus> in addition to <TEI>. Thus the sequence of
  :              elements in $text may contain both <TEI> and
@@ -159,7 +162,7 @@ let $allRows :=
         return 
           ( $file, $idno, $author, $pubDate )
     (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := $text//text[not(parent::group)]
+    let $ELEMENTS := $text//TEI/text
     (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
      : For example, 
      :    ('castList', 'elision', 'figDesc', 'label', 'speaker')
