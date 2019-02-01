@@ -18,8 +18,7 @@
     Changelog:
       2019-01-30, v2.2: Added "noted" mode to ensure that <note>s will not breaking 
         up words. Instead of being resolved in "unifier" mode, these interrupting 
-        <note>s are withheld and resolved in a third pass, during which each <note> 
-        is inserted before the first wordpart.
+        <note>s are withheld and put back where they were in a third pass.
       2018-06-27, v2.1: Ensured that any whitespace deleted during shy handling is
         represented in @read, either on the soft hyphen, or by adding a <seg> with a
         @type of 'explicit-whitespace'. Added function to test if a node occurs 
@@ -258,31 +257,13 @@
       <xsl:copy-of select="@*"/>
       <xsl:choose>
         <!-- If $move-notes-to-anchors is toggled on and there are anchored notes 
-          that could not be inserted (because they break up a word), do another pass 
-          using the normalized word boundaries created in "unified" mode. -->
+          that could not be inserted (because they break up a word), make sure the
+          notes are put back in their original locations. -->
         <xsl:when test="$move-notes-to-anchors and exists($unmoved-notes)">
-          <!-- Create groups of nodes, each ending with a <note>-less anchor. -->
-          <xsl:for-each-group select="$unified/descendant-or-self::node()" 
-              group-ending-with="*[@corresp = $unmoved-notes/@sameAs]">
-            <!-- Identify the note that the anchor matches, and the last text node 
-              containing whitespace (read: the text node which contains the first 
-              wordpart. -->
-            <xsl:variable name="anchor" select="current-group()[last()]/@corresp/data(.)"/>
-            <xsl:variable name="matchedNote" select="$unmoved-notes[@sameAs/data(.) eq $anchor]"/>
-            <xsl:message select="$anchor"/>
-            <xsl:variable name="lastSpacedNode" 
-              select="( current-group()[self::text()][matches(., '\s')] )[last()]"/>
-            <xsl:message select="$lastSpacedNode"/>
-            <!-- Apply "noted" mode for the current group, passing along the 
-              previously-identified nodes. -->
-            <xsl:message select="local-name(.)"/>
-            <xsl:for-each select="current-group()[. is root() or parent::*[not(. = current-group())]]">
-              <xsl:apply-templates select="." mode="noted">
-                <xsl:with-param name="matched-note" select="$matchedNote" as="node()?" tunnel="yes"/>
-                <xsl:with-param name="target-node" select="$lastSpacedNode" as="text()" tunnel="yes"/>
-              </xsl:apply-templates>
-            </xsl:for-each>
-          </xsl:for-each-group>
+          <!--<xsl:message select="'Applying third pass'"/>-->
+          <xsl:apply-templates select="$unified" mode="noted">
+            <xsl:with-param name="unmoved-notes" select="$unmoved-notes" as="node()*" tunnel="yes"/>
+          </xsl:apply-templates>
         </xsl:when>
         <!-- If a third pass isn't needed, just copy the results from applying 
           "unified" mode. -->
@@ -445,9 +426,10 @@
     <xsl:if test="count(subsequence(parent::*/(* | text()),1,$start-position)) gt 0">
       <xsl:variable name="groupmates">
         <xsl:variable name="siblings-after" as="node()*">
-          <xsl:variable name="all-after" select="subsequence(parent::*/(* | text()),$start-position,last())"/>
+          <xsl:variable name="all-after" 
+            select="subsequence(parent::*/(* | text()), $start-position, last())"/>
           <xsl:copy-of select="if ( count($all-after) gt $max-length ) then
-                                 subsequence($all-after,1,$max-length)
+                                 subsequence($all-after, 1, $max-length)
                                else $all-after"/>
         </xsl:variable>
         <xsl:variable name="first-nonmatch">
@@ -700,46 +682,18 @@
   
 <!-- MODE: noted -->
   
-  <!-- OPTIONAL: if $move-notes-to-anchor is toggled on, and one of the notes 
-    would break up a word, the note should instead be inserted before the first 
-    wordpart. -->
-  <xsl:template match="text()[matches(., '\s')]" mode="noted">
-    <xsl:param name="matched-note" as="node()?" tunnel="yes"/>
-    <xsl:param name="target-node" as="text()" tunnel="yes"/>
+  <xsl:template match="hyperDiv/notes/note[@xml:id][not(node())]" mode="noted">
+    <xsl:param name="unmoved-notes" as="node()*" tunnel="yes"/>
+    <xsl:variable name="idref" select="concat('#', @xml:id)"/>
     <xsl:choose>
-      <!-- If this whitespace-containing text node is the last before the note's 
-        anchor, insert the note after the last instance of whitespace. -->
-      <xsl:when test=". is $target-node">
-        <!--<xsl:message select="matches(., '(\s+)([^\s]*)$', 'm')"/>
-        <xsl:message select=". is $target-node"/>-->
-        <xsl:analyze-string select="." regex="(\s+)([^\s]*)$" flags="m">
-          <xsl:matching-substring>
-            <xsl:value-of select="regex-group(1)"/>
-            <xsl:if test="exists($matched-note)">
-              <xsl:copy-of select="$matched-note"/>
-              <!-- Insert implicit whitespace after the note if needed. -->
-              <xsl:if test="matches(string-join($matched-note//text(), ''), '\S+$')">
-                <seg read="">
-                  <xsl:if test="$include-provenance-attributes">
-                    <xsl:call-template name="set-provenance-attributes">
-                      <xsl:with-param name="type" select="'implicit-whitespace'"/>
-                      <xsl:with-param name="subtype" select="'add-content add-element'"/>
-                    </xsl:call-template>
-                  </xsl:if>
-                  <xsl:text> </xsl:text>
-                </seg>
-              </xsl:if>
-            </xsl:if>
-            <xsl:value-of select="regex-group(2)"/>
-          </xsl:matching-substring>
-          <xsl:non-matching-substring>
-            <xsl:copy/>
-          </xsl:non-matching-substring>
-        </xsl:analyze-string>
+      <xsl:when test="$idref = $unmoved-notes/@sameAs">
+        <xsl:copy>
+          <xsl:copy-of select="@* except (@resp[starts-with(., 'fulltextBot')], @subtype)"/>
+          <xsl:copy-of select="$unmoved-notes[@sameAs eq $idref]/node()"/>
+        </xsl:copy>
       </xsl:when>
-      <!-- If this node is not the target text node, simply copy it. -->
       <xsl:otherwise>
-        <xsl:copy/>
+        <xsl:copy-of select="."/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
