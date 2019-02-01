@@ -86,9 +86,20 @@ xquery version "3.1";
     around elements that normally imply whitespace, such as <lb>. The default is to 
     preserve whitespace as it appears in the input XML. :)
   declare variable $preserve-space as xs:boolean external := true();
-  (:  :)
+  (: Set $move-notes-to-anchors to 'true()' in order to move <wwp:note>s close to 
+    their anchors, making sure not to break up a word in doing so.
+    
+    IMPORTANT: In order to use this feature in oXygen, you will need an XQuery 
+    transformation scenario that recognizes XQuery Update. Use Saxon EE as your 
+    "transformer". Click on the symbol next to "Saxon EE" to open the processor 
+    settings. Turn on the "linked tree" model and XQuery Update. Turn off XQuery 
+    Update backups. :)
   declare variable $move-notes-to-anchors as xs:boolean external := false();
-  (:  :)
+  (: The "fulltext-library-filepath" parameter is only needed if you are using the 
+    $move-notes-to-anchors feature. Download the XQuery library from GitHub, and 
+    change the value of this parameter to the XQuery's local filepath.
+    https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext/fulltext-library.xql
+    :)
   declare variable $fulltext-library-filepath as xs:string external := 'fulltext-library.xql';
   
   (: Morphadorner-specific control :)
