@@ -57,12 +57,12 @@ xquery version "3.0";
  :)
 
 (:  NAMESPACES  :)
-declare default element namespace "http://www.wwp.northeastern.edu/ns/textbase";
-declare namespace tei="http://www.tei-c.org/ns/1.0";
-declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
-declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
+  declare default element namespace "http://www.wwp.northeastern.edu/ns/textbase";
+  declare namespace tei="http://www.tei-c.org/ns/1.0";
+  declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
+  declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
 (:  OPTIONS  :)
-declare option output:method "text";
+  declare option output:method "text";
 
 
 (:  VARIABLES  :)
@@ -83,58 +83,58 @@ declare option output:method "text";
 
 
 (:  FUNCTIONS  :)
-(: Given a type of text output and an element, create a plain text version of the 
-  morphadorned TEI. :)
-declare function local:get-morphadorned-text($element as node(), $type as xs:string) {
-  let $useType := if ( $type = $valid-morphadorner-types ) then $type else 'text'
-  return
-    if ( $type eq 'text') then
-      local:get-text($element)
-    else 
-      let $strings :=
-        if ( $element[self::lb][not($preserve-space)] ) then
-          ' '
-        (: Since Morphadorner will place the same value on both parts of the same 
-          word, we will only process the first split token, and unbroken tokens. :)
-        else if ( $element[@part[data(.) = ('M', 'F')]] ) then
-          ()
-        else if ( $element[self::c] ) then
-          $element/data(.)
-        else if ( $element[@lem or @pos or @reg or @spe] ) then
-          $element/@*[local-name(.) eq $type]/data(.)
-        else
-          for $child in $element/*
-          return local:get-morphadorned-text($child, $type)
-      return
-        string-join($strings,' ')
-};
-
-(: Get the normalized text content of an element. :)
-declare function local:get-text($element as node()) as xs:string {
-  replace($element, '\s+', ' ')
-};
-
-(: Use tabs to separate cells within rows. :)
-declare function local:make-cells-in-row($sequence as xs:string*) {
-  string-join($sequence, '&#9;')
-};
-(: Separate each row with a newline. :)
-declare function local:make-rows-in-table($sequence as xs:string*) {
-  string-join($sequence, '&#13;')
-};
-
-(: Remove certain named elements from within an XML fragment. :)
-declare function local:omit-descendants($node as node(), $element-names as xs:string*) as node()? {
-  if ( empty($element-names) ) then $node
-  else if ( $node[self::text()] ) then text { $node }
-  else if ( $node[self::*]/local-name() = $element-names ) then ()
-  else
-    element { $node/name() } {
-      $node/@*,
-      for $child in $node/node()
-      return local:omit-descendants($child, $element-names)
-    }
-};
+  (: Given a type of text output and an element, create a plain text version of the 
+    morphadorned TEI. :)
+  declare function local:get-morphadorned-text($element as node(), $type as xs:string) {
+    let $useType := if ( $type = $valid-morphadorner-types ) then $type else 'text'
+    return
+      if ( $type eq 'text') then
+        local:get-text($element)
+      else 
+        let $strings :=
+          if ( $element[self::lb][not($preserve-space)] ) then
+            ' '
+          (: Since Morphadorner will place the same value on both parts of the same 
+            word, we will only process the first split token, and unbroken tokens. :)
+          else if ( $element[@part[data(.) = ('M', 'F')]] ) then
+            ()
+          else if ( $element[self::c] ) then
+            $element/data(.)
+          else if ( $element[@lem or @pos or @reg or @spe] ) then
+            $element/@*[local-name(.) eq $type]/data(.)
+          else
+            for $child in $element/*
+            return local:get-morphadorned-text($child, $type)
+        return
+          string-join($strings,' ')
+  };
+  
+  (: Get the normalized text content of an element. :)
+  declare function local:get-text($element as node()) as xs:string {
+    replace($element, '\s+', ' ')
+  };
+  
+  (: Use tabs to separate cells within rows. :)
+  declare function local:make-cells-in-row($sequence as xs:string*) {
+    string-join($sequence, '&#9;')
+  };
+  (: Separate each row with a newline. :)
+  declare function local:make-rows-in-table($sequence as xs:string*) {
+    string-join($sequence, '&#13;')
+  };
+  
+  (: Remove certain named elements from within an XML fragment. :)
+  declare function local:omit-descendants($node as node(), $element-names as xs:string*) as node()? {
+    if ( empty($element-names) ) then $node
+    else if ( $node[self::text()] ) then text { $node }
+    else if ( $node[self::*]/local-name() = $element-names ) then ()
+    else
+      element { $node/name() } {
+        $node/@*,
+        for $child in $node/node()
+        return local:omit-descendants($child, $element-names)
+      }
+  };
 
 
 (:  MAIN QUERY  :)
@@ -156,7 +156,7 @@ let $allRows :=
           let $date := $header/fileDesc/sourceDesc[@n][1]//imprint[1]/date[1]
           return 
             if ( $date[@from][@to] ) then
-              concat( $date/@from/data(.), '-', $date/@to/data(.) )
+              concat( $date/@from/data(.), '–', $date/@to/data(.) )
             else $date/@when/data(.)
         return 
           ( $file, $idno, $author, $pubDate )
