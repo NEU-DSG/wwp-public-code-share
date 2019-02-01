@@ -340,7 +340,7 @@
   
   <!-- Add a single space before any element that implies some kind of whitespace 
     separator. This implementation may be incomplete. -->
-  <xsl:template match="ab | argument | castGroup | castItem | castList | closer 
+  <xsl:template match="ab | argument | bibl | castGroup | castItem | castList | closer 
                       | dateline | div | docEdition | docImprint | docSale | epigraph 
                       | figDesc | figure | head | imprimatur | item | l | lg | list 
                       | note | opener | p | respLine | salute | signed | sp | speaker 
