@@ -154,6 +154,7 @@ xquery version "3.1";
 
 (:  MAIN QUERY  :)
 let $text := /(TEI | teiCorpus)
+let $file := tokenize($text/base-uri(),'/')[last()]
 let $text :=
   if ( $move-notes-to-anchors ) then
     local:anchor-notes($text)
@@ -164,7 +165,6 @@ let $allRows :=
     if ( $return-only-words ) then ()
     else local:make-cells-in-row($headerRow)
     ,
-    let $file := tokenize(./base-uri(),'/')[last()]
     let $optionalMetadata :=
       if ( $return-only-words ) then ()
       else

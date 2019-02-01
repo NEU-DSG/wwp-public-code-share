@@ -1,4 +1,4 @@
-xquery version "3.0";
+xquery version "3.1";
 
 (:~
  : A script to strip out the text from a TEI document, while retaining some metadata 
@@ -12,8 +12,17 @@ xquery version "3.0";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
- : @version 1.4
+ : @version 2.0
  :
+ :  2019-02-01: v.2.0. Updated to XQuery version 3.1, which allows modules
+ :              (libraries) to be dynamically loaded. Added the external variable 
+ :              $move-notes-to-anchors, which moves <wwp:note>s from the <hyperDiv> 
+ :              to their anchor in the text itself. For backwards compatibility with 
+ :              older versions of this script, this new option is off by default. 
+ :              The process requires XQuery Update to be enabled by the XQuery 
+ :              processor. To make use of the new option, use Saxon EE with XQuery 
+ :              Update and "Linked Tree" model turned on. Modified the indentation
+ :              of the script for readability.
  :  2018-12-20: v.1.4. Added link to GitHub.
  :  2018-12-01: Allow for outermost element of input document to be
  :              <teiCorpus> in addition to <TEI>. Thus the sequence of
@@ -61,6 +70,8 @@ xquery version "3.0";
   declare namespace tei="http://www.tei-c.org/ns/1.0";
   declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
   declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
+  declare namespace werr="http://www.wwp.northeastern.edu/ns/err";
+  declare namespace wft="http://www.wwp.northeastern.edu/ns/fulltext";
 (:  OPTIONS  :)
   declare option output:method "text";
 
@@ -75,6 +86,10 @@ xquery version "3.0";
     around elements that normally imply whitespace, such as <lb>. The default is to 
     preserve whitespace as it appears in the input XML. :)
   declare variable $preserve-space as xs:boolean external := true();
+  (:  :)
+  declare variable $move-notes-to-anchors as xs:boolean external := false();
+  (:  :)
+  declare variable $fulltext-library-filepath as xs:string external := 'fulltext-library.xql';
   
   (: Morphadorner-specific control :)
   declare variable $is-morphadorned as xs:boolean external := false();
@@ -83,6 +98,18 @@ xquery version "3.0";
 
 
 (:  FUNCTIONS  :)
+  (: Wrapper function to call wfn:anchor-notes() dynamically. This will only occur 
+    if $move-notes-to-anchors is toggled on. :)
+  declare function local:anchor-notes($xml as node()) {
+    let $libNs := 'http://www.wwp.northeastern.edu/ns/fulltext'
+    let $notesFunction := 
+      let $loadedFunctions :=
+        load-xquery-module($libNs, map { 'location-hints': ($fulltext-library-filepath) })('functions')
+      let $functionName := QName($libNs, 'anchor-notes')
+      return $loadedFunctions($functionName)(1)
+    return $notesFunction($xml)
+  };
+  
   (: Given a type of text output and an element, create a plain text version of the 
     morphadorned TEI. :)
   declare function local:get-morphadorned-text($element as node(), $type as xs:string) {
@@ -146,6 +173,10 @@ let $allRows :=
     
     for $text in $use-docs/TEI | $use-docs/teiCorpus
     let $file := tokenize($text/base-uri(),'/')[last()]
+    let $text :=
+      if ( $move-notes-to-anchors ) then
+        local:anchor-notes($text)
+      else $text
     let $optionalMetadata :=
       if ( $return-only-words ) then ()
       else
