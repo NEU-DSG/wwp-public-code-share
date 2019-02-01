@@ -616,14 +616,7 @@
     <xsl:param name="processed-notes" as="node()*" tunnel="yes"/>
     <xsl:variable name="idref" select="@corresp/data(.)"/>
     <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref]"/>
-    <xsl:variable name="hasSpacing" 
-      select=" matches($matchedNote/data(.), '^\s') 
-            or matches(data(.), '\s$') 
-            or (
-                normalize-space() eq '' 
-            and matches(preceding-sibling::node()[self::text() or self::*[text()]][1], '\s$') 
-            )"/>
-    <xsl:if test="not($hasSpacing)">
+    <xsl:variable name="whitespaceSeg">
       <seg read="">
         <xsl:call-template name="set-provenance-attributes">
           <xsl:with-param name="type" select="'implicit-whitespace'"/>
@@ -631,8 +624,28 @@
         </xsl:call-template>
         <xsl:text> </xsl:text>
       </seg>
+    </xsl:variable>
+    <!-- Add a space before the note if needed. -->
+    <xsl:variable name="hasPreSpacing" 
+      select=" matches($matchedNote/data(.), '^\s')
+            or (
+                normalize-space() eq '' 
+            and matches(preceding-sibling::node()[self::text() or self::*[text()]][1], '\s$') 
+            )"/>
+    <xsl:if test="not($hasPreSpacing)">
+      <xsl:copy-of select="$whitespaceSeg"/>
     </xsl:if>
     <xsl:copy-of select="$matchedNote"/>
+    <!-- Add a space after the note if needed. -->
+    <xsl:variable name="hasPostSpacing" 
+      select=" matches($matchedNote/data(.), '\s$')
+            or (
+                normalize-space() eq '' 
+            and matches(following::node()[self::text() or self::*[text()]][1], '^\s') 
+            )"/>
+    <xsl:if test="not($hasPostSpacing)">
+      <xsl:copy-of select="$whitespaceSeg"/>
+    </xsl:if>
   </xsl:template>
   
   <!-- If $move-notes-to-anchors is toggled on, elements with @corresp get copies of 
