@@ -12,10 +12,12 @@ xquery version "3.0";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @version 1.4
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
  :
  :  2019-01-31: Use an easier XPath to select <text> elements (since
  :              all those that are not a child of <group> is the same
  :              set as all those that are a child of <TEI>).
+ :  2018-12-20: v.1.4. Added link to GitHub.
  :  2018-12-01: Allow for outermost element of input document to be
  :              <teiCorpus> in addition to <TEI>. Thus the sequence of
  :              elements in $text may contain both <TEI> and
