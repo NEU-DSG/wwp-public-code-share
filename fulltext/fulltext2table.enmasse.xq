@@ -15,6 +15,9 @@ xquery version "3.0";
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
  : @version 1.4
  :
+ :  2019-01-31: Use an easier XPath to select <text> elements (since
+ :              all those that are not a child of <group> is the same
+ :              set as all those that are a child of <TEI>).
  :  2018-12-20: v.1.4. Added link to GitHub.
  :  2018-11-29: Examine all <text> elements except those that are a
  :              child of <group>. Add change-log comments. --Syd
@@ -136,7 +139,7 @@ let $allRows :=
     let $optionalMetadata :=
       if ( $return-only-words ) then ()
       else
-        let $header := /TEI/teiHeader
+        let $header := /*/teiHeader
         let $idno := $header/fileDesc/publicationStmt/idno[@type eq 'WWP']/data(.)
         let $author := $header/fileDesc/titleStmt/author[1]/persName[@ref][1]/@ref/substring-after(data(.),'p:')
         let $pubDate := 
@@ -148,7 +151,7 @@ let $allRows :=
         return 
           ( $file, $idno, $author, $pubDate )
     (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := //text[not(parent::group)]
+    let $ELEMENTS := //TEI/text
     (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
      : For example, 
      :    ('castList', 'elision', 'figDesc', 'label', 'speaker')
