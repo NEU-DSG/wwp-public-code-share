@@ -18,8 +18,7 @@
   <!-- A Perlese example of the use of this key would be-->
   <!-- $gis{emph}, which reference would return a nodeset -->
   <!-- of all the <*:emph> nodes, I think -->
-  <xsl:key name="gis" use="local-name()"
-    match="//tei:TEI/tei:text//*"/>
+  <xsl:key name="gis" use="local-name()" match="//tei:TEI/tei:text//*"/>
   <!-- Generate a key for element namespaces. --> 
   <!-- A Perlese example of the use of this key would be-->
   <!-- $nss{svg}, which reference would return a nodeset -->
@@ -43,14 +42,15 @@
         <xsl:sort select="namespace-uri()"/>
         <!-- and remember said namespace for easy reference -->
         <xsl:variable name="ns" select="namespace-uri()"/>
-        <!-- output a <namespace> element in which to list the elemenst used in this namespace -->
+        <!-- output a <namespace> element in which to list the
+	     elements used in this namespace -->
         <namespace name="{$ns}">
-          <!-- process each node that has this namespace and is the first one in the set of nodes with the same -->
-          <!-- local name -->
+          <!-- process each node that has this namespace and is the
+	       first one in the set of nodes with the same local name -->
           <xsl:for-each select="//*[namespace-uri(.)=$ns][generate-id(.)=generate-id(key('gis',local-name(.))[1])]">
             <!-- sort by the local name -->
             <xsl:sort select="local-name()"/>
-            <!-- putput a <tagUsage> element that gives counts for the number -->
+            <!-- output a <tagUsage> element that gives counts for the number -->
             <!-- of similarly named descendants of <text> and number of those -->
             <!-- that are identified with xml:id=. -->
             <tagUsage gi="{local-name(.)}"
