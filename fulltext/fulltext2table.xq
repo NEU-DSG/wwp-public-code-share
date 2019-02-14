@@ -14,6 +14,8 @@ xquery version "3.1";
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
  : @version 2.0
  :
+ :  2019-02-14: v.2.1. Merged in sane XPaths from a divergent git branch (see 
+ :              2019-01-31 for details). Changed variable $text to $teiDoc.
  :  2019-02-01: v.2.0. Updated to XQuery version 3.1, which allows modules
  :              (libraries) to be dynamically loaded. Added the external variable 
  :              $move-notes-to-anchors, which moves <wwp:note>s from the <hyperDiv> 
@@ -23,10 +25,13 @@ xquery version "3.1";
  :              processor. To make use of the new option, use Saxon EE with XQuery 
  :              Update and "Linked Tree" model turned on. Modified the indentation
  :              of the script for readability.
+ :  2019-01-31: Use an easier XPath to select <text> elements (since
+ :              all those that are not a child of <group> is the same
+ :              set as all those that are a child of <TEI>).
  :  2018-12-20: v.1.4. Added link to GitHub.
  :  2018-12-01: Allow for outermost element of input document to be
  :              <teiCorpus> in addition to <TEI>. Thus the sequence of
- :              elements in $text may contain both <TEI> and
+ :              elements in $teiDoc may contain both <TEI> and
  :              <teiCorpus>, and to look for the non-metadata bits
  :              themselves we want to look for all <text> desendants,
  :              not just child of outermost element. However, we don't
@@ -38,9 +43,9 @@ xquery version "3.1";
  :              <group>.)
  :  2018-11-29: Bug fix (by SB on phone w/ AC): fix assignment of
  :              $header (to the <teiHeader> child of the outermost
- :              element, recorded in $text, rather than to the
+ :              element, recorded in $teiDoc, rather than to the
  :              non-existant <teiHeader> child of the <TEI> child of
- :              the element recorded in $text).
+ :              the element recorded in $teiDoc).
  :  2018-06-21: v.1.3. Added the external variable $preserve-space, which determines 
  :              whether whitespace is respected in the input XML document (the 
  :              default), or if steps are taken to normalize whitespace and add 
@@ -175,23 +180,22 @@ xquery version "3.1";
   };
 
 
+
 (:  MAIN QUERY  :)
+
+let $corpus := $use-docs/(TEI | teiCorpus)
 let $headerRow := ('filename', 'tr #', 'author pid', 'pub date', 'full text')
 let $allRows := 
   (
     if ( $return-only-words ) then ()
     else local:make-cells-in-row($headerRow),
     
-    for $text in $use-docs/TEI | $use-docs/teiCorpus
-    let $file := tokenize($text/base-uri(),'/')[last()]
-    let $text :=
-      if ( $move-notes-to-anchors ) then
-        local:anchor-notes($text)
-      else $text
+    for $teiDoc in $corpus
+    let $file := tokenize($teiDoc/base-uri(),'/')[last()]
     let $optionalMetadata :=
       if ( $return-only-words ) then ()
       else
-        let $header := $text/teiHeader
+        let $header := $teiDoc/teiHeader
         let $idno := $header/fileDesc/publicationStmt/idno[@type eq 'WWP']/data(.)
         let $author := $header/fileDesc/titleStmt/author[1]/persName[@ref][1]/@ref/substring-after(data(.),'p:')
         let $pubDate := 
@@ -202,12 +206,20 @@ let $allRows :=
             else $date/@when/data(.)
         return 
           ( $file, $idno, $author, $pubDate )
-    (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := $text//text[not(parent::group)]
-    (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
-     : For example, 
-     :    ('castList', 'elision', 'figDesc', 'label', 'speaker')
-     :)
+    (: Refine $teiDoc, ensuring that it contains a <TEI> element, and that notes 
+      have been moved to their anchors (if requested). :)
+    let $teiDoc :=
+      if ( $move-notes-to-anchors ) then
+        local:anchor-notes($teiDoc)
+      else $teiDoc
+    let $teiDoc := $teiDoc/descendant-or-self::TEI
+  (: Change $ELEMENTS to reflect the elements for which you want full-text 
+      representations. :)
+    let $ELEMENTS := $teiDoc/text
+  (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
+      For example, 
+        ('castList', 'elision', 'figDesc', 'label', 'speaker')
+  :)
     let $ELEMENTS2OMIT := ()
     let $fulltext := 
       let $wordSeq := for $element in $ELEMENTS
