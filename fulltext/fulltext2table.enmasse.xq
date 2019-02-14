@@ -15,6 +15,8 @@ xquery version "3.1";
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
  : @version 2.0
  :
+ :  2019-02-14: v.2.1. Merged in sane XPaths from a divergent git branch (see 
+ :              2019-01-31 for details). Changed variable $text to $teiDoc.
  :  2019-02-01: v.2.0. Updated to XQuery version 3.1, which allows modules
  :              (libraries) to be dynamically loaded. Added the external variable 
  :              $move-notes-to-anchors, which moves <wwp:note>s from the <hyperDiv> 
@@ -24,6 +26,9 @@ xquery version "3.1";
  :              processor. To make use of the new option, use Saxon EE with XQuery 
  :              Update and "Linked Tree" model turned on. Modified the indentation
  :              of the script for readability.
+ :  2019-01-31: Use an easier XPath to select <text> elements (since
+ :              all those that are not a child of <group> is the same
+ :              set as all those that are a child of <TEI>).
  :  2018-12-20: v.1.4. Added link to GitHub.
  :  2018-11-29: Examine all <text> elements except those that are a
  :              child of <group>. Add change-log comments. --Syd
@@ -163,23 +168,21 @@ xquery version "3.1";
   };
 
 
+
 (:  MAIN QUERY  :)
-let $text := /(TEI | teiCorpus)
-let $file := tokenize($text/base-uri(),'/')[last()]
-let $text :=
-  if ( $move-notes-to-anchors ) then
-    local:anchor-notes($text)
-  else $text
+
+let $file := tokenize(/base-uri(),'/')[last()]
 let $headerRow := ('filename', 'tr #', 'author pid', 'pub date', 'full text')
 let $allRows := 
   (
     if ( $return-only-words ) then ()
     else local:make-cells-in-row($headerRow)
     ,
+    let $teiDoc := /(TEI | teiCorpus)
     let $optionalMetadata :=
       if ( $return-only-words ) then ()
       else
-        let $header := $text/teiHeader
+        let $header := $teiDoc/teiHeader
         let $idno := $header/fileDesc/publicationStmt/idno[@type eq 'WWP']/data(.)
         let $author := $header/fileDesc/titleStmt/author[1]/persName[@ref][1]/@ref/substring-after(data(.),'p:')
         let $pubDate := 
@@ -190,14 +193,20 @@ let $allRows :=
             else $date/@when/data(.)
         return 
           ( $file, $idno, $author, $pubDate )
-    (: Change $ELEMENTS to reflect the elements for which you want full-text representations. :)
-    let $ELEMENTS := $text//text[not(parent::group)]
-    (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
-     : For example, 
-     :    ('castList', 'elision', 'figDesc', 'label', 'speaker')
-     :)
+    (: Refine $teiDoc. :)
+    let $teiDoc :=
+      if ( $move-notes-to-anchors ) then
+        local:anchor-notes($teiDoc)
+      else $teiDoc
+    let $teiDoc := $teiDoc/descendant-or-self::TEI
+  (: Change $ELEMENTS to reflect the elements for which you want full-text 
+      representations. :)
+    let $ELEMENTS := $teiDoc/text
+  (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
+      For example, 
+        ('castList', 'elision', 'figDesc', 'label', 'speaker')
+  :)
     let $ELEMENTS2OMIT := ()
-    
     let $fulltext := 
       let $wordSeq := for $element in $ELEMENTS
                       let $abridged := local:omit-descendants($element, $ELEMENTS2OMIT)
