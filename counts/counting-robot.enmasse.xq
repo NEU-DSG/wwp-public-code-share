@@ -2,6 +2,10 @@ xquery version "3.0";
 
 (:~
  : A starter script for counting values and phenomena in XML using XPath and XQuery.
+ : This version of counting-robot.xq can be used to create one report per input 
+ : file, which may be useful when a cross-collection query is too computationally
+ : expensive for oXygen. The reports can then be merged with the functions in
+ : count-sets-library.xql.
  :
  : @return tab-delimited text
  :
@@ -11,12 +15,7 @@ xquery version "3.0";
  :
  :  2018-12-20: Added link to GitHub.
  :  2018-08-01: v1.1. Added some nonsortable articles.
- :  2017-06-30: v1.0. Added this header and changelog.
- :  2017-04-28: Moved script from Gist to wwp-public-code-share git repository.
- :  2017-04-13: Added default element namespace declaration.
- :  2016-05-24: Added $sortWithArticles toggle.
- :  2016-02-23: Added $sortByCount toggle.
- :  2016-01-13: Created.
+ :  2017-11-16: Created using counting-robot.xq v1.0.
  :)
 
 (: NAMESPACES :)
@@ -27,6 +26,9 @@ declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
 (: OPTIONS :)
 declare option output:item-separator "";
 declare option output:method "text";
+  
+  (: This sets our scope to the input file. :)
+  declare context item external;
 
 (: VARIABLES - SORTING :)
   (: Change $sortByCount to false() in order to sort by result value. :)
@@ -38,15 +40,10 @@ declare option output:method "text";
   declare variable $sortWithArticles := false();
 
 (: VARIABLES - QUERYING :)
-  (: Create variables referencing the files or folders you wish to query. :)
-    (:  To get one file:       doc('FILEPATH/FILENAME')                   :)
-    (:  To get one directory:  collection('FILEPATH/?select=*.xml')       :)
-    (:  To get more than one:  ( DOC | DOC | DIR )                        :)
-  declare variable $DESCRIPTIVE_NAME := collection('file:///Users/ashleyclark/WWP/textbase/distribution/?select=*.xml');
   
   (: Change this to your XPath query. (Or your XQuery!) :)
     (:  For example: $VARIABLE/XPATH                    :)
-  declare variable $query := $DESCRIPTIVE_NAME//text//title;
+  declare variable $query := //text//title/normalize-space(.);
 
 
 (: FUNCTIONS :)
