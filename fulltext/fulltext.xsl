@@ -16,12 +16,15 @@
     Author: Ashley M. Clark
     
     Changelog:
+      2019-01-30, v2.2: Added "noted" mode to ensure that <note>s will not breaking 
+        up words. Instead of being resolved in "unifier" mode, these interrupting 
+        <note>s are withheld and put back where they were in a third pass.
       2018-06-27, v2.1: Ensured that any whitespace deleted during shy handling is
         represented in @read, either on the soft hyphen, or by adding a <seg> with a
         @type of 'explicit-whitespace'. Added function to test if a node occurs 
         after an unresolved soft hyphen. During unifier mode, the results of the 
         'make-whitespace-explicit' template are removed if they prove unnecessary.
-        Appended this XSLT's version number to the $fulltextBot variable. 
+        Appended this XSLT's version number to the $fulltextBot variable.
       2018-06-20, v2.0: Began fixing soft hyphen handling by partially walking back 
         the previous workflow of moving wordparts from one side of a break tag to 
         the other. Instead, any intermediate whitespace is deleted between the soft 
@@ -95,7 +98,7 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.1'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.2'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
@@ -149,6 +152,44 @@
     </xsl:for-each>
     <xsl:text>&#x0A;</xsl:text>
     <xsl:apply-templates/>
+  </xsl:template>
+  
+  <!-- Move a <note> to its anchor, making sure to set it off with whitespace if 
+    needed. -->
+  <xsl:template name="insert-preprocessed-note">
+    <xsl:param name="processed-notes" as="node()*" tunnel="yes"/>
+    <xsl:variable name="idref" select="@corresp/data(.)"/>
+    <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref]"/>
+    <xsl:variable name="whitespaceSeg">
+      <seg read="">
+        <xsl:call-template name="set-provenance-attributes">
+          <xsl:with-param name="type" select="'implicit-whitespace'"/>
+          <xsl:with-param name="subtype" select="'add-content add-element'"/>
+        </xsl:call-template>
+        <xsl:text> </xsl:text>
+      </seg>
+    </xsl:variable>
+    <!-- Add a space before the note if needed. -->
+    <xsl:variable name="hasPreSpacing" 
+      select=" matches($matchedNote/data(.), '^\s')
+            or (
+                normalize-space() eq '' 
+            and matches(preceding-sibling::node()[self::text() or self::*[text()]][1], '\s$') 
+            )"/>
+    <xsl:if test="not($hasPreSpacing)">
+      <xsl:copy-of select="$whitespaceSeg"/>
+    </xsl:if>
+    <xsl:copy-of select="$matchedNote"/>
+    <!-- Add a space after the note if needed. -->
+    <xsl:variable name="hasPostSpacing" 
+      select=" matches($matchedNote/data(.), '\s$')
+            or (
+                normalize-space() eq '' 
+            and matches(following::node()[self::text() or self::*[text()]][1], '^\s') 
+            )"/>
+    <xsl:if test="not($hasPostSpacing)">
+      <xsl:copy-of select="$whitespaceSeg"/>
+    </xsl:if>
   </xsl:template>
   
   <!-- Test if the current element has whitespace preceding it explicitly. If the 
@@ -210,11 +251,21 @@
     </xsl:if>
   </xsl:template>
   
+  
 <!-- MODE: #default -->
   
   <!-- Copy the <teiHeader>. -->
   <xsl:template match="teiHeader">
     <xsl:copy-of select="."/>
+  </xsl:template>
+  
+  <!-- Do not apply fulltexting transformations on any <text> containing a <group> 
+    of <text>s. -->
+  <xsl:template match="text[group]" priority="5">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
   </xsl:template>
   
   <!-- Run default mode on the descendants of <text>, then resolve soft hyphens. -->
@@ -226,16 +277,40 @@
       in the <hyperDiv>. These notes will be tunnelled to anchors. -->
     <xsl:variable name="notes" as="node()*">
       <xsl:if test="$move-notes-to-anchors">
-        <xsl:apply-templates select="$first-pass[self::hyperDiv]//note" mode="unifier">
+        <xsl:apply-templates select="$first-pass[self::hyperDiv]//note[@xml:id]" mode="unifier">
           <xsl:with-param name="is-anchored" select="true()"/>
         </xsl:apply-templates>
       </xsl:if>
     </xsl:variable>
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
+    <xsl:variable name="unified" as="node()*">
       <xsl:apply-templates select="$first-pass" mode="unifier">
         <xsl:with-param name="processed-notes" select="$notes" as="node()*" tunnel="yes"/>
       </xsl:apply-templates>
+    </xsl:variable>
+    <!-- Check for and copy any <note>s that haven't been moved into the text yet. -->
+    <xsl:variable name="unmoved-notes" as="node()*">
+      <xsl:if test="$move-notes-to-anchors">
+        <xsl:variable name="moved-notes" select="$unified//note/@sameAs/data(.)"/>
+        <xsl:copy-of select="$notes[@sameAs[not(data(.) = $moved-notes)]]"/>
+      </xsl:if>
+    </xsl:variable>
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:choose>
+        <!-- If $move-notes-to-anchors is toggled on and there are anchored notes 
+          that could not be inserted (because they break up a word), make sure the
+          processed notes are put back in their original locations. -->
+        <xsl:when test="$move-notes-to-anchors and exists($unmoved-notes)">
+          <xsl:apply-templates select="$unified" mode="noted">
+            <xsl:with-param name="unmoved-notes" select="$unmoved-notes" as="node()*" tunnel="yes"/>
+          </xsl:apply-templates>
+        </xsl:when>
+        <!-- If a third pass isn't needed, just copy the results from applying 
+          "unified" mode. -->
+        <xsl:otherwise>
+          <xsl:copy-of select="$unified"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:copy>
   </xsl:template>
   
@@ -249,7 +324,7 @@
   
   <!-- By default when matching an element, copy it and apply templates to its 
     children. -->
-  <xsl:template match="*" mode="#default text2attr unifier" priority="-40">
+  <xsl:template match="*" mode="#default text2attr unifier noted" priority="-40">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates select="*|text()" mode="#current"/>
@@ -265,7 +340,7 @@
   
   <!-- Add a single space before any element that implies some kind of whitespace 
     separator. This implementation may be incomplete. -->
-  <xsl:template match="ab | argument | castGroup | castItem | castList | closer 
+  <xsl:template match="ab | argument | bibl | castGroup | castItem | castList | closer 
                       | dateline | div | docEdition | docImprint | docSale | epigraph 
                       | figDesc | figure | head | imprimatur | item | l | lg | list 
                       | note | opener | p | respLine | salute | signed | sp | speaker 
@@ -391,9 +466,10 @@
     <xsl:if test="count(subsequence(parent::*/(* | text()),1,$start-position)) gt 0">
       <xsl:variable name="groupmates">
         <xsl:variable name="siblings-after" as="node()*">
-          <xsl:variable name="all-after" select="subsequence(parent::*/(* | text()),$start-position,last())"/>
+          <xsl:variable name="all-after" 
+            select="subsequence(parent::*/(* | text()), $start-position, last())"/>
           <xsl:copy-of select="if ( count($all-after) gt $max-length ) then
-                                 subsequence($all-after,1,$max-length)
+                                 subsequence($all-after, 1, $max-length)
                                else $all-after"/>
         </xsl:variable>
         <xsl:variable name="first-nonmatch">
@@ -405,17 +481,10 @@
           </xsl:variable>
           <xsl:value-of select="index-of($nonmatches,true())[1]"/>
         </xsl:variable>
-        <xsl:variable name="potential-group" select=" if ( $first-nonmatch ne '' ) then 
-                                                        subsequence($siblings-after, 1, $first-nonmatch - 1) 
-                                                      else $siblings-after"/>
-        <!--<xsl:variable name="pattern" select="for $i in $potential-group
-                                             return 
-                                              if ( $i[self::mw] ) then 
-                                                $i/@type
-                                              else $i/local-name()"/>
-        <xsl:message>
-          <xsl:value-of select="string-join($pattern,'/')"/>
-        </xsl:message>-->
+        <xsl:variable name="potential-group" 
+          select="if ( $first-nonmatch ne '' ) then 
+                    subsequence($siblings-after, 1, $first-nonmatch - 1) 
+                  else $siblings-after"/>
         <xsl:copy-of select="$potential-group"/>
         <xsl:if test="$first-nonmatch eq '' and count($siblings-after) eq $max-length">
           <xsl:call-template name="pbSubsequencer">
@@ -579,35 +648,20 @@
   <!-- If $move-notes-to-anchors is toggled on, elements with @corresp get copies of 
     any matching notes placed immediately after them. -->
   <xsl:template match="*[@corresp][$move-notes-to-anchors]" mode="unifier">
-    <xsl:param name="processed-notes" as="node()*" tunnel="yes"/>
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates mode="#current"/>
     </xsl:copy>
-    <xsl:variable name="idref" select="@corresp/data(.)"/>
-    <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref]"/>
-    <xsl:variable name="hasSpacing" 
-      select=" matches($matchedNote/data(.), '^\s') 
-            or matches(data(.), '\s$') 
-            or (
-                normalize-space() eq '' 
-            and matches(preceding-sibling::node()[self::text() or self::*[text()]][1], '\s$') 
-            )"/>
-    <xsl:if test="not($hasSpacing)">
-      <seg read="">
-        <xsl:call-template name="set-provenance-attributes">
-          <xsl:with-param name="type" select="'implicit-whitespace'"/>
-          <xsl:with-param name="subtype" select="'add-content add-element'"/>
-        </xsl:call-template>
-        <xsl:text> </xsl:text>
-      </seg>
+    <!-- Do not copy the matching note if the current element appears in the middle 
+      of a word. -->
+    <xsl:if test="not(wf:is-splitting-a-word(.))">
+      <xsl:call-template name="insert-preprocessed-note"/>
     </xsl:if>
-    <xsl:copy-of select="$matchedNote"/>
   </xsl:template>
   
   <!-- If $move-notes-to-anchors is toggled on, anchored notes are suppressed where 
     they appeared in the XML, and copied alongside their referencing context. -->
-  <xsl:template match="note[@xml:id][@target][$move-notes-to-anchors]" mode="unifier">
+  <xsl:template match="hyperDiv/notes/note[@xml:id][$move-notes-to-anchors]" mode="unifier">
     <xsl:param name="is-anchored" select="false()" as="xs:boolean"/>
     <xsl:choose>
       <xsl:when test="$is-anchored">
@@ -631,6 +685,27 @@
           </xsl:call-template>
           <!--<xsl:apply-templates select="*|text()" mode="text2attr"/>-->
         </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  
+<!-- MODE: noted -->
+  
+  <!-- If $move-notes-to-anchors is toggled on, and a <note> cannot be moved 
+    without interrupting a word, move it back into the <hyperDiv>. -->
+  <xsl:template match="hyperDiv/notes/note[@xml:id][not(node())]" mode="noted">
+    <xsl:param name="unmoved-notes" as="node()*" tunnel="yes"/>
+    <xsl:variable name="idref" select="concat('#', @xml:id)"/>
+    <xsl:choose>
+      <xsl:when test="$idref = $unmoved-notes/@sameAs">
+        <xsl:copy>
+          <xsl:copy-of select="@* except (@resp[starts-with(., 'fulltextBot')], @subtype)"/>
+          <xsl:copy-of select="$unmoved-notes[@sameAs eq $idref]/node()"/>
+        </xsl:copy>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="."/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
