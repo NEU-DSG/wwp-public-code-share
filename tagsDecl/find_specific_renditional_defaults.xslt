@@ -22,7 +22,7 @@
     Example usage on a single file:
     $ saxon -xsl:/path/to/find_specific_renditional_defaults.xslt -s:distribution/elizabeth.lastspeech.xml -o:/dev/null/ '?GIs=("fw","pb","milestone","div")'
     Example usage on a directory:
-    $ saxon -xsl:/path/to/find_specific_renditional_defaults.xslt -s:INPUTdir/ -o:/tmp/OUTPUTdir/ '?GIs=("fw","pb","milestone","div")'; done
+    $ saxon -xsl:/path/to/find_specific_renditional_defaults.xslt -s:INPUTdir/ -o:/tmp/OUTPUTdir/ '?GIs=("fw","pb","milestone","div")'
     Note that in the single file case we can just toss away the output
     by sending it to /dev/null; but we can't do that in the directory-
     at-a-time case, because Saxon requires that if -s: is a directory
