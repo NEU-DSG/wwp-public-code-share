@@ -10,7 +10,7 @@ So I have left the simple version here for those who want to puzzle through what
 
 ## Warnings for Simple Version
 
-1. Deletes <tt>&lt;namespace></tt> without checking to see if there is useful information in there or not. The more complex version is smarter about this. If you do not have any prose, but just counts and counts-with-ID in your <tt>&lt;namespace></tt>, you can easily re-generate it using [Generate_tagsDecl_P5](https://wiki.tei-c.org/index.php/Generate_tagsDecl_P5.xslt). If you actually have useful content in any of your <tt>&lt;tagUsage></tt> elements, **do not** use the simple version. 
+1. Deletes <tt>&lt;namespace></tt> without checking to see if there is useful information in there or not. The more complex version is smarter about this. If you do not have any prose, but just counts and counts-with-ID in your <tt>&lt;namespace></tt>, you can easily re-generate it using [generate_tagsDecl](../../tagsDecl/generate_tagsDecl.xslt). If you actually have useful content in any of your <tt>&lt;tagUsage></tt> elements, **do not** use the simple version. 
 
 2. Deletes any existing <tt>@selector</tt> attributes, so **do not** run it on files that already use the new mechanism.
 
@@ -18,12 +18,4 @@ So I have left the simple version here for those who want to puzzle through what
 
 # validating the values of <tt>@selector</tt> attributes
 
-The value of <tt>@selector</tt> is supposed to be in CSS (unless a
-different language is specified on the <tt>@scheme</tt> attribute).
-The TEI Guidelines (as of version 3.5.0a, last updated on 23 Jul 18,
-revision 206c146) ...
-
-
-
-
-
+The value of <tt>@selector</tt> is supposed to be in CSS (unless a different language is specified on the <tt>@scheme</tt> attribute). The TEI Guidelines currently (as of version 3.5.0, released 29 Jan 19) do not have any mechanism for validating that the value of <tt>@selector</tt> is CSS or not. Sometime in summer 2019 I expect to post code to this repository that will generate either a simple RELAX NG grammar or an XSLT program for testing that the value of <tt>@selector</tt> is valid CSS3.
