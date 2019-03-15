@@ -1,17 +1,17 @@
-<!-- Last updated 2017-07-03 -->
+<!-- Last updated 2019-03-15 -->
 # Setting up transformations
 
-We generally use XSLT version 2.0, which can only be processed with Saxon HE/PE/EE.
+Most of our stylesheets use XSLT version 2.0, which can only be processed with Saxon HE/PE/EE. XSLT 1.0 and 3.0 can also be processed with Saxon. With a little set-up, XSL transformations can also be run in XML databases such as eXist-DB or BaseX.
 
 Our XSLT stylesheets are very likely to include optional parameters. Check the READMEs for parameter names and any available options. Parameter options should also be explained at the top of each XSLT file, in comments close to any `<xsl:param>`s.
 
-## Transforming with oXygen
+<!-- ## Transforming with oXygen
 
-
+-->
 
 ## Transforming through the command line
 
-To use XSLT 2.0+ on the command line, you will need a copy of the Saxon HE processor. Download the latest ZIP file from [Sourceforge](https://sourceforge.net/projects/saxon/files/Saxon-HE/) and decompress it somewhere you can easily find it. Inside the unzipped folder is a file called something like "saxon9he.jar". This JAR file is your Saxon processor.
+To use XSLT 2.0+ on the command line, you will need a copy of the Saxon HE processor. Download the latest ZIP file from [Sourceforge](https://sourceforge.net/projects/saxon/files/Saxon-HE/) and decompress it somewhere you can easily find it. Inside the unzipped folder is a file called something like “saxon9he.jar.” This JAR file is your Saxon processor.
 
 Before you continue, navigate to the JAR file in your command line interface and make sure that you can execute it.
 
@@ -21,11 +21,11 @@ This command will process an input XML document using an XSLT stylesheet:
 
 If you need to add/modify any parameters, append your choices to the command, using the format `NAME=VALUE`.
 
-See the Saxonica documentation for other options. http://www.saxonica.com/documentation/#!using-xsl/commandline
+See the Saxonica documentation for other options: <http://www.saxonica.com/documentation/#!using-xsl/commandline>.
 
 ## Transforming with eXist-DB
 
-eXist comes bundled with Saxon HE. As long as you have your XSLT and input document loaded into the database, you can run transformations in eXist with a simple XQuery:
+eXist-DB comes bundled with Saxon HE. As long as you have your XSLT and input document loaded into the database, you can run transformations in eXist with a simple XQuery:
 
     xquery version "1.0";
     
