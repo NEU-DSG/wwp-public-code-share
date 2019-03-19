@@ -16,7 +16,7 @@
     Author: Ashley M. Clark
     
     Changelog:
-      2019-01-30, v2.2: Added "noted" mode to ensure that <note>s will not breaking 
+      2019-01-30, v2.2: Added "noted" mode to ensure that <note>s will not break 
         up words. Instead of being resolved in "unifier" mode, these interrupting 
         <note>s are withheld and put back where they were in a third pass.
       2018-06-27, v2.1: Ensured that any whitespace deleted during shy handling is
