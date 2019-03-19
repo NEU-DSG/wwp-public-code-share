@@ -18,7 +18,7 @@ xquery version "3.1";
  :  2019-03-19: v.2.2. In order to remove the dependency on Saxon EE, I removed the 
  :              dynamic function call. Instead, an explicit call to 
  :              wft:anchor-notes() has been commented out. To use the feature
- :              $move-notes-to-anchors, follow the instructions above 
+ :              $move-notes-to-anchors, follow the instructions for 
  :              local:anchor-notes() below.
  :  2019-02-14: v.2.1. Merged in sane XPaths from a divergent git branch (see 
  :              2019-01-31 for details). Changed variable $text to $teiDoc.
@@ -100,8 +100,9 @@ xquery version "3.1";
 
 (:  FUNCTIONS  :)
   
-  (: Wrapper function to call wft:anchor-notes(). In order to use this feature in 
-    oXygen, you will need to do the following once (and only once):
+  (: Wrapper function to call wft:anchor-notes(). In order to use the feature 
+    $move-notes-to-anchors, you will need to do the following set-up once (but only 
+    once):
       (1) make sure you have downloaded the XQuery file at
         https://raw.githubusercontent.com/NEU-DSG/wwp-public-code-share/master/fulltext/fulltext-library.xql ;
       (2) make sure the downloaded file is stored in the same location as this 
