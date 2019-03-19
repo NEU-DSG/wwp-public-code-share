@@ -13,8 +13,13 @@ xquery version "3.1";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
- : @version 2.0
+ : @version 2.2
  :
+ :  2019-03-19: v.2.2. In order to remove the dependency on Saxon EE, I removed the 
+ :              dynamic function call. Instead, an explicit call to 
+ :              wft:anchor-notes() has been commented out. To use the feature
+ :              $move-notes-to-anchors, follow the instructions above 
+ :              local:anchor-notes() below.
  :  2019-02-14: v.2.1. Merged in sane XPaths from a divergent git branch (see 
  :              2019-01-31 for details). Changed variable $text to $teiDoc.
  :  2019-02-01: v.2.0. Updated to XQuery version 3.1, which allows modules
@@ -59,13 +64,15 @@ xquery version "3.1";
  :  2017-04-28: v1.0. Created from fulltext2table.xq.
  :)
 
+(:  IMPORTS  :)
+  import module namespace wft="http://www.wwp.northeastern.edu/ns/fulltext" 
+    at "fulltext-library.xql";
 (:  NAMESPACES  :)
   declare default element namespace "http://www.wwp.northeastern.edu/ns/textbase";
   declare namespace tei="http://www.tei-c.org/ns/1.0";
   declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
   declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
   declare namespace werr="http://www.wwp.northeastern.edu/ns/err";
-  declare namespace wft="http://www.wwp.northeastern.edu/ns/fulltext";
 (:  OPTIONS  :)
   declare option output:method "text";
 
@@ -81,19 +88,9 @@ xquery version "3.1";
   declare variable $preserve-space as xs:boolean external := true();
   (: Set $move-notes-to-anchors to 'true()' in order to move <wwp:note>s close to 
     their anchors, making sure not to break up a word in doing so.
-    
-    IMPORTANT: In order to use this feature in oXygen, you will need an XQuery 
-    transformation scenario that recognizes XQuery Update. Use Saxon EE as your 
-    "transformer". Click on the symbol next to "Saxon EE" to open the processor 
-    settings. Turn on the "linked tree" model and XQuery Update. Turn off XQuery 
-    Update backups. :)
+    IMPORTANT: In order to use this feature in oXygen, you will need to follow the 
+    instructions for the function local:anchor-notes() below. :)
   declare variable $move-notes-to-anchors as xs:boolean external := false();
-  (: The "fulltext-library-filepath" parameter is only needed if you are using the 
-    $move-notes-to-anchors feature. Download the XQuery library from GitHub, and 
-    change the value of this parameter to the XQuery's local filepath.
-    https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext/fulltext-library.xql
-    :)
-  declare variable $fulltext-library-filepath as xs:string external := 'fulltext-library.xql';
   
   (: Morphadorner-specific control :)
   declare variable $is-morphadorned as xs:boolean external := false();
@@ -102,16 +99,22 @@ xquery version "3.1";
 
 
 (:  FUNCTIONS  :)
-  (: Wrapper function to call wfn:anchor-notes() dynamically. This will only occur 
-    if $move-notes-to-anchors is toggled on. :)
+  
+  (: Wrapper function to call wft:anchor-notes(). In order to use this feature in 
+    oXygen, you will need to do the following once (and only once):
+      (1) make sure you have downloaded the XQuery file at
+        https://raw.githubusercontent.com/NEU-DSG/wwp-public-code-share/master/fulltext/fulltext-library.xql ;
+      (2) make sure the downloaded file is stored in the same location as this 
+        script, and that it is named "fulltext-library.xql";
+      (3) uncomment the line below that reads `wft:anchor-notes($xml)`, then comment 
+        out or delete the line that reads `$xml`; and
+      (4) use an XQuery processor that recognizes XQuery Update.
+    To accomplish #2 in oXygen, use Saxon EE as your "transformer". Click on the 
+    symbol next to "Saxon EE" to open the processor settings. Turn on the "linked 
+    tree" model and XQuery Update. Turn off XQuery Update backups. :)
   declare function local:anchor-notes($xml as node()) {
-    let $libNs := 'http://www.wwp.northeastern.edu/ns/fulltext'
-    let $notesFunction := 
-      let $loadedFunctions :=
-        load-xquery-module($libNs, map { 'location-hints': ($fulltext-library-filepath) })('functions')
-      let $functionName := QName($libNs, 'anchor-notes')
-      return $loadedFunctions($functionName)(1)
-    return $notesFunction($xml)
+    (:wft:anchor-notes($xml):)
+    $xml
   };
   
   (: Given a type of text output and an element, create a plain text version of the 
