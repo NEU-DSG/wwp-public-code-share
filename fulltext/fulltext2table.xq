@@ -76,14 +76,14 @@ xquery version "3.1";
  :)
 
 (:  IMPORTS  :)
-  import module namespace wft="http://www.wwp.northeastern.edu/ns/fulltext" 
-    at "fulltext-library.xql";
+  (:import module namespace wft="http://www.wwp.northeastern.edu/ns/fulltext" 
+    at "fulltext-library.xql";:)
 (:  NAMESPACES  :)
   declare default element namespace "http://www.wwp.northeastern.edu/ns/textbase";
   declare namespace tei="http://www.tei-c.org/ns/1.0";
-  declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
   declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
   declare namespace werr="http://www.wwp.northeastern.edu/ns/err";
+  declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
 (:  OPTIONS  :)
   declare option output:method "text";
 
@@ -119,9 +119,10 @@ xquery version "3.1";
         https://raw.githubusercontent.com/NEU-DSG/wwp-public-code-share/master/fulltext/fulltext-library.xql ;
       (2) make sure the downloaded file is stored in the same location as this 
         script, and that it is named "fulltext-library.xql";
-      (3) uncomment the line below that reads `wft:anchor-notes($xml)`, then comment 
+      (3) uncomment the import statement under "IMPORTS" above;
+      (4) uncomment the line below that reads `wft:anchor-notes($xml)`, then comment 
         out or delete the line that reads `$xml`; and
-      (4) use an XQuery processor that recognizes XQuery Update.
+      (5) use an XQuery processor that recognizes XQuery Update.
     To accomplish #2 in oXygen, use Saxon EE as your "transformer". Click on the 
     symbol next to "Saxon EE" to open the processor settings. Turn on the "linked 
     tree" model and XQuery Update. Turn off XQuery Update backups. :)
