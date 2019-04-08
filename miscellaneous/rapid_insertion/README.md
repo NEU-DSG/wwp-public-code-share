@@ -44,5 +44,5 @@ inserted the character we use for soft hyphen, then
 a newline, then the requisite number of spaces, & the
 `<lb>`, and then popped the cursor forward 8 words.
 
-See [our blog post](NOT_AVAILABLE_YET) about this
+See [our blog post](https://wwp.northeastern.edu/blog/?p=1109) about this
 topic.
