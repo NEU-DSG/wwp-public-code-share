@@ -11,13 +11,11 @@
   
   <xd:doc scope="stylesheet">
     <xd:desc>
-      <xd:p>Major updates 2018-05-11 by Syd</xd:p>
-      <xd:p>Minor updates 2018-05-07 by Syd</xd:p>
-      <xd:p>Major updates 2014-07-22/23 by Syd</xd:p>
-      <xd:p><xd:b>Created on:</xd:b> 2014-02-09</xd:p>
+      <xd:p><xd:b>Created:</xd:b> 2019-04-20, based very heavily on
+        my ~/Documents/WWP/allChars.xslt, istelf begun 2014-02-09</xd:p>
       <xd:p><xd:b>Author:</xd:b> syd</xd:p>
-      <xd:p>Read in an XML file and write out a list of each character, expressed as a Unicode
-        codepoint. What counts as a character is based on the various parameters, below.</xd:p>
+      <xd:p>Read in a WWP file and write out an HTML table the characters therein.
+        What counts as a character is based on the various parameters, below.</xd:p>
       <xd:ul>
         <xd:li>attrs:
         <xd:ul>
@@ -72,17 +70,6 @@
   <xsl:output method="xhtml" indent="yes"/>
 
   <xsl:template match="/">
-    <xsl:variable name="msg"
-      select="concat(
-      'file ', $fileName,
-      ' attrs=', $attrs,
-      ' whitespace=', $whitespace,
-      ' fold=', $fold,
-      ' skip=', $skip
-      )"/>
-    <xsl:if test="$debug">
-      <xsl:message>processing <xsl:value-of select="$msg"/>.</xsl:message>
-    </xsl:if>
     <!-- pass1: generate a copy of input, handling skip= and attrs= -->
     <xsl:variable name="content">
       <xsl:apply-templates select="node()" _mode="{'skip'||$skip}"/>
@@ -124,14 +111,16 @@
     </xsl:variable>
     <!-- Convert the entire big string into a sequence of (decimal) codepoints -->
     <xsl:variable name="seq" select="string-to-codepoints( $bigString )"/>
-    <xsl:if test="$debug">
-      <xsl:message> ... file <xsl:value-of select="document-uri(/)"/> has <xsl:value-of
-        select="count($seq)"/> chars, being sent to STDOUT. </xsl:message>
-    </xsl:if>
-    <xsl:variable name="UCHARSbyCOUNT" as="map( xs:integer, xs:integer )">
+    <!--
+      Convert sequence of (decimal) codes into a variable that maps the
+      decimal codepoint into a count thereof. That is,
+      $count_by_decimal_char_num(44) returns the number of commas in the
+      (counted portion of) the input document.
+    -->
+    <xsl:variable name="count_by_decimal_char_num" as="map( xs:integer, xs:integer )">
       <xsl:map>
-        <xsl:for-each select="$seq => distinct-values()">
-          <xsl:map-entry key="." select="count( $seq[ . eq current()] )"/>
+        <xsl:for-each select="distinct-values( $seq )">
+          <xsl:map-entry key="." select="count( $seq[ . eq current() ] )"/>
         </xsl:for-each>
       </xsl:map>
     </xsl:variable>
@@ -144,37 +133,56 @@
         <meta name="generated_at" content="{current-dateTime()}"/>
         <script type="application/javascript" src="http://www.wwp.neu.edu/utils/bin/javascript/sorttable.js"/>
         <style type="text/css">
-          thead { background-color: #E0E1E2; }
-          tbody > tr > td { padding: 0.5ex; }
-          td.fn { font-size: small; font-family: monospace; }
-          td.n  { text-align: center; font-size: small; }
-          td.tit { font-style: italic; }
+          body { margin: 1em 1em 1em 3em; padding: 1em 1em 1em 3em; }
+          thead { background-color: #DEE3E6; }
+          th, td { padding: 0.5ex; }
+          td.Ucp {
+             text-align: center;
+             }
+          td.chr {
+             text-align: center;
+             }
+          td.cnt {
+             font-family: monospace;
+             text-align: right;
+             padding-right: 1.0em;
+             }
         </style>
       </head>
       <body>
-        <p>Prose…</p>
+        <h2>Character Counts in <xsl:value-of select="$fileName"/></h2>
+        <p>Character counts in <xsl:value-of select="base-uri(/)"/>, using
+        the following parameteres (see documentation for what they mean):</p>
+        <ul>
+          <li><span class="param">attrs</span> = <xsl:value-of select="$attrs"/></li>
+          <li><span class="param">whitespace</span> = <xsl:value-of select="$whitespace"/></li>
+          <li><span class="param">fold</span> = <xsl:value-of select="$fold"/></li>
+          <li><span class="param">skip</span> = <xsl:value-of select="$skip"/></li>
+        </ul>
+        <p>Click on a column header to sort by that column.</p>
         <table class="sortable" border="1">
           <thead>
             <tr>
-              <th>seq #</th>
-              <th>Uchar</th>
               <th>count</th>
+              <th>codepoint</th>
+              <th>character</th>
             </tr>
           </thead>
           <tbody>
-            <xsl:for-each select="map:keys($UCHARSbyCOUNT)">
+            <xsl:for-each select="map:keys($count_by_decimal_char_num)">
               <tr>
-                <td><xsl:value-of select="position()"/></td>
-                <td>
+                <td class="cnt"><xsl:value-of select="$count_by_decimal_char_num(.)"/></td>
+                <td class="Ucp">
                   <xsl:variable name="hexNum" select="wf:decimal2hexDigits(.)!translate(.,'&#x20;','') => string-join()"/>
                   <xsl:variable name="hexNum4digit" select="substring('0000', string-length($hexNum) +1)||$hexNum"/>
                   <xsl:value-of select="'U+'||$hexNum4digit"/>
                 </td>
-                <td><xsl:value-of select="$UCHARSbyCOUNT(.)"/></td>
+                <td class="chr"><xsl:value-of select="codepoints-to-string(.)"/></td>
               </tr>
             </xsl:for-each>
           </tbody>
         </table>
+        <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
       </body>
     </html>
   </xsl:template>
