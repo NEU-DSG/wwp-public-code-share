@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="3.0"
   xpath-default-namespace="http://www.wwp.northeastern.edu/ns/textbase"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:map="http://www.w3.org/2005/xpath-functions/map"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -41,7 +43,7 @@
         <xd:ul>
           <xd:li>skip=0 means process the entire document including PIs and comments</xd:li>
           <xd:li>skip=1 means process the entire document excluding PIs and comments</xd:li>
-          <xd:li>skip=2 means strip out the &lt;teiHeader>, too</xd:li>
+          <xd:li>skip=2 means strip out the &lt;teiHeader>(s), too</xd:li>
           <xd:li>skip=3 means strip out &lt;fw>, &lt;figDesc>, and non-authorial notes, too</xd:li>
           <xd:li>skip=4 means 3 + also take &lt;corr> over &lt;sic>,
             &lt;expan> over &lt;abbr>, &lt;reg> over &lt;orig> (including processing VUJIs)
@@ -56,7 +58,8 @@
   <xsl:param name="attrs" select="1" as="xs:integer"/>
   <xsl:param name="whitespace" select="0" as="xs:integer"/>
   <xsl:param name="fold" select="0" as="xs:integer"/>
-  <xsl:param name="skip" select="3" as="xs:integer"/>
+  <xsl:param name="skip" select="3" as="xs:integer" static="yes"/>
+  <xsl:param name="fileName" select="tokenize( document-uri(/),'/')[last()]"/>
   <xd:doc>
     <xd:desc>The following 2 parameters should each be set to a character
     string that will <xd:b>never</xd:b> occur in an input document</xd:desc>
@@ -66,12 +69,12 @@
   <xsl:variable name="rlop" select="'\\\('"/> <!-- rendition ladder open paren -->
   <xsl:variable name="rlcp" select="'\\\)'"/> <!-- rendition ladder close paren -->
 
-  <xsl:output method="text"/>
+  <xsl:output method="xhtml" indent="yes"/>
 
   <xsl:template match="/">
     <xsl:variable name="msg"
       select="concat(
-      'file ', tokenize( document-uri(/),'/')[last()],
+      'file ', $fileName,
       ' attrs=', $attrs,
       ' whitespace=', $whitespace,
       ' fold=', $fold,
@@ -80,45 +83,29 @@
     <xsl:if test="$debug">
       <xsl:message>processing <xsl:value-of select="$msg"/>.</xsl:message>
     </xsl:if>
-    <!-- pass1: generate a copy of input take, handling skip= and attrs= -->
+    <!-- pass1: generate a copy of input, handling skip= and attrs= -->
     <xsl:variable name="content">
-      <xsl:choose>
-        <xsl:when test="$skip eq 0">
-          <xsl:apply-templates select="/node()" mode="skip0"/>
-        </xsl:when>
-        <xsl:when test="$skip eq 1">
-          <xsl:apply-templates select="/TEI" mode="skip1"/>
-        </xsl:when>
-        <xsl:when test="$skip eq 2">
-          <xsl:apply-templates select="/TEI/* except teiHeader" mode="skip2"/>
-        </xsl:when>
-        <xsl:when test="$skip eq 3">
-          <xsl:apply-templates select="/TEI/* except teiHeader" mode="skip3"/>
-        </xsl:when>
-        <xsl:when test="$skip eq 4">
-          <xsl:apply-templates select="/TEI/* except teiHeader" mode="skip4"/>
-        </xsl:when>
-      </xsl:choose>
+      <xsl:apply-templates select="node()" _mode="{'skip'||$skip}"/>
     </xsl:variable>
     <!-- We now have a reduced version of entire document in $content -->
-    <!-- Turn it into a big string -->
-    <xsl:variable name="bigString" select="$content||' '||string-join( $content//@*,' ')"/>
+    <!-- Turn it into a big string, collapsing whitespace as requested -->
     <xsl:variable name="bigString">
       <xsl:choose>
         <xsl:when test="$whitespace eq 0">
-          <xsl:value-of select="translate( normalize-space( $bigString ),'&#x20;','')"/>
+          <xsl:value-of select="translate( normalize-space( $content ),'&#x20;','')"/>
         </xsl:when>
         <xsl:when test="$whitespace eq 1">
-          <xsl:value-of select="normalize-space( $bigString )"/>
+          <xsl:value-of select="normalize-space( $content )"/>
         </xsl:when>
         <xsl:when test="$whitespace eq 3">
-          <xsl:value-of select="$bigString"/>
+          <xsl:value-of select="$content"/>
         </xsl:when>
         <xsl:otherwise>
           <xsl:message terminate="yes" select="'Invalid whitespace param '||$whitespace"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <!-- Case-fold alphabetic characters as requested -->
     <xsl:variable name="bigString">
       <xsl:choose>
         <xsl:when test="$fold eq 0">
@@ -135,20 +122,61 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <!-- Convert the entire big string into a sequence of (decimal) codepoints -->
     <xsl:variable name="seq" select="string-to-codepoints( $bigString )"/>
     <xsl:if test="$debug">
       <xsl:message> ... file <xsl:value-of select="document-uri(/)"/> has <xsl:value-of
         select="count($seq)"/> chars, being sent to STDOUT. </xsl:message>
     </xsl:if>
-    <xsl:text># </xsl:text>
-    <xsl:value-of select="$msg"/>
-    <xsl:text>&#x0A;</xsl:text>
-    <xsl:for-each select="$seq">
-      <xsl:variable name="hexNum" select="wf:decimal2hexDigits(.)!translate(.,'&#x20;','') => string-join()"/>
-      <xsl:variable name="hexNum4digit" select="substring('0000', string-length($hexNum) +1)||$hexNum"/>
-      <xsl:value-of select="'U+'||$hexNum4digit"/>
-      <xsl:text>&#x0A;</xsl:text>
-    </xsl:for-each>
+    <xsl:variable name="UCHARSbyCOUNT" as="map( xs:integer, xs:integer )">
+      <xsl:map>
+        <xsl:for-each select="$seq => distinct-values()">
+          <xsl:map-entry key="." select="count( $seq[ . eq current()] )"/>
+        </xsl:for-each>
+      </xsl:map>
+    </xsl:variable>
+    <!-- Generate output -->    
+    <html>
+      <head>
+        <xsl:variable name="title" select="'chars in '||$fileName"/>
+        <title><xsl:value-of select="$fileName"/></title>
+        <meta name="generated_by" content="tableOfChars.xslt"/>
+        <meta name="generated_at" content="{current-dateTime()}"/>
+        <script type="application/javascript" src="http://www.wwp.neu.edu/utils/bin/javascript/sorttable.js"/>
+        <style type="text/css">
+          thead { background-color: #E0E1E2; }
+          tbody > tr > td { padding: 0.5ex; }
+          td.fn { font-size: small; font-family: monospace; }
+          td.n  { text-align: center; font-size: small; }
+          td.tit { font-style: italic; }
+        </style>
+      </head>
+      <body>
+        <p>Prose…</p>
+        <table class="sortable" border="1">
+          <thead>
+            <tr>
+              <th>seq #</th>
+              <th>Uchar</th>
+              <th>count</th>
+            </tr>
+          </thead>
+          <tbody>
+            <xsl:for-each select="map:keys($UCHARSbyCOUNT)">
+              <tr>
+                <td><xsl:value-of select="position()"/></td>
+                <td>
+                  <xsl:variable name="hexNum" select="wf:decimal2hexDigits(.)!translate(.,'&#x20;','') => string-join()"/>
+                  <xsl:variable name="hexNum4digit" select="substring('0000', string-length($hexNum) +1)||$hexNum"/>
+                  <xsl:value-of select="'U+'||$hexNum4digit"/>
+                </td>
+                <td><xsl:value-of select="$UCHARSbyCOUNT(.)"/></td>
+              </tr>
+            </xsl:for-each>
+          </tbody>
+        </table>
+      </body>
+    </html>
   </xsl:template>
 
   <xsl:template match="@*|node()" mode="#all">
@@ -207,7 +235,9 @@
   </xsl:template>
   
   <!--
-    This function modified from http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511 -->
+    This function modified from the template at
+    http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
+  -->
   <xsl:function name="wf:decimal2hexDigits" as="xs:string+">
     <xsl:param name="number" as="xs:integer"/>
     <xsl:variable name="remainder" select="$number mod 16" as="xs:integer"/>
