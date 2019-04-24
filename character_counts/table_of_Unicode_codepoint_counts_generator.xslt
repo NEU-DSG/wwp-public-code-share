@@ -2,10 +2,11 @@
 <xsl:stylesheet
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:out="http://www.w3.org/1999/XSL/Transform-NOT!"
+  xmlns:map="http://www.w3.org/2005/xpath-functions/map"
   xmlns:doc="http://www.oxygenxml.com/ns/doc/xsl-NOT!"
+  xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:in="http://www.example.edu/no_matter,_input_not_actually_read"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   version="3.0">
   
   <xsl:namespace-alias stylesheet-prefix="out" result-prefix="xsl"/>
@@ -13,21 +14,50 @@
   <xsl:output method="xml" indent="yes"/>
   <xsl:param name="UCD"
     select="'https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml'"/>
-  <xsl:param name="WWPns" select="'http://www.wwp.northeastern.edu/ns/textbase'"/>
-  <xsl:param name="TEIns" select="'http://www.tei-c.org/ns/1.0'"/>
-
+  <xsl:param name="me" select="base-uri(/)"/>
+  <xsl:variable name="myself" select="tokenize( $me,'/')[last()]"/>
+  <xsl:param name="namespaceof" as="map( xs:string, xs:string )">
+    <xsl:map>
+      <xsl:map-entry key="'TEI'" select="'http://www.wwp.northeastern.edu/ns/textbase'"/>
+      <xsl:map-entry key="'WWP'" select="'http://www.tei-c.org/ns/1.0'"/>
+      <xsl:map-entry key="'XHTML'" select="'http://www.w3.org/1999/xhtml'"/>
+      <xsl:map-entry key="'yaps'" select="'http://www.wwp.northeastern.edu/ns/yaps'"/>
+    </xsl:map>
+  </xsl:param>
+  <xsl:variable name="schemes" select="map:keys( $namespaceof )" as="xs:string+"/>
+  
+  
   <xsl:template match="/">
-    <xsl:result-document href="WWP.xslt">
+    <xsl:for-each select="$schemes">
+      <xsl:variable name="scheme" select="normalize-space(.)"/>
+      <xsl:choose>
+        <xsl:when test="$scheme castable as xs:Name">
+          <xsl:call-template name="generator">
+            <xsl:with-param name="scheme" select="$scheme"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:message select="'ERROR: scheme &quot;'||$scheme||'&quot; not a valid name; ignoring it.'"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:for-each>
+  </xsl:template>
+  
+  <xsl:template name="generator">
+    <xsl:param name="scheme"/>
+    <xsl:variable name="outFile" select="replace( $me,'_generator\.xslt$', '_'||$scheme||'.xslt')"/>
+    <xsl:result-document href="{$outFile}">
 
       <xsl:comment> *************** </xsl:comment>
       <xsl:comment> * DO NOT EDIT * </xsl:comment>
       <xsl:comment> *************** </xsl:comment>
       <xsl:comment> *
-     * This program generated from XSLT source; to make changes edit source, then
-     * run the source program, and use the newly generated output in place of this.   
+     * This program generated from XSLT source; to make changes edit the source
+     * program <xsl:value-of select="$myself"/>, then run it _on itself_, and
+     * then use the newly generated output in place of this.   
      * </xsl:comment>
       <out:stylesheet version="3.0"
-        xpath-default-namespace="{$WWPns}"
+        xpath-default-namespace="{$namespaceof($scheme)}"
         xmlns="http://www.w3.org/1999/xhtml"
         xmlns:map="http://www.w3.org/2005/xpath-functions/map"
         xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -37,15 +67,36 @@
 
         <doc:doc scope="stylesheet">
           <doc:desc>
-            <doc:p><doc:b>Created:</doc:b> 2019-04-20, based very heavily on my
-              ~/Documents/WWP/allChars.xslt, itself begun 2014-02-09</doc:p>
             <doc:p><doc:b>Author:</doc:b> syd</doc:p>
-            <doc:p>Read in a WWP file and write out an HTML table the characters therein. What
-              counts as a character is based on the various parameters, below.</doc:p>
+            <doc:p>Read in a <xsl:value-of select="$scheme"/> file and write out an HTML table the characters therein.
+              What counts as a character is based on the various parameters, below.</doc:p>
             <doc:ul>
               <doc:li>attrs: <doc:ul>
                   <doc:li>attrs=0 means drop <doc:i>all</doc:i> attributes</doc:li>
-                  <doc:li>attrs=1 means keep pre() and post() of @rend only [default]</doc:li>
+                <xsl:choose>
+                  <xsl:when test="$scheme eq 'TEI'">
+                    <doc:li>attrs=1 means drop all attributes except:
+                      <doc:ul>
+                        <doc:li>@assertedValue iff @locus is "value"</doc:li>
+                        <doc:li>@baseForm</doc:li>
+                        <doc:li>@expand, other than on &lt;classRef></doc:li>
+                        <doc:li>@lemma</doc:li>
+                        <doc:li>@orig</doc:li>
+                        <doc:li>the "content:" property of @style</doc:li>
+                      </doc:ul>
+                      [default]
+                    </doc:li>
+                  </xsl:when>
+                  <xsl:when test="$scheme eq 'WWP'">
+                    <doc:li>attrs=1 means keep pre() and post() of @rend only [default]</doc:li>
+                  </xsl:when>
+                  <xsl:when test="$scheme eq 'XHTML'">
+                    <doc:li>attrs=1 means to keep only @title and the "content:" property of @style [default]</doc:li>
+                  </xsl:when>
+                  <xsl:when test="$scheme eq 'yaps'">
+                    <doc:li>attrs=1 means to keep only the "content:" property of @style [default]</doc:li>
+                  </xsl:when>
+                </xsl:choose>
                   <doc:li>attrs=9 means keep <doc:i>all</doc:i> attributes</doc:li>
                 </doc:ul></doc:li>
               <doc:li>whitespace: <doc:ul>
@@ -57,15 +108,15 @@
               </doc:li>
               <doc:li>fold: <doc:ul>
                   <doc:li>fold=0 means no case folding [default]</doc:li>
-                  <doc:li>fold=1 means case folding (upper to lower, A-Z only)</doc:li>
-                  <doc:li>fold=2 means case folding (including Greek, etc.) and long-s folded to
-                    s</doc:li>
+                  <doc:li>fold=1 means case folding (upper to lower, but A-Z <doc:b>only</doc:b>)</doc:li>
+                <doc:li>fold=2 means case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
+                  into LATIN SMALL LETTER S</doc:li>
                 </doc:ul>
               </doc:li>
               <doc:li>skip: <doc:ul>
                   <doc:li>skip=0 means process the entire document including PIs and
                     comments</doc:li>
-                  <doc:li>skip=1 means process the entire document excluding PIs and
+                  <doc:li>skip=1 means process the entire document <doc:b>excluding</doc:b> PIs and
                     comments</doc:li>
                   <doc:li>skip=2 means strip out the &lt;teiHeader>(s), too</doc:li>
                   <doc:li>skip=3 means strip out &lt;fw>, &lt;figDesc>, and non-authorial notes,
@@ -362,6 +413,14 @@
       </out:stylesheet>
     </xsl:result-document>
     
+      <xsl:choose>
+        <xsl:when test="$scheme eq 'TEI'"></xsl:when>
+        <xsl:when test="$scheme eq 'WWP'"></xsl:when>
+        <xsl:when test="$scheme eq 'XHTML'"></xsl:when>
+        <xsl:when test="$scheme eq 'yaps'"></xsl:when>
+      </xsl:choose>
+
   </xsl:template>
-  
+
+
 </xsl:stylesheet>
