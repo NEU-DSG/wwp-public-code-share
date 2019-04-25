@@ -53,8 +53,8 @@
       <xsl:comment> *************** </xsl:comment>
       <xsl:comment> *
      * This program generated from XSLT source; to make changes edit the source
-     * program <xsl:value-of select="$myself"/>, then run it _on itself_, and
-     * then use the newly generated output in place of this.   
+     * program <xsl:value-of select="$myself"/>, then run it
+     * _on itself_, and then use the newly generated output in place of this.   
      * </xsl:comment>
       <out:stylesheet version="3.0"
         xpath-default-namespace="{$namespaceof($scheme)}"
@@ -99,31 +99,52 @@
                 </xsl:choose>
                   <doc:li>attrs=9 means keep <doc:i>all</doc:i> attributes</doc:li>
                 </doc:ul></doc:li>
-              <doc:li>whitespace: <doc:ul>
+              <doc:li>whitespace:
+                <doc:ul>
                   <doc:li>whitespace=0 means strip whitespace [default]</doc:li>
                   <doc:li>whitespace=1 means all whitespace normalized; presumption is space between
-                    attr values</doc:li>
+                    attribute values</doc:li>
                   <doc:li>whitespace=3 means no normalization at all</doc:li>
                 </doc:ul>
               </doc:li>
-              <doc:li>fold: <doc:ul>
+              <doc:li>fold:
+                <doc:ul>
                   <doc:li>fold=0 means no case folding [default]</doc:li>
                   <doc:li>fold=1 means case folding (upper to lower, but A-Z <doc:b>only</doc:b>)</doc:li>
-                <doc:li>fold=2 means case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
-                  into LATIN SMALL LETTER S</doc:li>
+                  <doc:li>fold=2 means case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
+                    into LATIN SMALL LETTER S</doc:li>
                 </doc:ul>
               </doc:li>
-              <doc:li>skip: <doc:ul>
+              <doc:li>skip:
+                <doc:ul>
                   <doc:li>skip=0 means process the entire document including PIs and
                     comments</doc:li>
                   <doc:li>skip=1 means process the entire document <doc:b>excluding</doc:b> PIs and
                     comments</doc:li>
-                  <doc:li>skip=2 means strip out the &lt;teiHeader>(s), too</doc:li>
-                  <doc:li>skip=3 means strip out &lt;fw>, &lt;figDesc>, and non-authorial notes,
-                    too</doc:li>
-                  <doc:li>skip=4 means 3 + also take &lt;corr> over &lt;sic>, &lt;expan> over
-                    &lt;abbr>, &lt;reg> over &lt;orig> (including processing VUJIs) and first
-                    &lt;supplied> or &lt;unclear> in a &lt;choice>. [default]</doc:li>
+                  <xsl:choose>
+                    <xsl:when test="$scheme = ('TEI','WWP','yaps')">
+                      <doc:li>skip=2 means strip out the &lt;teiHeader>(s), too</doc:li>
+                    </xsl:when>
+                    <xsl:when test="$scheme eq 'XHTML'">
+                      <doc:li>skip=2 means strip out the &lt;head> element, too</doc:li>
+                    </xsl:when>
+                  </xsl:choose>
+                  <xsl:choose>
+                    <xsl:when test="$scheme eq 'TEI'">
+                      <doc:li>skip=3 means strip out &lt;fw> and &lt;figDesc>, too [default]</doc:li>
+                    </xsl:when>
+                    <xsl:when test="$scheme eq 'WWP'">
+                      <doc:li>skip=3 means strip out &lt;mw>, &lt;figDesc>, and non-authorial notes,
+                        too [default]</doc:li>
+                    </xsl:when>
+                    <xsl:when test="$scheme eq 'XHTML'"/>
+                    <xsl:when test="$scheme eq 'yaps'"/>
+                  </xsl:choose>
+                  <xsl:if test="$scheme = ('TEI','WWP')">
+                    <doc:li>skip=4 means 3 + also take &lt;corr> over &lt;sic>, &lt;expan> over
+                      &lt;abbr>, &lt;reg> over &lt;orig> <xsl:if test="$scheme eq 'WWP'">(including processing VUJIs)
+                      </xsl:if>and first &lt;supplied> or &lt;unclear> in a &lt;choice>.</doc:li>
+                  </xsl:if>
                 </doc:ul>
               </doc:li>
             </doc:ul>
