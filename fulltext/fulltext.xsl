@@ -13,9 +13,17 @@
     and any other activity where having access to semi-regularized, complete words 
     might be useful.
     
-    Author: Ashley M. Clark
+    Author: Ashley M. Clark, Northeastern University Women Writers Project
+    See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-05-31, v2.3: Ensured that the non-<group> children of `//text[group]` are
+        processed with unifier mode.
+        If $move-notes-to-anchors is toggled on, each <text> inherits pre-processed 
+        <note>s from its ancestors. Nested <text>s are copied forward during 
+        "unifier" mode, since its descendents would already have been run through 
+        unifier (and possibly "noted") mode.
+        The unused function wf:get-first-word() has been deleted.
       2019-01-30, v2.2: Added "noted" mode to ensure that <note>s will not break 
         up words. Instead of being resolved in "unifier" mode, these interrupting 
         <note>s are withheld and put back where they were in a third pass.
@@ -98,7 +106,7 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.2'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.3'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
