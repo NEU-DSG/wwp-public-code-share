@@ -90,9 +90,9 @@
     WWP content is removed, no @read is used to capture deleted content. -->
   <xsl:param name="keep-wwp-text"                 as="xs:boolean" select="true()"/>
   
-  <!-- Parameter option to move notes from the <hyperDiv> or endnotes section, to 
-    their anchorpoint. This could be useful for proximity-based text analysis. The 
-    default is to keep the notes where they appeared in the input XML. -->
+  <!-- Parameter option to move notes from the <hyperDiv> section, to their 
+    anchorpoint. This could be useful for proximity-based text analysis. The default 
+    is to keep the notes where they appeared in the input XML. -->
   <xsl:param name="move-notes-to-anchors"         as="xs:boolean" select="false()"/>
   
   
@@ -106,37 +106,35 @@
   
 <!-- FUNCTIONS -->
   
-  <xsl:function name="wf:get-first-word" as="xs:string">
-    <xsl:param name="text" as="xs:string"/>
-    <xsl:variable name="slim-text" select="normalize-space($text)"/>
-    <xsl:variable name="pattern">
-      <xsl:text>^\s*([\w'-]+[\.,;:!?”/)\]]?)((\s+|[―—]*|-{2,}).*)?$</xsl:text>
-    </xsl:variable>
-    <xsl:value-of select="replace($slim-text, $pattern, '$1')"/>
-  </xsl:function>
-  
+  <!-- Determine if a given element has both element and text node children. -->
   <xsl:function name="wf:has-mixed-content" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:value-of select="exists($element[*][text()])"/>
   </xsl:function>
   
+  <!-- Determine if a node meets the criteria for belonging to a pbGroup. This 
+    function does not imply that the given node *is* a part of a pbGroup, only that 
+    it could belong to one. -->
   <xsl:function name="wf:is-pbGroup-candidate" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
-    <xsl:value-of select="exists( $node[  self::mw[@type = ('catch', 'pageNum', 'sig', 'vol')] 
-                                       (: The XPath above tests for mw with types that could trigger a pbGroup. 
-                                          The XPath below tests for mw that could belong to a pbGroup. :)
-                                       or self::mw[@type = ('border', 'border-ornamental', 'border-rule', 'other', 'pressFig', 'unknown')]
-                                       or self::pb 
-                                       or self::milestone
-                                       or self::text()[normalize-space() eq ''] ] )"/>
+    <xsl:value-of 
+      select="exists( $node[  self::mw[@type = ('catch', 'pageNum', 'sig', 'vol')] 
+                           (: The XPath above tests for mw with types that could trigger a pbGroup. 
+                              The XPath below tests for mw that could belong to a pbGroup. :)
+                           or self::mw[@type = ('border', 'border-ornamental', 'border-rule', 'other', 'pressFig', 'unknown')]
+                           or self::pb 
+                           or self::milestone
+                           or self::text()[normalize-space() eq ''] ] )"/>
   </xsl:function>
   
+  <!-- Determine if a node appears in between parts of a single word. -->
   <xsl:function name="wf:is-splitting-a-word" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
     <xsl:value-of select="exists($node/preceding::text()[not(normalize-space(.) eq '')][1]
                                                         [matches(., $shyEndingPattern)])"/>
   </xsl:function>
   
+  <!-- Given a string, remove any soft hyphens and return the result. -->
   <xsl:function name="wf:remove-shy" as="xs:string">
     <xsl:param name="text" as="xs:string"/>
     <xsl:value-of select="replace($text, $shyEndingPattern, '')"/>
@@ -583,7 +581,8 @@
     </xsl:choose>
   </xsl:template>
   
-  <!-- OPTIONAL: remove the auto-generated @type of 'implicit-whitespace'. -->
+  <!-- If $include-provenance-attributes is toggled off, remove the auto-generated 
+    @type of 'implicit-whitespace'. -->
   <xsl:template match="seg[@type eq 'implicit-whitespace'][not($include-provenance-attributes)]" mode="unifier">
     <xsl:copy>
       <xsl:copy-of select="@* except @type"/>
@@ -710,10 +709,8 @@
   <xsl:template match="hyperDiv/notes/note[@xml:id][not(node())]" mode="noted">
     <xsl:param name="unmoved-notes" as="node()*" tunnel="yes"/>
     <xsl:variable name="idref" select="concat('#', @xml:id)"/>
-    <xsl:message select="count($unmoved-notes//@sameAs)"/>
     <xsl:choose>
       <xsl:when test="$idref = $unmoved-notes/@sameAs/data(.)">
-        <xsl:message select="'Found matching note'"/>
         <xsl:copy>
           <xsl:copy-of select="@* except (@resp[starts-with(., 'fulltextBot')], @subtype)"/>
           <xsl:copy-of select="$unmoved-notes[@sameAs eq $idref]/node()"/>
