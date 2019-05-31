@@ -322,7 +322,7 @@
       <!-- If a third pass isn't needed, just copy the results from the default 
         transformation. -->
       <xsl:otherwise>
-        <xsl:copy-of select="$default-transform/*"/>
+        <xsl:copy-of select="$default-transform"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
