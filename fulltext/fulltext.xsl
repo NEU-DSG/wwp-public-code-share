@@ -13,9 +13,17 @@
     and any other activity where having access to semi-regularized, complete words 
     might be useful.
     
-    Author: Ashley M. Clark
+    Author: Ashley M. Clark, Northeastern University Women Writers Project
+    See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-05-31, v2.3: Ensured that the non-<group> children of `//text[group]` are
+        processed with unifier mode.
+        If $move-notes-to-anchors is toggled on, each <text> inherits pre-processed 
+        <note>s from its ancestors. Nested <text>s are copied forward during 
+        "unifier" mode, since its descendents would already have been run through 
+        unifier (and possibly "noted") mode.
+        The unused function wf:get-first-word() has been deleted.
       2019-01-30, v2.2: Added "noted" mode to ensure that <note>s will not break 
         up words. Instead of being resolved in "unifier" mode, these interrupting 
         <note>s are withheld and put back where they were in a third pass.
@@ -90,15 +98,15 @@
     WWP content is removed, no @read is used to capture deleted content. -->
   <xsl:param name="keep-wwp-text"                 as="xs:boolean" select="true()"/>
   
-  <!-- Parameter option to move notes from the <hyperDiv> or endnotes section, to 
-    their anchorpoint. This could be useful for proximity-based text analysis. The 
-    default is to keep the notes where they appeared in the input XML. -->
+  <!-- Parameter option to move notes from the <hyperDiv> section, to their 
+    anchorpoint. This could be useful for proximity-based text analysis. The default 
+    is to keep the notes where they appeared in the input XML. -->
   <xsl:param name="move-notes-to-anchors"         as="xs:boolean" select="false()"/>
   
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.2'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.3'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
@@ -106,37 +114,35 @@
   
 <!-- FUNCTIONS -->
   
-  <xsl:function name="wf:get-first-word" as="xs:string">
-    <xsl:param name="text" as="xs:string"/>
-    <xsl:variable name="slim-text" select="normalize-space($text)"/>
-    <xsl:variable name="pattern">
-      <xsl:text>^\s*([\w'-]+[\.,;:!?”/)\]]?)((\s+|[―—]*|-{2,}).*)?$</xsl:text>
-    </xsl:variable>
-    <xsl:value-of select="replace($slim-text, $pattern, '$1')"/>
-  </xsl:function>
-  
+  <!-- Determine if a given element has both element and text node children. -->
   <xsl:function name="wf:has-mixed-content" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:value-of select="exists($element[*][text()])"/>
   </xsl:function>
   
+  <!-- Determine if a node meets the criteria for belonging to a pbGroup. This 
+    function does not imply that the given node *is* a part of a pbGroup, only that 
+    it could belong to one. -->
   <xsl:function name="wf:is-pbGroup-candidate" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
-    <xsl:value-of select="exists( $node[  self::mw[@type = ('catch', 'pageNum', 'sig', 'vol')] 
-                                       (: The XPath above tests for mw with types that could trigger a pbGroup. 
-                                          The XPath below tests for mw that could belong to a pbGroup. :)
-                                       or self::mw[@type = ('border', 'border-ornamental', 'border-rule', 'other', 'pressFig', 'unknown')]
-                                       or self::pb 
-                                       or self::milestone
-                                       or self::text()[normalize-space() eq ''] ] )"/>
+    <xsl:value-of 
+      select="exists( $node[  self::mw[@type = ('catch', 'pageNum', 'sig', 'vol')] 
+                           (: The XPath above tests for mw with types that could trigger a pbGroup. 
+                              The XPath below tests for mw that could belong to a pbGroup. :)
+                           or self::mw[@type = ('border', 'border-ornamental', 'border-rule', 'other', 'pressFig', 'unknown')]
+                           or self::pb 
+                           or self::milestone
+                           or self::text()[normalize-space() eq ''] ] )"/>
   </xsl:function>
   
+  <!-- Determine if a node appears in between parts of a single word. -->
   <xsl:function name="wf:is-splitting-a-word" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
     <xsl:value-of select="exists($node/preceding::text()[not(normalize-space(.) eq '')][1]
                                                         [matches(., $shyEndingPattern)])"/>
   </xsl:function>
   
+  <!-- Given a string, remove any soft hyphens and return the result. -->
   <xsl:function name="wf:remove-shy" as="xs:string">
     <xsl:param name="text" as="xs:string"/>
     <xsl:value-of select="replace($text, $shyEndingPattern, '')"/>
@@ -159,7 +165,7 @@
   <xsl:template name="insert-preprocessed-note">
     <xsl:param name="processed-notes" as="node()*" tunnel="yes"/>
     <xsl:variable name="idref" select="@corresp/data(.)"/>
-    <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref]"/>
+    <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref][1]" as="node()?"/>
     <xsl:variable name="whitespaceSeg">
       <seg read="">
         <xsl:call-template name="set-provenance-attributes">
@@ -259,59 +265,66 @@
     <xsl:copy-of select="."/>
   </xsl:template>
   
-  <!-- Do not apply fulltexting transformations on any <text> containing a <group> 
-    of <text>s. -->
-  <xsl:template match="text[group]" priority="5">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-  
-  <!-- Run default mode on the descendants of <text>, then resolve soft hyphens. -->
+  <!-- Run default mode on the outermost <text> elements, then resolve soft hyphens. -->
   <xsl:template match="text">
+    <xsl:param name="notes-preprocessed" as="node()*" tunnel="yes"/>
+    <!-- The first pass makes most whitespace explicit, creates pbGroups, makes 
+      <choice>s, etc. -->
     <xsl:variable name="first-pass" as="node()*">
       <xsl:apply-templates/>
     </xsl:variable>
-    <!-- If $move-notes-to-anchors is toggled on, pre-process soft hyphens for notes 
-      in the <hyperDiv>. These notes will be tunnelled to anchors. -->
-    <xsl:variable name="notes" as="node()*">
-      <xsl:if test="$move-notes-to-anchors">
-        <xsl:apply-templates select="$first-pass[self::hyperDiv]//note[@xml:id]" mode="unifier">
-          <xsl:with-param name="is-anchored" select="true()"/>
-        </xsl:apply-templates>
-      </xsl:if>
-    </xsl:variable>
-    <xsl:variable name="unified" as="node()*">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
       <xsl:apply-templates select="$first-pass" mode="unifier">
-        <xsl:with-param name="processed-notes" select="$notes" as="node()*" tunnel="yes"/>
+        <xsl:with-param name="processed-notes" select="$notes-preprocessed" as="node()*" tunnel="yes"/>
       </xsl:apply-templates>
+    </xsl:copy>
+  </xsl:template>
+  
+  <!-- If $move-notes-to-anchors is toggled on, preprocess the notes in the 
+    <hyperDiv> before continuing to apply templates. -->
+  <xsl:template match="text[hyperDiv][$move-notes-to-anchors]" priority="5">
+    <!-- Include any notes from an ancestor with a <hyperDiv>. -->
+    <xsl:param name="notes-preprocessed" as="node()*" tunnel="yes"/>
+    <!-- Pre-process notes in the <hyperDiv>. These notes will be tunnelled to 
+      anchors. -->
+    <xsl:variable name="notes-processed" as="node()*">
+      <xsl:variable name="first-pass" as="node()*">
+        <xsl:apply-templates select="hyperDiv//note[@xml:id]"/>
+      </xsl:variable>
+      <xsl:apply-templates select="$first-pass" mode="unifier">
+        <xsl:with-param name="is-anchored" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <!-- Use all preprocessed notes currently available and apply the default 
+      template for <text> (above). -->
+    <xsl:variable name="notes-full" as="node()*" 
+      select="( $notes-preprocessed, $notes-processed )"/>
+    <xsl:variable name="default-transform" as="node()">
+      <xsl:next-match>
+        <xsl:with-param name="notes-preprocessed" select="$notes-full" tunnel="yes"/>
+      </xsl:next-match>
     </xsl:variable>
     <!-- Check for and copy any <note>s that haven't been moved into the text yet. -->
     <xsl:variable name="unmoved-notes" as="node()*">
-      <xsl:if test="$move-notes-to-anchors">
-        <xsl:variable name="moved-notes" select="$unified//note/@sameAs/data(.)"/>
-        <xsl:copy-of select="$notes[@sameAs[not(data(.) = $moved-notes)]]"/>
-      </xsl:if>
+      <xsl:variable name="moved-notes" select="$default-transform//note/@sameAs/data(.)"/>
+      <xsl:copy-of select="$notes-processed[not(@sameAs[. = $moved-notes])]"/>
     </xsl:variable>
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:choose>
-        <!-- If $move-notes-to-anchors is toggled on and there are anchored notes 
-          that could not be inserted (because they break up a word), make sure the
-          processed notes are put back in their original locations. -->
-        <xsl:when test="$move-notes-to-anchors and exists($unmoved-notes)">
-          <xsl:apply-templates select="$unified" mode="noted">
-            <xsl:with-param name="unmoved-notes" select="$unmoved-notes" as="node()*" tunnel="yes"/>
-          </xsl:apply-templates>
-        </xsl:when>
-        <!-- If a third pass isn't needed, just copy the results from applying 
-          "unified" mode. -->
-        <xsl:otherwise>
-          <xsl:copy-of select="$unified"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:copy>
+    <xsl:choose>
+      <!-- If there are anchored notes from this <text>'s <hyperDiv> that could not 
+        be inserted (because they break up a word), make sure the processed notes 
+        are put back in their original locations. -->
+      <xsl:when test="exists($unmoved-notes)">
+        <xsl:apply-templates select="$default-transform" mode="noted">
+          <xsl:with-param name="unmoved-notes" select="$unmoved-notes" as="node()*" tunnel="yes"/>
+        </xsl:apply-templates>
+      </xsl:when>
+      <!-- If a third pass isn't needed, just copy the results from the default 
+        transformation. -->
+      <xsl:otherwise>
+        <xsl:copy-of select="$default-transform/*"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <!-- Normalize 'ſ' to 's'. Soft hyphens are replaced with $shyDelimiter, which is 
@@ -553,6 +566,11 @@
   
 <!-- MODE: unifier -->
   
+  <!-- Nested <text>s should have already been handled, so they are copied forward. -->
+  <xsl:template match="text" mode="unifier">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
   <!-- Copy whitespace-only text nodes forward, unless they occur between a soft 
     hyphen and a subsequent wordpart. -->
   <xsl:template match="text()[normalize-space(.) eq '']" mode="unifier" priority="10">
@@ -571,7 +589,8 @@
     </xsl:choose>
   </xsl:template>
   
-  <!-- OPTIONAL: remove the auto-generated @type of 'implicit-whitespace'. -->
+  <!-- If $include-provenance-attributes is toggled off, remove the auto-generated 
+    @type of 'implicit-whitespace'. -->
   <xsl:template match="seg[@type eq 'implicit-whitespace'][not($include-provenance-attributes)]" mode="unifier">
     <xsl:copy>
       <xsl:copy-of select="@* except @type"/>
@@ -661,7 +680,8 @@
   
   <!-- If $move-notes-to-anchors is toggled on, anchored notes are suppressed where 
     they appeared in the XML, and copied alongside their referencing context. -->
-  <xsl:template match="hyperDiv/notes/note[@xml:id][$move-notes-to-anchors]" mode="unifier">
+  <xsl:template match="note[@xml:id][$move-notes-to-anchors]
+                           [exists(parent::notes) or not(exists(parent::*))]" mode="unifier">
     <xsl:param name="is-anchored" select="false()" as="xs:boolean"/>
     <xsl:choose>
       <xsl:when test="$is-anchored">
@@ -698,7 +718,7 @@
     <xsl:param name="unmoved-notes" as="node()*" tunnel="yes"/>
     <xsl:variable name="idref" select="concat('#', @xml:id)"/>
     <xsl:choose>
-      <xsl:when test="$idref = $unmoved-notes/@sameAs">
+      <xsl:when test="$idref = $unmoved-notes/@sameAs/data(.)">
         <xsl:copy>
           <xsl:copy-of select="@* except (@resp[starts-with(., 'fulltextBot')], @subtype)"/>
           <xsl:copy-of select="$unmoved-notes[@sameAs eq $idref]/node()"/>
