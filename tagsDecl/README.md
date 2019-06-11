@@ -6,6 +6,7 @@ This directory holds routines that operate on or help with the TEI `<tagsDecl>`.
 ## Table of Contents
 * [find specific renditional defaults](#find_specific_renditional_defaults.xslt)
 * [generate tagsDecl](#generateTagsdecl.xslt)
+* [generate a regexp to validate `@selector`](#valsel)
 
 ## [find_specific_renditional_defaults.xslt](./find_specific_renditional_defaults.xslt)
 
@@ -47,3 +48,11 @@ Note that the useful output is sent to the message area; the actual output files
 ## [generate_tagsDecl.xslt](./generate_tagsDecl.xslt)
 
 This is an XSLT 1.0 program that read in a TEI P5 document and writes out a complete `&lt;tagsDecl> element that reflects its encoding.
+
+## [valsel](./CSS3_selector_regex_generator.perl)
+
+This is a Perl program that generates a regular expression which can be used in your ODD file to validate that the value of an attribute (in particular, the `@selector` attribute of `<rendition>`) is proper CSS3.
+
+It also generates a RELAX NG grammar (or an XSLT program) that can be used to test the regular expression.
+
+Just run the Perl program. It takes no parameters nor input. It writes the regular expression alone to STDERR and as part of a self-testing RELAX NG grammer to STDOUT. Thus a typical invocation might be `CSS3_selector_regex_generator.perl 2> ~/Documents/selector_regex.txt > /tmp/test_selector_regex.rng`.
