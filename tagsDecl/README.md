@@ -4,9 +4,9 @@
 This directory holds routines that operate on or help with the TEI `<tagsDecl>`.
 
 ## Table of Contents
-* [find specific renditional defaults](#find_specific_renditional_defaults.xslt)
-* [generate tagsDecl](#generateTagsdecl.xslt)
-* [generate a regexp to validate `@selector`](#CSS3_selector_regex_generator.perl)
+* [find specific renditional defaults](#find_specific_renditional_defaultsxslt)
+* [generate tagsDecl](#generateTagsdeclxslt)
+* [generate a regexp to validate `@selector`](#CSS3_selector_regex_generatorperl)
 
 ## [find_specific_renditional_defaults.xslt](./find_specific_renditional_defaults.xslt)
 
