@@ -100,7 +100,7 @@ if (!file.exists(w2vBin)) {
 You don't need to run this if you want to work with a file you just trained; but if you would like to switch models or read-in an existing one after starting a new session, this is the code you would use.
  
 ```{r}
-w2vModel = read.vectors("data/name_of_your_file.bin")
+w2vModel <- read.vectors("data/name_of_your_file.bin")
 
 ```
 
@@ -116,22 +116,23 @@ w2vModel %>% plot(perplexity=10)
 
 ```{r}
 
-centers = 150
-clustering = kmeans(w2vModel,centers=centers,iter.max = 40)
+centers <- 150
+clustering <- kmeans(w2vModel, centers=centers, iter.max=40)
 
-sapply(sample(1:centers,10),function(n) {
-  names(clustering$cluster[clustering$cluster==n][1:10])
+sapply(sample(1:centers, 10), function(n) {
+  names(clustering$cluster[clustering$cluster==n][1:15])
 })
+
 ```
 
 ## Closest To
 
 ```{r}
 #To have the results appear in the console below
-w2vModel %>% closest_to('girl', 30) 
+w2vModel %>% closest_to("girl", 30) 
 
 #To view the results in a separate tab
-w2vModel %>% closest_to('girl', 30) %>% View()
+w2vModel %>% closest_to("girl", 30) %>% View()
 
 ```
 
@@ -140,7 +141,7 @@ w2vModel %>% closest_to('girl', 30) %>% View()
 
 ```{r}
 
-w2vModel %>% closest_to(~'girl'+'woman',20) 
+w2vModel %>% closest_to(~"girl"+"woman", 20)
 
 ```
 
@@ -148,7 +149,7 @@ w2vModel %>% closest_to(~'girl'+'woman',20)
 
 ```{r}
 
-w2vModel %>% closest_to(~'woman'-'man',20)
+w2vModel %>% closest_to(~"man"-"woman", 20)
 
 ```
 
@@ -156,11 +157,35 @@ w2vModel %>% closest_to(~'woman'-'man',20)
 
 ```{r}
 
-w2vModel %>% closest_to(~'king'-'man'+'woman',20)
+w2vModel %>% closest_to(~"king"-"man"+"woman", 20)
 
 ```
 
+##Export Queries
+```{r}
 
+w2vExport <- w2vModel %>% closest_to("girl", 30) 
+
+#Change "name_of_your_query" to a descriptive name that you want to give to your export file.
+write.csv(file="output/name_of_your_query.csv", x=w2vExport)
+
+
+```
+
+##Export Clusters
+```{r}
+
+centers <- 150
+clustering <- kmeans(w2vModel,centers=centers,iter.max = 40)
+
+#Change "name_of_your_query" to a descriptive name that you want to give to your export file.
+w2vExport <-sapply(sample(1:centers,150),function(n) {
+  names(clustering$cluster[clustering$cluster==n][1:15])
+})
+
+write.csv(file="output/name_of_your_cluster.csv", x=w2vExport)
+
+```
 ## Evaluate the Model
 
 You can run this test by hitting `command-return` or `control-return` to run one line a time, or just hit the green button in the top right of the code block below. 
@@ -220,7 +245,7 @@ results <- structure(data_list,
                      row.names = rownames
 )
 
-write.csv(file="results.csv", x=results)
+write.csv(file="output/model-test-results.csv", x=results)
 
 ```
 
