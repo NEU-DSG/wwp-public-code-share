@@ -269,7 +269,7 @@ w2vModel = read.vectors("data/name_of_your_file.bin")
 
 ```
 
-##Export Queries
+## Export Queries
 The code below will enable you to export the results from a particular query. To export query results, all you need to do is change the part after "w2vModel %>%" to match the query that you want to export. An example is filled in so that you can see what this looks like; to export the terms closest to a particular query term, you just need to change the text inside of the quotation marks. You can also adjust the number of words in the results set, if you want to see more or fewer. If you'd like to export results from a different query, such as addition or subtraction, just paste over the example query with the one that you want to export. 
 
 The first line of code defines the variable "w2vExport" as whatever query you set. The second line actually exports a csv file (which you can open in any program on your computer that works with tabular data). You can call the file whatever you like by replacing the template text inside of the quotation marks. The csv file will be exported to the "output" folder in your current working directory, and the default is *not* to override any existing files with the same name, so if you do want to override one of those, delete it first. 
@@ -284,7 +284,7 @@ write.csv(file="output/name_of_your_query.csv", x=w2vExport)
 
 ```
 
-##Export Clusters
+## Export Clusters
 You can use a similar method to export your clusters; the code below will first generate a set of clusters and then export a specified (by you) number of terms from those clusters. As above, you can change the number of centers and iterations when you are generating the clusters; you can also change how many sets of clusters and words from each cluster to export. The exporting mechanism is the same as with exporting queries above; you just change the language in the quotation marks to match the name that you want to give your file. 
 
 ```{r}
