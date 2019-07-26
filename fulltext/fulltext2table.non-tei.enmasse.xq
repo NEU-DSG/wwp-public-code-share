@@ -5,19 +5,42 @@ xquery version "3.1";
  : generate one table per TEI document, using an 'XML with XQuery' transformation to 
  : dynamically change the context node.
  :
- : The $ELEMENTS variable gives control over which TEI elements should be output via 
+ : The $ELEMENTS variable gives control over which elements should be output via 
  : XPath.
  :
  : @return tab-delimited text
  :
  : @author Ashley M. Clark and Sarah Connell, Northeastern University Women Writers Project
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
- : @version 1.1
+ : @version 1.2
  :
- :
- :  2019-07-17: v1.1. Tweak language in comments and this header. Fix bug in 
+ : Changelog:
+ :  2019-07-26: v1.2. Added MIT License. Removed "werr" namespace declaration.
+ :  2019-07-17: v1.1. Tweaked language in comments and this header. Fixed bug in 
  :    local:add-spaces(); non-element nodes were being treated as elements.
  :  2019-06-19: v1.0. Created from fulltext2table.enmasse.xq.
+ :
+ : MIT License
+ :
+ : Copyright (c) 2019 Northeastern University Women Writers Project
+ : 
+ : Permission is hereby granted, free of charge, to any person obtaining a copy
+ : of this software and associated documentation files (the "Software"), to deal
+ : in the Software without restriction, including without limitation the rights
+ : to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ : copies of the Software, and to permit persons to whom the Software is
+ : furnished to do so, subject to the following conditions:
+ :
+ : The above copyright notice and this permission notice shall be included in all
+ : copies or substantial portions of the Software.
+ :
+ : THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ : IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ : FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ : AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ : LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ : OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ : SOFTWARE.
  :)
 
 (:  NAMESPACES  :)
