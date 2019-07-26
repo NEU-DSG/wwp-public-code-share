@@ -200,8 +200,8 @@ w2vModel %>% plot(perplexity=10)
 The following script provides a way to cluster words that are near each other in vector space, using the k-means clustering algorithm. Below, we choose 150 `centers`, or 150 points around which to cluster words. Then we select ten random clusters and 15 words from each cluster to view. This code will also take a minute or two to run. You can change the number of centers, number of clusters to view, or the number of words to see—you can also increase the number of iterations (the number of times the algorithm should adjust where the centers are and where terms are positioned in relationship to those centers).
 
 ```{r}
-centers = 150
-clustering = kmeans(w2vModel, centers=centers, iter.max=40)
+centers <- 150
+clustering <- kmeans(w2vModel, centers=centers, iter.max=40)
 
 sapply(sample(1:centers, 10), function(n) {
   names(clustering$cluster[clustering$cluster==n][1:15])
@@ -215,7 +215,7 @@ sapply(sample(1:centers, 10), function(n) {
 To find the words closest to a particular word in vector space, fill in that term and then run the code below. If you want to see more words, just increase the number. Make sure not to delete the quotation marks, and enter your word in lowercase. 
 
 ```{r}
-w2vModel %>% closest_to('girl', 30) 
+w2vModel %>% closest_to("girl", 30) 
 
 ```
 
@@ -226,7 +226,7 @@ You might also want to see the words closest to a combination of two (or more) w
 
 ```{r}
 
-w2vModel %>% closest_to(~'girl'+'woman', 20) %>% View()
+w2vModel %>% closest_to(~"girl"+"woman", 20) %>% View()
 
 ```
 
@@ -237,7 +237,7 @@ Or, you might want to look at the space between two terms, to see which words ar
 
 ```{r}
 
-w2vModel %>% closest_to(~'man'-'woman', 20) %>% View()
+w2vModel %>% closest_to(~"man"-"woman", 20) %>% View()
 
 ```
 
@@ -248,7 +248,7 @@ You can even construct analogies, such as in the example below; these use vector
 
 ```{r}
 
-w2vModel %>% closest_to(~'king'-'man'+'woman', 20) %>%  View()
+w2vModel %>% closest_to(~"king"-"man"+"woman", 20) %>%  View()
 
 ```
 
@@ -269,10 +269,40 @@ w2vModel = read.vectors("data/name_of_your_file.bin")
 
 ```
 
+## Export Queries
+The code below will enable you to export the results from a particular query. To export query results, all you need to do is change the part after "w2vModel %>%" to match the query that you want to export. An example is filled in so that you can see what this looks like; to export the terms closest to a particular query term, you just need to change the text inside of the quotation marks. You can also adjust the number of words in the results set, if you want to see more or fewer. If you'd like to export results from a different query, such as addition or subtraction, just paste over the example query with the one that you want to export. 
 
+The first line of code defines the variable "w2vExport" as whatever query you set. The second line actually exports a csv file (which you can open in any program on your computer that works with tabular data). You can call the file whatever you like by replacing the template text inside of the quotation marks. The csv file will be exported to the "output" folder in your current working directory, and the default is *not* to override any existing files with the same name, so if you do want to override one of those, delete it first. 
+
+```{r}
+
+w2vExport <- w2vModel %>% closest_to("girl", 30) 
+
+#Change "name_of_your_query" to a descriptive name that you want to give to your export file.
+write.csv(file="output/name_of_your_query.csv", x=w2vExport)
+
+
+```
+
+## Export Clusters
+You can use a similar method to export your clusters; the code below will first generate a set of clusters and then export a specified (by you) number of terms from those clusters. As above, you can change the number of centers and iterations when you are generating the clusters; you can also change how many sets of clusters and words from each cluster to export. The exporting mechanism is the same as with exporting queries above; you just change the language in the quotation marks to match the name that you want to give your file. 
+
+```{r}
+
+centers <- 150
+clustering <- kmeans(w2vModel,centers=centers,iter.max = 40)
+
+#Change "name_of_your_query" to a descriptive name that you want to give to your export file.
+w2vExport <-sapply(sample(1:centers,150),function(n) {
+  names(clustering$cluster[clustering$cluster==n][1:15])
+})
+
+write.csv(file="output/name_of_your_cluster.csv", x=w2vExport)
+
+```
 ## Evaluate the Model
 
-Below is a very simple test that will calculate the cosine similarities for a small and generic set of word pairs that are likely to be related in many models. You can customize this list for your own corpus by editing the pairs below, or even adding new ones (add as many as you like, but just make sure to follow the same format as in the examples below). This code will produce a "results.csv" file with cosine similarity scores on these word pairs for every model in your folder (so, if your folder is very crowded, this will take a bit of time to run). This is meant to be an example of the kinds of testing that are used in model evaluation, and is not a substitute for more rigorous testing processes. 
+Below is a very simple test that will calculate the cosine similarities for a small set of word pairs that are likely to be related in many models. You can customize this list for your own corpus by editing the pairs below, or even adding new ones (add as many as you like, but just make sure to follow the same format as in the examples below). This code will produce a "model-test-results.csv" file with cosine similarity scores on these word pairs for every model in your folder (so, if your folder is very crowded, this will take a bit of time to run). The results file will be in the "output" folder of your current working directory, and the default is *not* to override any existing files with the same name, so if you do want to override one of those, delete it first. This is meant to be an example of the kinds of testing that are used in model evaluation, and is not a substitute for more rigorous testing processes. 
 
 There's one additional package you'll need for this test; the line of code below installs it. You don't need to run this code again, after you've installed the package.
 
@@ -341,7 +371,8 @@ results <- structure(data_list,
                      row.names = rownames
 )
 
-write.csv(file="results.csv", x=results)
+#If you want to give your results document a more specific name; you can edit "model-test-results" below. 
+write.csv(file="output/model-test-results.csv", x=results)
 
 ```
 
