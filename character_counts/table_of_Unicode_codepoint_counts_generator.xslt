@@ -4,6 +4,7 @@
   xmlns:out="http://www.w3.org/1999/XSL/Transform-NOT!"
   xmlns:map="http://www.w3.org/2005/xpath-functions/map"
   xmlns:doc="http://www.oxygenxml.com/ns/doc/xsl-NOT!"
+  xmlns:ucd="http://www.unicode.org/ns/2003/ucd/1.0"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:in="http://www.example.edu/no_matter,_input_not_actually_read"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -68,14 +69,17 @@
         <doc:doc scope="stylesheet">
           <doc:desc>
             <doc:p><doc:b>Author:</doc:b> syd</doc:p>
-            <doc:p>Read in a <xsl:value-of select="$scheme"/> file and write out an HTML table the characters therein.
-              What counts as a character is based on the various parameters, below.</doc:p>
+            <doc:p>Read in a <xsl:value-of select="$scheme"/> file and
+            write out an HTML table the characters therein. What
+            counts as a character is based on the various parameters,
+            below.</doc:p>
             <doc:ul>
-              <doc:li>attrs: <doc:ul>
-                  <doc:li>attrs=0 means drop <doc:i>all</doc:i> attributes</doc:li>
-                <xsl:choose>
-                  <xsl:when test="$scheme eq 'TEI'">
-                    <doc:li>attrs=1 means drop all attributes except:
+	      <doc:li>attrs:
+	      <doc:ul>
+		<doc:li>attrs=0 means drop <doc:i>all</doc:i> attributes</doc:li>
+		<xsl:choose>
+		  <xsl:when test="$scheme eq 'TEI'">
+		    <doc:li>attrs=1 means drop all attributes except:
                       <doc:ul>
                         <doc:li>@assertedValue iff @locus is "value"</doc:li>
                         <doc:li>@baseForm</doc:li>
@@ -159,9 +163,10 @@
         <out:param name="fileName" select="tokenize(document-uri(/), '/')[last()]"/>
         <out:param name="UCD" select='{"&apos;"||$UCD||"&apos;"}'/>
         <doc:doc>
-          <doc:desc>The following 2 parameters (protect open paren &amp; protected close paren)
-            should each be set to a character string that will
-            <doc:b>never</doc:b> occur in an input document</doc:desc>
+          <doc:desc>The following 2 parameters (protect open paren
+          &amp; protect close paren) should each be set to a character
+          string that will <doc:b>never</doc:b> occur in an input
+          document</doc:desc>
         </doc:doc>
         <out:param name="pop" select="'&#xFF08;'"/>
         <out:param name="pcp" select="'&#xFF09;'"/>
@@ -170,6 +175,16 @@
         </doc:doc>
         <out:variable name="rlop" select="'\\\('"/>
         <out:variable name="rlcp" select="'\\\)'"/>
+        <out:variable name="ucd">
+          <out:choose>
+            <out:when test="doc-available(&#x24;UCD)">
+              <out:copy-of select="document(&#x24;UCD)"/>
+            </out:when>
+            <out:otherwise>
+              <ucd:char>Unicode character name not available</ucd:char>
+            </out:otherwise>
+          </out:choose>
+        </out:variable>
 
         <out:output method="xhtml" indent="yes"/>
 
@@ -289,23 +304,46 @@
                     <th>count</th>
                     <th>codepoint</th>
                     <th>character</th>
+                    <th>character name</th>
                   </tr>
                 </thead>
                 <tbody>
                   <out:for-each select="map:keys($count_by_decimal_char_num)">
+                    <out:variable name="hexNum"
+                      select="wf:decimal2hexDigits(.) ! translate(., '&#x20;', '') => string-join()"/>
+                    <out:variable name="hexNum4digit"
+                      select="substring('0000', string-length($hexNum) + 1) || $hexNum"/>
                     <tr>
                       <td class="cnt">
                         <out:value-of select="$count_by_decimal_char_num(.)"/>
                       </td>
                       <td class="Ucp">
-                        <out:variable name="hexNum"
-                          select="wf:decimal2hexDigits(.) ! translate(., '&#x20;', '') => string-join()"/>
-                        <out:variable name="hexNum4digit"
-                          select="substring('0000', string-length($hexNum) + 1) || $hexNum"/>
                         <out:value-of select="'U+' || $hexNum4digit"/>
                       </td>
                       <td class="chr">
                         <out:value-of select="codepoints-to-string(.)"/>
+                      </td>
+                      <td class="ucn">
+                        <out:variable name="thisChar" select="$ucd/ucd:ucd/ucd:repertoire/ucd:group/ucd:char[@cp eq &#x24;hexNum4digit]"/>
+                        <out:choose>
+                          <out:when test="$thisChar[@na  and  normalize-space(@na1) ne '']">
+                            <out:value-of select="$thisChar/@na||' or '||$thisChar/@na1"/>
+                          </out:when>
+                          <out:when test="$thisChar[@na or @na1]">
+                            <out:value-of select="( $thisChar/@na, $thisChar/@na1 )[1]"/>
+                          </out:when>
+                          <out:when test="$thisChar/parent::ucd:group[@na or normalize-space(@na1) ne '']">
+                            <out:choose>
+                              <out:when test="$thisChar/parent::ucd:group[@na and normalize-space(@na1) ne '']">
+                                <out:value-of select="$thisChar/parent::ucd:group/@na||' or '||$thisChar/parent::ucd:group/@na1"/>
+                              </out:when>
+                              <out:otherwise>
+                                <out:value-of select="$thisChar/parent::ucd:group/@na"/>
+                              </out:otherwise>
+                            </out:choose>
+                          </out:when>
+                          <out:otherwise>Unicode name not available</out:otherwise>
+                        </out:choose>
                       </td>
                     </tr>
                   </out:for-each>
@@ -400,15 +438,12 @@
             <xsl:attribute name="name" select="'{$keyword}'"/>
             <xsl:attribute name="select" select='"replace($keyw, &apos;#(rule|ornament)&apos;, &apos;&apos;)"'/>
           </out:attribute>
-            
-            
-            name="{$keyword}" select="replace($keyw, '#(rule|ornament)', '')"
         </out:template>
 
         <!--
-    This function modified from the template at
-    http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
-  -->
+	    This function modified from the template at
+	    http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
+	-->
         <out:function name="wf:decimal2hexDigits" as="xs:string+">
           <out:param name="number" as="xs:integer"/>
           <out:variable name="remainder" select="$number mod 16" as="xs:integer"/>
