@@ -1,0 +1,1034 @@
+<?xml version="1.0"?>
+<rng:grammar xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:teix="http://www.tei-c.org/ns/Examples" xmlns:rng="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://home.ccil.org/~cowan/ns/ibtwsh">
+<!--
+Schema generated from ODD source 2009-03-01T06:40:45-05:00. 
+TEI Edition: 1.3.0. Last updated on February 1st 2009.
+
+-->
+<!--Copyleft 2009 Syd Bauman-->
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_macro.anyXML">
+    <element>
+      <anyName/>
+      <zeroOrMore>
+        <choice>
+          <attribute>
+            <anyName/>
+          </attribute>
+          <text/>
+          <ref name="ibtwsh_macro.anyXML"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_horiz.model">
+    <zeroOrMore>
+      <choice>
+        <ref name="ibtwsh_horiz"/>
+        <text/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.canonical.attributes">
+    <ref name="att.canonical.attribute.key"/>
+    <ref name="att.canonical.attribute.ref"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.canonical.attribute.key">
+    <rng:optional>
+      <rng:attribute name="key">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">provides an externally-defined means
+ of identifying the entity (or entities) being named, using a coded value
+      of some kind.</a:documentation>
+        <data type="string"/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.canonical.attribute.ref">
+    <rng:optional>
+      <rng:attribute name="ref">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (reference) provides an explicit means of locating a full definition
+      for the entity being named by means of one or more URIs.</a:documentation>
+        <rng:list>
+          <rng:oneOrMore>
+            <data type="anyURI"/>
+          </rng:oneOrMore>
+        </rng:list>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attributes">
+    <ref name="att.dimensions.attribute.unit"/>
+    <ref name="att.dimensions.attribute.quantity"/>
+    <ref name="att.dimensions.attribute.extent"/>
+    <ref name="att.dimensions.attribute.atLeast"/>
+    <ref name="att.dimensions.attribute.atMost"/>
+    <ref name="att.dimensions.attribute.min"/>
+    <ref name="att.dimensions.attribute.max"/>
+    <ref name="att.dimensions.attribute.precision"/>
+    <ref name="att.dimensions.attribute.scope"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attribute.unit">
+    <rng:optional>
+      <rng:attribute name="unit">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">names the unit used for the measurement
+Suggested values include: 1] cm (centimetres); 2] mm (millimetres); 3] in (inches); 4] lines; 5] chars (characters)</a:documentation>
+        <rng:choice>
+          <rng:value>cm</rng:value>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(centimetres) </a:documentation>
+          <rng:value>mm</rng:value>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(millimetres) </a:documentation>
+          <rng:value>in</rng:value>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(inches) </a:documentation>
+          <rng:value>lines</rng:value>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">lines of text</a:documentation>
+          <rng:value>chars</rng:value>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(characters) characters of text</a:documentation>
+          <data type="Name"/>
+        </rng:choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attribute.quantity">
+    <rng:optional>
+      <rng:attribute name="quantity">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">specifies the length in the units specified</a:documentation>
+        <choice>
+          <data type="double"/>
+          <data type="decimal"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attribute.extent">
+    <rng:optional>
+      <rng:attribute name="extent">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">indicates the size of the object concerned using a
+      project-specific vocabulary combining quantity and units in a
+      single string of words.  </a:documentation>
+        <rng:list>
+          <rng:oneOrMore>
+            <data type="token">
+              <param name="pattern">(\p{L}|\p{N}|\p{P}|\p{S})+</param>
+            </data>
+          </rng:oneOrMore>
+        </rng:list>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attribute.atLeast">
+    <rng:optional>
+      <rng:attribute name="atLeast">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">gives a minimum  estimated value for the  measurement.</a:documentation>
+        <choice>
+          <data type="double"/>
+          <data type="decimal"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attribute.atMost">
+    <rng:optional>
+      <rng:attribute name="atMost">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">gives a maximum  estimated value for the  measurement.</a:documentation>
+        <choice>
+          <data type="double"/>
+          <data type="decimal"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attribute.min">
+    <rng:optional>
+      <rng:attribute name="min">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">where the measurement summarizes more than one
+      observation, supplies the minimum value observed.</a:documentation>
+        <choice>
+          <data type="double"/>
+          <data type="decimal"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attribute.max">
+    <rng:optional>
+      <rng:attribute name="max">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">where the measurement summarizes more than one
+      observation, supplies the maximum value observed.</a:documentation>
+        <choice>
+          <data type="double"/>
+          <data type="decimal"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attribute.precision">
+    <rng:optional>
+      <rng:attribute name="precision">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">characterizes the precision of the values specified by the
+      other attributes.</a:documentation>
+        <choice>
+          <value>high</value>
+          <value>medium</value>
+          <value>low</value>
+          <value>unknown</value>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.dimensions.attribute.scope">
+    <rng:optional>
+      <rng:attribute name="scope">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">where the measurement summarizes more than one
+      observation, specifies the applicability of this measurement.
+Sample values include: 1] all; 2] most; 3] range</a:documentation>
+        <data type="Name"/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.datable.w3c.attributes">
+    <ref name="att.datable.w3c.attribute.period"/>
+    <ref name="att.datable.w3c.attribute.when"/>
+    <ref name="att.datable.w3c.attribute.notBefore"/>
+    <ref name="att.datable.w3c.attribute.notAfter"/>
+    <ref name="att.datable.w3c.attribute.from"/>
+    <ref name="att.datable.w3c.attribute.to"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.datable.w3c.attribute.period">
+    <rng:optional>
+      <rng:attribute name="period">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">supplies a pointer to some location defining a named
+      period of time within which the datable item is understood to
+      have occurred.</a:documentation>
+        <data type="anyURI"/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.datable.w3c.attribute.when">
+    <rng:optional>
+      <rng:attribute name="when">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">supplies the value of the date or time in a standard form,
+      e.g. yyyy-mm-dd.</a:documentation>
+        <choice>
+          <data type="date"/>
+          <data type="gYear"/>
+          <data type="gMonth"/>
+          <data type="gDay"/>
+          <data type="gYearMonth"/>
+          <data type="gMonthDay"/>
+          <data type="time"/>
+          <data type="dateTime"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.datable.w3c.attribute.notBefore">
+    <rng:optional>
+      <rng:attribute name="notBefore">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">specifies the earliest possible date for the event in
+	  standard form, e.g. yyyy-mm-dd.</a:documentation>
+        <choice>
+          <data type="date"/>
+          <data type="gYear"/>
+          <data type="gMonth"/>
+          <data type="gDay"/>
+          <data type="gYearMonth"/>
+          <data type="gMonthDay"/>
+          <data type="time"/>
+          <data type="dateTime"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.datable.w3c.attribute.notAfter">
+    <rng:optional>
+      <rng:attribute name="notAfter">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">specifies the latest possible date for the event in
+	  standard form, e.g. yyyy-mm-dd.</a:documentation>
+        <choice>
+          <data type="date"/>
+          <data type="gYear"/>
+          <data type="gMonth"/>
+          <data type="gDay"/>
+          <data type="gYearMonth"/>
+          <data type="gMonthDay"/>
+          <data type="time"/>
+          <data type="dateTime"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.datable.w3c.attribute.from">
+    <rng:optional>
+      <rng:attribute name="from">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">indicates the starting point of the period in standard form, e.g. yyyy-mm-dd.</a:documentation>
+        <choice>
+          <data type="date"/>
+          <data type="gYear"/>
+          <data type="gMonth"/>
+          <data type="gDay"/>
+          <data type="gYearMonth"/>
+          <data type="gMonthDay"/>
+          <data type="time"/>
+          <data type="dateTime"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.datable.w3c.attribute.to">
+    <rng:optional>
+      <rng:attribute name="to">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">indicates the ending point of the period in standard
+	  form, e.g. yyyy-mm-dd.</a:documentation>
+        <choice>
+          <data type="date"/>
+          <data type="gYear"/>
+          <data type="gMonth"/>
+          <data type="gDay"/>
+          <data type="gYearMonth"/>
+          <data type="gMonthDay"/>
+          <data type="time"/>
+          <data type="dateTime"/>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.duration.w3c.attributes">
+    <ref name="att.duration.w3c.attribute.dur"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.duration.w3c.attribute.dur">
+    <rng:optional>
+      <rng:attribute name="dur">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(duration) indicates the length of this element in time.</a:documentation>
+        <data type="duration"/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.editLike.attributes">
+    <ref name="att.dimensions.attributes"/>
+    <ref name="att.editLike.attribute.cert"/>
+    <ref name="att.editLike.attribute.resp"/>
+    <ref name="att.editLike.attribute.evidence"/>
+    <ref name="att.editLike.attribute.source"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.editLike.attribute.cert">
+    <rng:optional>
+      <rng:attribute name="cert">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(certainty) signifies the degree of certainty associated with the
+	intervention or interpretation.</a:documentation>
+        <choice>
+          <value>high</value>
+          <value>medium</value>
+          <value>low</value>
+          <value>unknown</value>
+        </choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.editLike.attribute.resp">
+    <rng:optional>
+      <rng:attribute name="resp">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(responsible party) indicates the agency responsible for the
+	intervention or interpretation, for example an editor or transcriber.</a:documentation>
+        <rng:list>
+          <rng:oneOrMore>
+            <data type="anyURI"/>
+          </rng:oneOrMore>
+        </rng:list>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.editLike.attribute.evidence">
+    <rng:optional>
+      <rng:attribute name="evidence">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">indicates the nature of the evidence supporting the reliability or
+  accuracy of the intervention or interpretation.
+Suggested values include: 1] internal; 2] external; 3] conjecture</a:documentation>
+        <rng:choice>
+          <rng:value>internal</rng:value>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">there is internal evidence to support the intervention.</a:documentation>
+          <rng:value>external</rng:value>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">there is external evidence to support the intervention.</a:documentation>
+          <rng:value>conjecture</rng:value>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">the intervention or interpretation has been made by
+	    the editor, cataloguer, or scholar on the basis of their
+	    expertise.</a:documentation>
+          <data type="Name"/>
+        </rng:choice>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.editLike.attribute.source">
+    <rng:optional>
+      <rng:attribute name="source">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">contains a list of one or more pointers indicating the
+      sources which support the given reading.</a:documentation>
+        <rng:list>
+          <rng:oneOrMore>
+            <data type="anyURI"/>
+          </rng:oneOrMore>
+        </rng:list>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.naming.attributes">
+    <ref name="att.canonical.attributes"/>
+    <ref name="att.naming.attribute.nymRef"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="att.naming.attribute.nymRef">
+    <rng:optional>
+      <rng:attribute name="nymRef">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">(reference to the canonical name) provides a means of locating the canonical form
+      (nym) of the names associated with the object
+       named by
+      the element bearing it.</a:documentation>
+        <rng:list>
+          <rng:oneOrMore>
+            <data type="anyURI"/>
+          </rng:oneOrMore>
+        </rng:list>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="all.attributes">
+    <ref name="all.attribute.id"/>
+    <ref name="all.attribute.class"/>
+    <ref name="all.attribute.style"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="all.attribute.id">
+    <rng:optional>
+      <rng:attribute name="id">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+        <data type="ID"/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="all.attribute.class">
+    <rng:optional>
+      <rng:attribute name="class">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+        <rng:list>
+          <rng:oneOrMore>
+            <data type="token">
+              <param name="pattern">(\p{L}|\p{N}|\p{P}|\p{S})+</param>
+            </data>
+          </rng:oneOrMore>
+        </rng:list>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="all.attribute.style">
+    <rng:optional>
+      <rng:attribute name="style">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+        <text/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="i18n.attributes">
+    <ref name="i18n.attribute.lang"/>
+    <ref name="i18n.attribute.dir"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="i18n.attribute.lang">
+    <rng:optional>
+      <rng:attribute name="lang">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+        <data type="language"/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="i18n.attribute.dir">
+    <rng:optional>
+      <rng:attribute xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" name="dir" a:defaultValue="ltr">
+        <a:documentation/>
+        <data type="Name"/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="basic.attributes">
+    <ref name="i18n.attributes"/>
+    <ref name="all.attributes"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="align.attributes">
+    <ref name="align.attribute.align"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="align.attribute.align">
+    <rng:optional>
+      <rng:attribute name="align">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+        <data type="Name"/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="compact.attributes">
+    <ref name="compact.attribute.compact"/>
+    <empty/>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="compact.attribute.compact">
+    <rng:optional>
+      <rng:attribute name="compact">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+        <data type="Name"/>
+      </rng:attribute>
+    </rng:optional>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_local">
+    <rng:choice>
+      <ref name="ibtwsh_CITE"/>
+      <ref name="ibtwsh_CODE"/>
+      <ref name="ibtwsh_DFN"/>
+      <ref name="ibtwsh_EM"/>
+      <ref name="ibtwsh_KBD"/>
+      <ref name="ibtwsh_SAMP"/>
+      <ref name="ibtwsh_STRONG"/>
+      <ref name="ibtwsh_VAR"/>
+      <ref name="ibtwsh_ABBR"/>
+      <ref name="ibtwsh_ACRONYM"/>
+      <ref name="ibtwsh_BIG"/>
+      <ref name="ibtwsh_SMALL"/>
+    </rng:choice>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_horiz">
+    <rng:choice>
+      <ref name="ibtwsh_local"/>
+      <ref name="ibtwsh_A"/>
+      <ref name="ibtwsh_BR"/>
+      <ref name="ibtwsh_SPAN"/>
+      <ref name="ibtwsh_XML"/>
+    </rng:choice>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_headers">
+    <rng:choice>
+      <ref name="ibtwsh_H1"/>
+      <ref name="ibtwsh_H2"/>
+      <ref name="ibtwsh_H3"/>
+    </rng:choice>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_vert">
+    <rng:choice>
+      <ref name="ibtwsh_horiz"/>
+    </rng:choice>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_struct">
+    <rng:choice>
+      <ref name="ibtwsh_headers"/>
+      <ref name="ibtwsh_ADDRESS"/>
+    </rng:choice>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_CITE">
+    <element name="CITE">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Citation (italics)</a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_CODE">
+    <element name="CODE">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Source code (monowidth)</a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_DFN">
+    <element name="DFN">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Terms being defined (normal) </a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_EM">
+    <element name="EM">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Emphasis (italics) </a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_KBD">
+    <element name="KBD">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Keyboard input </a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_SAMP">
+    <element name="SAMP">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Sample output text (monowidth)</a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_STRONG">
+    <element name="STRONG">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Strong emphasis (boldface)</a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_VAR">
+    <element name="VAR">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Variable names (italics)</a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_ABBR">
+    <element name="ABBR">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Abbreviations (normal)</a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_ACRONYM">
+    <element name="ACRONYM">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Acronyms (normal)</a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_BIG">
+    <element name="BIG">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Text importance (change of size)</a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_SMALL">
+    <element name="SMALL">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_A">
+    <element name="A">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Hypertext anchors) CONSTRAINT: A elements are not allowed inside other A elements, a fact that this
+	  schema does not express.</a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <rng:optional>
+        <rng:attribute name="href">
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+          <data type="anyURI"/>
+        </rng:attribute>
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="name">
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+          <data type="ID"/>
+        </rng:attribute>
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="rel">
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Sorry, unable to create schema that uses actual counts minOccurs=1 and maxOccurs=15; approximating to minOccurs=1 and maxOccurs=unbounded.</a:documentation>
+          <rng:list>
+            <rng:choice>
+              <rng:value>Alternate</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Designates substitute versions for the document in which the link occurs.
+		  When used together with the lang attribute, it implies a translated version of
+		  the document. When used together with the media attribute, it implies a version
+		  designed for a different medium (or media).</a:documentation>
+              <rng:value>Stylesheet</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to an external style sheet. See the section on external style sheets
+		  for details. This is used together with the link type "Alternate" for
+		  user-selectable alternate style sheets.</a:documentation>
+              <rng:value>Start</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to the first document in a collection of documents. This link type
+		  tells search engines which document is considered by the author to be the
+		  starting point of the collection.</a:documentation>
+              <rng:value>Next</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to the next document in a linear sequence of documents. User agents
+		  may choose to preload the "next" document, to reduce the perceived load
+		  time.</a:documentation>
+              <rng:value>Prev</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to the previous document in an ordered series of documents. Some user
+		  agents also support the synonym "Previous".</a:documentation>
+              <rng:value>Contents</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as a table of contents. Some user agents also
+		  support the synonym ToC (from "Table of Contents").</a:documentation>
+              <rng:value>Index</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document providing an index for the current document.</a:documentation>
+              <rng:value>Glossary</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document providing a glossary of terms that pertain to the
+		  current document.</a:documentation>
+              <rng:value>Copyright</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a copyright statement for the current document.</a:documentation>
+              <rng:value>Chapter</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as a chapter in a collection of
+		  documents.</a:documentation>
+              <rng:value>Section</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as a section in a collection of
+		  documents.</a:documentation>
+              <rng:value>Subsection</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as a subsection in a collection of
+		  documents.</a:documentation>
+              <rng:value>Appendix</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as an appendix in a collection of
+		  documents.</a:documentation>
+              <rng:value>Help</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document offering help (more information, links to other sources
+		  information, etc.)</a:documentation>
+              <rng:value>Bookmark</rng:value>
+              <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a bookmark. A bookmark is a link to a key entry point within an
+		  extended document. The title attribute may be used, for example, to label the
+		  bookmark. Note that several bookmarks may be defined in each document.</a:documentation>
+            </rng:choice>
+            <rng:zeroOrMore>
+              <rng:choice>
+                <rng:value>Alternate</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Designates substitute versions for the document in which the link occurs.
+		  When used together with the lang attribute, it implies a translated version of
+		  the document. When used together with the media attribute, it implies a version
+		  designed for a different medium (or media).</a:documentation>
+                <rng:value>Stylesheet</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to an external style sheet. See the section on external style sheets
+		  for details. This is used together with the link type "Alternate" for
+		  user-selectable alternate style sheets.</a:documentation>
+                <rng:value>Start</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to the first document in a collection of documents. This link type
+		  tells search engines which document is considered by the author to be the
+		  starting point of the collection.</a:documentation>
+                <rng:value>Next</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to the next document in a linear sequence of documents. User agents
+		  may choose to preload the "next" document, to reduce the perceived load
+		  time.</a:documentation>
+                <rng:value>Prev</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to the previous document in an ordered series of documents. Some user
+		  agents also support the synonym "Previous".</a:documentation>
+                <rng:value>Contents</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as a table of contents. Some user agents also
+		  support the synonym ToC (from "Table of Contents").</a:documentation>
+                <rng:value>Index</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document providing an index for the current document.</a:documentation>
+                <rng:value>Glossary</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document providing a glossary of terms that pertain to the
+		  current document.</a:documentation>
+                <rng:value>Copyright</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a copyright statement for the current document.</a:documentation>
+                <rng:value>Chapter</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as a chapter in a collection of
+		  documents.</a:documentation>
+                <rng:value>Section</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as a section in a collection of
+		  documents.</a:documentation>
+                <rng:value>Subsection</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as a subsection in a collection of
+		  documents.</a:documentation>
+                <rng:value>Appendix</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document serving as an appendix in a collection of
+		  documents.</a:documentation>
+                <rng:value>Help</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a document offering help (more information, links to other sources
+		  information, etc.)</a:documentation>
+                <rng:value>Bookmark</rng:value>
+                <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Refers to a bookmark. A bookmark is a link to a key entry point within an
+		  extended document. The title attribute may be used, for example, to label the
+		  bookmark. Note that several bookmarks may be defined in each document.</a:documentation>
+              </rng:choice>
+            </rng:zeroOrMore>
+          </rng:list>
+        </rng:attribute>
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="title">
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+          <text/>
+        </rng:attribute>
+      </rng:optional>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_BR">
+    <element name="BR">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Mandatory line breaks </a:documentation>
+      <rng:empty/>
+      <ref name="all.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_SPAN">
+    <element name="SPAN">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Spans of text with changes in basic attributes </a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_XML">
+    <element name="XML">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Arbitrary embedded XML (not HTML-compatible yet) </a:documentation>
+      <zeroOrMore>
+        <element>
+          <rng:anyName/>
+          <zeroOrMore>
+            <ref name="ibtwsh_macro.anyXML"/>
+          </zeroOrMore>
+        </element>
+      </zeroOrMore>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_H1">
+    <element name="H1">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="align.attributes"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_H2">
+    <element name="H2">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="align.attributes"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_H3">
+    <element name="H3">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="align.attributes"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_DL">
+    <element name="DL">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Definition list ) </a:documentation>
+      <oneOrMore>
+        <choice>
+          <ref name="ibtwsh_DT"/>
+          <ref name="ibtwsh_DD"/>
+        </choice>
+      </oneOrMore>
+      <ref name="compact.attributes"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_DT">
+    <element name="DT">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Defined term ) </a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_DD">
+    <element name="DD">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Definition ) </a:documentation>
+      <zeroOrMore>
+        <ref name="ibtwsh_vert"/>
+      </zeroOrMore>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_OL">
+    <element name="OL">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Ordered list ) </a:documentation>
+      <oneOrMore>
+        <ref name="ibtwsh_LI"/>
+      </oneOrMore>
+      <ref name="compact.attributes"/>
+      <ref name="basic.attributes"/>
+      <rng:optional>
+        <rng:attribute name="start">
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+          <data type="NMTOKEN"/>
+        </rng:attribute>
+      </rng:optional>
+      <rng:optional>
+        <rng:attribute name="type">
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+          <data type="token">
+            <param name="pattern">1|a|A|i|I</param>
+          </data>
+        </rng:attribute>
+      </rng:optional>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_UL">
+    <element name="UL">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Unordered list ) </a:documentation>
+      <oneOrMore>
+        <ref name="ibtwsh_LI"/>
+      </oneOrMore>
+      <ref name="compact.attributes"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_DIR">
+    <element name="DIR">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Directory (minimal) list </a:documentation>
+      <oneOrMore>
+        <ref name="ibtwsh_LI"/>
+      </oneOrMore>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_LI">
+    <element name="LI">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">List element </a:documentation>
+      <zeroOrMore>
+        <ref name="ibtwsh_vert"/>
+      </zeroOrMore>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_ADDRESS">
+    <element name="ADDRESS">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Address block </a:documentation>
+      <zeroOrMore>
+        <choice>
+          <ref name="ibtwsh_horiz"/>
+          <ref name="ibtwsh_P"/>
+        </choice>
+      </zeroOrMore>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_BLOCKQUOTE">
+    <element name="BLOCKQUOTE">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Block quotation ) </a:documentation>
+      <zeroOrMore>
+        <ref name="ibtwsh_struct"/>
+      </zeroOrMore>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_DIV">
+    <element name="DIV">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">General text division </a:documentation>
+      <zeroOrMore>
+        <ref name="ibtwsh_struct"/>
+      </zeroOrMore>
+      <ref name="align.attributes"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_HR">
+    <element name="HR">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Horizontal rule ) </a:documentation>
+      <rng:empty/>
+      <ref name="all.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_P">
+    <element name="P">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Paragraph ) </a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_PRE">
+    <element name="PRE">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"> (Preformatted text ) </a:documentation>
+      <rng:ref name="ibtwsh_horiz.model"/>
+      <ref name="basic.attributes"/>
+      <rng:optional>
+        <rng:attribute name="width">
+          <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+          <data type="NMTOKEN"/>
+        </rng:attribute>
+      </rng:optional>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_HTML">
+    <element name="HTML">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+      <optional>
+        <ref name="ibtwsh_HEAD"/>
+      </optional>
+      <rng:ref name="ibtwsh_BODY"/>
+      <ref name="i18n.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_HEAD">
+    <element name="HEAD">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+      <choice>
+        <group>
+          <ref name="ibtwsh_TITLE"/>
+          <optional>
+            <ref name="ibtwsh_STYLE"/>
+          </optional>
+        </group>
+        <group>
+          <ref name="ibtwsh_STYLE"/>
+          <ref name="ibtwsh_TITLE"/>
+        </group>
+      </choice>
+      <ref name="i18n.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_TITLE">
+    <element name="TITLE">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+      <rng:text/>
+      <ref name="i18n.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_STYLE">
+    <element name="STYLE">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+      <rng:text/>
+      <ref name="i18n.attributes"/>
+      <rng:attribute name="type">
+        <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+        <text/>
+      </rng:attribute>
+      <empty/>
+    </element>
+  </define>
+  <define xmlns="http://relaxng.org/ns/structure/1.0" name="ibtwsh_BODY">
+    <element name="BODY">
+      <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"/>
+      <zeroOrMore>
+        <ref name="ibtwsh_struct"/>
+      </zeroOrMore>
+      <ref name="all.attributes"/>
+      <empty/>
+    </element>
+  </define>
+  <rng:start>
+    <rng:ref name="ibtwsh_HTML"/>
+  </rng:start>
+</rng:grammar>
