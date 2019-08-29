@@ -1,0 +1,765 @@
+<?xml version="1.0"?>
+<TEI xmlns:rng="http://relaxng.org/ns/structure/1.0" xmlns="http://www.tei-c.org/ns/1.0"
+     xml:lang="en">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+	<title>IBTWSHT</title>
+	<author>
+	  <name>John Cowan</name>
+	</author>
+	<respStmt>
+	  <resp>Converted from DTD to ODD</resp>
+	  <name>Syd Bauman</name>
+	</respStmt>
+      </titleStmt>
+      <publicationStmt>
+	<availability>
+	  <ab>Copyleft 2009 Syd Bauman</ab>
+	</availability>
+      </publicationStmt>
+      <sourceDesc>
+	<p>
+	  <ptr target="http://home.ccil.org/~cowan/XML/ibtwsh.dtd"/>
+	</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <front>
+      <divGen type="toc"/>
+    </front>
+    <body>
+      <p>This is an XML DTD which describes a subset of HTML 4.0 for embedded use within other XML
+      DTDs. It is by intention equivalent (within its scope) to -//W3C//DTD HTML 4.0
+      Transitional//EN, but is not a derived work in the copyright sense. (Brief excerpts from
+      HTML 4.0 Transitional appear here and there.)</p>
+      <p>It is often convenient for XML documents to have a bit of documentation somewhere in them.
+      In the absence of a DTD like this one, that documentation winds up being #PCDATA only, which
+      is a pity, because rich text adds measurably to the readability of documents. By
+      incorporating this DTD by reference (as an external parameter entity) into another DTD, that
+      DTD inherits the capabilities of this one. Using HTML-compatible elements and attributes
+      allows the documentation to be passed straight through to HTML renderers.</p>
+      <p>Current HTML renderers can cope with most XML tags, but empty tags require special
+      treatment. Inserting a space before the terminating "/>" usually makes the "/" (which is not
+      HTML) invisible. Using "&lt;TAG>&lt;/TAG>" is not as effective, as the latter is
+      often misinterpreted as a second "&lt;TAG>".</p>
+      <p>Note that since the elements of this DTD are intended to be used within domain-specific
+      elements of the surrounding DTD, there is no "root element" corresponding to the HTML
+      element in HTML. Recommended content models for elements containing documentation are
+      "%horiz.model;" for simple text fragments, and "%struct.model;" for documents in
+      extenso.</p>
+      <p>You can use the XML element to embed arbitrary XML content into elements declared in this
+      DTD. If you'd rather use some other element instead, define it (or a group of alternatives)
+      as the value of the parameter entity "ibtwsh.include".</p>
+      <p>Note on draft 4.0: This draft removes the ugly FONT element in favor of BIG and SMALL, and
+      no longer provides ways to set color, the support for which is broken in many browsers
+      anyhow.</p>
+      <p>Draft 5.0 adds support for using IBTWSH as a replacement for full HTML. It now defines the
+      elements HTML, HEAD, TITLE, STYLE, and BODY, with appropriate content models and attributes.
+      You can suppress these elements by defining the parameter entity "ibtwsh.document" as
+      "IGNORE".</p>
+      <schemaSpec ident="ibtwsh" docLang="en" xml:lang="en" prefix="ibtwsh_" targetLang="en"
+		  start="HTML" ns="http://home.ccil.org/~cowan/ns/ibtwsh">
+	<moduleRef key="tei"/>
+	<!-- ***************** -->
+	<!-- attribute classes -->
+	<!-- ***************** -->
+	<classSpec ident="att.global" mode="delete" type="atts"/>
+	<classSpec ident="all" type="atts">
+	  <desc>All elements (except full-document elements) have these attributes</desc>
+	  <attList>
+	    <attDef usage="opt" ident="id">
+	      <datatype>
+		<rng:data type="ID"/>
+	      </datatype>
+	    </attDef>
+	    <attDef usage="opt" ident="class">
+	      <datatype maxOccurs="unbounded">
+		<rng:ref name="data.word"/>
+	      </datatype>
+	    </attDef>
+	    <attDef usage="opt" ident="style">
+	      <datatype>
+		<rng:text/>
+	      </datatype>
+	    </attDef>
+	  </attList>
+	</classSpec>
+	<classSpec ident="i18n" type="atts">
+	  <desc>All non-empty elements have these attributes</desc>
+	  <attList>
+	    <attDef usage="opt" ident="lang">
+	      <datatype>
+		<rng:ref name="data.language"/>
+	      </datatype>
+	    </attDef>
+	    <attDef usage="opt" ident="dir">
+	      <datatype>
+		<rng:ref name="data.enumerated"/>
+	      </datatype>
+	      <defaultVal>ltr</defaultVal>
+	      <valList>
+		<valItem ident="ltr"/>
+		<valItem ident="rtl"/>
+	      </valList>
+	    </attDef>
+	  </attList>
+	</classSpec>
+	<classSpec ident="basic" type="atts">
+	  <classes>
+	    <memberOf key="i18n"/>
+	    <memberOf key="all"/>
+	  </classes>
+	</classSpec>
+	<classSpec type="atts" ident="align">
+	  <attList>
+	    <attDef ident="align" usage="opt">
+	      <datatype>
+		<rng:ref name="data.enumerated"/>
+	      </datatype>
+	      <valList>
+		<valItem ident="left"/>
+		<valItem ident="center"/>
+		<valItem ident="right"/>
+	      </valList>
+	    </attDef>
+	  </attList>
+	</classSpec>
+	<classSpec ident="compact" type="atts">
+	  <attList>
+	    <attDef ident="compact" usage="opt">
+	      <datatype>
+		<rng:ref name="data.enumerated"/>
+	      </datatype>
+	      <valList>
+		<valItem ident="compact"/>
+	      </valList>
+	    </attDef>
+	  </attList>
+	</classSpec>
+	<!-- ************* -->
+	<!-- model classes -->
+	<!-- ************* -->
+	<classSpec ident="local" type="model">
+	  <classes>
+	    <memberOf key="horiz"/>
+	  </classes>
+	</classSpec>
+	<classSpec ident="horiz" type="model">
+	  <classes>
+	    <memberOf key="vert"/>
+	  </classes>
+	</classSpec>
+	<classSpec ident="lists" type="model">
+	  <classes>
+	    <memberOf key="vert"/>
+	  </classes>
+	</classSpec>
+	<classSpec ident="blocks" type="model">
+	  <classes>
+	    <memberOf key="vert"/>
+	  </classes>
+	</classSpec>
+	<classSpec ident="headers" type="model">
+	  <classes>
+	    <memberOf key="struct"/>
+	  </classes>
+	</classSpec>
+	<classSpec ident="vert" type="model"/>
+	<classSpec ident="struct" type="model"/>
+	
+	<!-- ****** -->
+	<!-- macros -->
+	<!-- ****** -->
+	<macroSpec ident="horiz.model">
+	  <content>
+	    <rng:zeroOrMore>
+	      <rng:choice>
+		<rng:ref name="horiz"/>
+		<rng:text/>
+	      </rng:choice>
+	    </rng:zeroOrMore>
+	  </content>
+	</macroSpec>
+	<macroSpec type="pe" ident="macro.anyXML" module="tei" mode="change">
+	  <desc>defines a content model within which any XML elements are
+	  permitted</desc>
+	  <content>
+	    <element xmlns="http://relaxng.org/ns/structure/1.0">
+	      <anyName/>
+	      <zeroOrMore>
+		<choice>
+		  <attribute>
+		    <anyName/>
+		  </attribute>
+		  <text/>
+		  <ref name="macro.anyXML"/>
+		</choice>
+	      </zeroOrMore>
+	    </element>
+	  </content>
+	</macroSpec>
+
+	<!-- ******** -->
+	<!-- elements -->
+	<!-- ******** -->
+	<elementSpec ident="CITE">
+	  <desc>Citation (italics)</desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="CODE">
+	  <desc>Source code (monowidth)</desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="DFN">
+	  <desc>Terms being defined (normal) </desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="EM">
+	  <desc>Emphasis (italics) </desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="KBD">
+	  <desc>Keyboard input </desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="SAMP">
+	  <desc>Sample output text (monowidth)</desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="STRONG">
+	  <desc>Strong emphasis (boldface)</desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="VAR">
+	  <desc>Variable names (italics)</desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="ABBR">
+	  <desc>Abbreviations (normal)</desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="ACRONYM">
+	  <desc>Acronyms (normal)</desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="BIG">
+	  <desc>Text importance (change of size)</desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="SMALL">
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="local"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="A">
+	  <gloss>Hypertext anchors</gloss>
+	  <desc>CONSTRAINT: A elements are not allowed inside other A elements, a fact that this
+	  schema does not express.</desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="horiz"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	  <attList>
+	    <attDef ident="href" usage="opt">
+	      <datatype>
+		<rng:ref name="data.pointer"/>
+	      </datatype>
+	    </attDef>
+	    <attDef ident="name" usage="opt">
+	      <datatype>
+		<rng:data type="ID"/>
+	      </datatype>
+	    </attDef>
+	    <attDef ident="rel" usage="opt">
+	      <datatype maxOccurs="15">
+		<rng:ref name="data.enumerated"/>
+	      </datatype>
+	      <valList type="closed">
+		<valItem ident="Alternate">
+		  <desc>Designates substitute versions for the document in which the link occurs.
+		  When used together with the lang attribute, it implies a translated version of
+		  the document. When used together with the media attribute, it implies a version
+		  designed for a different medium (or media).</desc>
+		</valItem>
+		<valItem ident="Stylesheet">
+		  <desc>Refers to an external style sheet. See the section on external style sheets
+		  for details. This is used together with the link type "Alternate" for
+		  user-selectable alternate style sheets.</desc>
+		</valItem>
+		<valItem ident="Start">
+		  <desc>Refers to the first document in a collection of documents. This link type
+		  tells search engines which document is considered by the author to be the
+		  starting point of the collection.</desc>
+		</valItem>
+		<valItem ident="Next">
+		  <desc>Refers to the next document in a linear sequence of documents. User agents
+		  may choose to preload the "next" document, to reduce the perceived load
+		  time.</desc>
+		</valItem>
+		<valItem ident="Prev">
+		  <desc>Refers to the previous document in an ordered series of documents. Some user
+		  agents also support the synonym "Previous".</desc>
+		</valItem>
+		<valItem ident="Contents">
+		  <desc>Refers to a document serving as a table of contents. Some user agents also
+		  support the synonym ToC (from "Table of Contents").</desc>
+		</valItem>
+		<valItem ident="Index">
+		  <desc>Refers to a document providing an index for the current document.</desc>
+		</valItem>
+		<valItem ident="Glossary">
+		  <desc>Refers to a document providing a glossary of terms that pertain to the
+		  current document.</desc>
+		</valItem>
+		<valItem ident="Copyright">
+		  <desc>Refers to a copyright statement for the current document.</desc>
+		</valItem>
+		<valItem ident="Chapter">
+		  <desc>Refers to a document serving as a chapter in a collection of
+		  documents.</desc>
+		</valItem>
+		<valItem ident="Section">
+		  <desc>Refers to a document serving as a section in a collection of
+		  documents.</desc>
+		</valItem>
+		<valItem ident="Subsection">
+		  <desc>Refers to a document serving as a subsection in a collection of
+		  documents.</desc>
+		</valItem>
+		<valItem ident="Appendix">
+		  <desc>Refers to a document serving as an appendix in a collection of
+		  documents.</desc>
+		</valItem>
+		<valItem ident="Help">
+		  <desc>Refers to a document offering help (more information, links to other sources
+		  information, etc.)</desc>
+		</valItem>
+		<valItem ident="Bookmark">
+		  <desc>Refers to a bookmark. A bookmark is a link to a key entry point within an
+		  extended document. The title attribute may be used, for example, to label the
+		  bookmark. Note that several bookmarks may be defined in each document.</desc>
+		</valItem>
+	      </valList>
+	    </attDef>
+	    <attDef ident="title" usage="opt">
+	      <datatype>
+		<rng:text/>
+	      </datatype>
+	    </attDef>
+	  </attList>
+	</elementSpec>
+
+	<elementSpec ident="BR">
+	  <desc>Mandatory line breaks </desc>
+	  <classes>
+	    <memberOf key="all"/>
+	    <memberOf key="horiz"/>
+	  </classes>
+	  <content>
+	    <rng:empty/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="SPAN">
+	  <desc>Spans of text with changes in basic attributes </desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="horiz"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="XML">
+	  <desc>Arbitrary embedded XML (not HTML-compatible yet) </desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="horiz"/>
+	  </classes>
+	  <content>
+	    <rng:zeroOrMore>
+	      <rng:choice>
+		<rng:element>
+		  <rng:anyName/>
+		  <rng:zeroOrMore>
+		    <rng:ref name="macro.anyXML"/>
+		  </rng:zeroOrMore>
+		</rng:element>
+	      </rng:choice>
+	    </rng:zeroOrMore>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="H1">
+	  <classes>
+	    <memberOf key="align"/>
+	    <memberOf key="basic"/>
+	    <memberOf key="headers"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+	
+	<elementSpec ident="H2">
+	  <classes>
+	    <memberOf key="align"/>
+	    <memberOf key="basic"/>
+	    <memberOf key="headers"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="H3">
+	  <classes>
+	    <memberOf key="align"/>
+	    <memberOf key="basic"/>
+	    <memberOf key="headers"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="DL">
+	  <gloss>Definition list </gloss>
+	  <classes>
+	    <memberOf key="compact"/>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:oneOrMore>
+	      <rng:choice>
+		<rng:ref name="DT"/>
+		<rng:ref name="DD"/>
+	      </rng:choice>
+	    </rng:oneOrMore>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="DT">
+	  <gloss>Defined term </gloss>
+	  <classes>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="DD">
+	  <gloss>Definition </gloss>
+	  <classes>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:zeroOrMore>
+	      <rng:ref name="vert"/>
+	    </rng:zeroOrMore>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="OL">
+	  <gloss>Ordered list </gloss>
+	  <classes>
+	    <memberOf key="compact"/>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:oneOrMore>
+	      <rng:ref name="LI"/>
+	    </rng:oneOrMore>
+	  </content>
+	  <attList>
+	    <attDef ident="start" usage="opt">
+	      <datatype>
+		<rng:data type="NMTOKEN"/>
+	      </datatype>
+	    </attDef>
+	    <attDef ident="type" usage="opt">
+	      <datatype>
+		<rng:data type="token">
+		  <rng:param name="pattern">1|a|A|i|I</rng:param>
+		</rng:data>
+	      </datatype>
+	    </attDef>
+	  </attList>
+	</elementSpec>
+
+	<elementSpec ident="UL">
+	  <gloss>Unordered list </gloss>
+	  <classes>
+	    <memberOf key="compact"/>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:oneOrMore>
+	      <rng:ref name="LI"/>
+	    </rng:oneOrMore>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="DIR">
+	  <desc>Directory (minimal) list </desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:oneOrMore>
+	      <rng:ref name="LI"/>
+	    </rng:oneOrMore>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="LI">
+	  <desc>List element </desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:zeroOrMore>
+	      <rng:ref name="vert"/>
+	    </rng:zeroOrMore>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="ADDRESS">
+	  <desc>Address block </desc>
+	  <classes>
+	    <memberOf key="basic"/>
+	    <memberOf key="struct"/>
+	  </classes>
+	  <content>
+	    <rng:zeroOrMore>
+	      <rng:choice>
+		<rng:ref name="horiz"/>
+		<rng:ref name="P"/>
+	      </rng:choice>
+	    </rng:zeroOrMore>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="BLOCKQUOTE">
+	  <gloss>Block quotation </gloss>
+	  <classes>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:zeroOrMore>
+	      <rng:ref name="struct"/>
+	    </rng:zeroOrMore>
+	  </content>
+	</elementSpec>
+	
+	<elementSpec ident="DIV">
+	  <desc>General text division </desc>
+	  <classes>
+	    <memberOf key="align"/>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:zeroOrMore>
+	      <rng:ref name="struct"/>
+	    </rng:zeroOrMore>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="HR">
+	  <gloss>Horizontal rule </gloss>
+	  <classes>
+	    <memberOf key="all"/>
+	  </classes>
+	  <content>
+	    <rng:empty/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="P">
+	  <gloss>Paragraph </gloss>
+	  <classes>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	</elementSpec>
+	
+	<elementSpec ident="PRE">
+	  <gloss>Preformatted text </gloss>
+	  <classes>
+	    <memberOf key="basic"/>
+	  </classes>
+	  <content>
+	    <rng:ref name="horiz.model"/>
+	  </content>
+	  <attList>
+	    <attDef ident="width" usage="opt">
+	      <datatype>
+		<rng:data type="NMTOKEN"/>
+	      </datatype>
+	    </attDef>
+	  </attList>
+	</elementSpec>
+
+	<elementSpec ident="HTML">
+	  <classes>
+	    <memberOf key="i18n"/>
+	  </classes>
+	  <content>
+	    <rng:optional>
+	      <rng:ref name="HEAD"/>
+	    </rng:optional>
+	    <rng:ref name="BODY"/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="HEAD">
+	  <classes>
+	    <memberOf key="i18n"/>
+	  </classes>
+	  <content>
+	    <rng:choice>
+	      <rng:group>
+		<rng:ref name="TITLE"/>
+		<rng:optional>
+		  <rng:ref name="STYLE"/>
+		</rng:optional>
+	      </rng:group>
+	      <rng:group>
+		<rng:ref name="STYLE"/>
+		<rng:ref name="TITLE"/>
+	      </rng:group>
+	    </rng:choice>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="TITLE">
+	  <classes>
+	    <memberOf key="i18n"/>
+	  </classes>
+	  <content>
+	    <rng:text/>
+	  </content>
+	</elementSpec>
+
+	<elementSpec ident="STYLE">
+	  <classes>
+	    <memberOf key="i18n"/>
+	  </classes>
+	  <content>
+	    <rng:text/>
+	  </content>
+	  <attList>
+	    <attDef ident="type" usage="req">
+	      <datatype>
+		<rng:text/>
+	      </datatype>
+	    </attDef>
+	  </attList>
+	</elementSpec>
+
+	<elementSpec ident="BODY">
+	  <classes>
+	    <memberOf key="all"/>
+	  </classes>
+	  <content>
+	    <rng:zeroOrMore>
+	      <rng:ref name="struct"/>
+	    </rng:zeroOrMore>
+	  </content>
+	</elementSpec>
+
+      </schemaSpec>
+    </body>
+  </text>
+</TEI>

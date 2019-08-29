@@ -1,0 +1,555 @@
+default namespace = "http://home.ccil.org/~cowan/ns/ibtwsh"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace rng = "http://relaxng.org/ns/structure/1.0"
+namespace teix = "http://www.tei-c.org/ns/Examples"
+namespace xlink = "http://www.w3.org/1999/xlink"
+
+# Schema generated from ODD source 2009-03-01T06:40:45-05:00. 
+# TEI Edition: 1.3.0. Last updated on February 1st 2009.
+#
+
+# Copyleft 2009 Syd Bauman
+ibtwsh_macro.anyXML =
+  element * {
+    (attribute * { text }
+     | text
+     | ibtwsh_macro.anyXML)*
+  }
+ibtwsh_horiz.model = (ibtwsh_horiz | text)*
+att.canonical.attributes =
+  att.canonical.attribute.key, att.canonical.attribute.ref, empty
+
+att.canonical.attribute.key =
+  ## provides an externally-defined means
+  ##  of identifying the entity (or entities) being named, using a coded value
+  ##       of some kind.
+  attribute key { xsd:string }?
+
+att.canonical.attribute.ref =
+  ##  (reference) provides an explicit means of locating a full definition
+  ##       for the entity being named by means of one or more URIs.
+  attribute ref {
+    list { xsd:anyURI+ }
+  }?
+att.dimensions.attributes =
+  att.dimensions.attribute.unit,
+  att.dimensions.attribute.quantity,
+  att.dimensions.attribute.extent,
+  att.dimensions.attribute.atLeast,
+  att.dimensions.attribute.atMost,
+  att.dimensions.attribute.min,
+  att.dimensions.attribute.max,
+  att.dimensions.attribute.precision,
+  att.dimensions.attribute.scope,
+  empty
+
+att.dimensions.attribute.unit =
+  ## names the unit used for the measurement
+  ## Suggested values include: 1] cm (centimetres); 2] mm (millimetres); 3] in (inches); 4] lines; 5] chars (characters)
+  attribute unit {
+    ## (centimetres) 
+    "cm" | ## (millimetres) 
+      "mm" | ## (inches) 
+      "in" | ## lines of text
+      "lines" | ## (characters) characters of text
+      "chars"
+    | xsd:Name
+  }?
+
+att.dimensions.attribute.quantity =
+  ## specifies the length in the units specified
+  attribute quantity { xsd:double | xsd:decimal }?
+
+att.dimensions.attribute.extent =
+  ## indicates the size of the object concerned using a
+  ##       project-specific vocabulary combining quantity and units in a
+  ##       single string of words.  
+  attribute extent {
+    list {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }+
+    }
+  }?
+
+att.dimensions.attribute.atLeast =
+  ## gives a minimum  estimated value for the  measurement.
+  attribute atLeast { xsd:double | xsd:decimal }?
+
+att.dimensions.attribute.atMost =
+  ## gives a maximum  estimated value for the  measurement.
+  attribute atMost { xsd:double | xsd:decimal }?
+
+att.dimensions.attribute.min =
+  ## where the measurement summarizes more than one
+  ##       observation, supplies the minimum value observed.
+  attribute min { xsd:double | xsd:decimal }?
+
+att.dimensions.attribute.max =
+  ## where the measurement summarizes more than one
+  ##       observation, supplies the maximum value observed.
+  attribute max { xsd:double | xsd:decimal }?
+
+att.dimensions.attribute.precision =
+  ## characterizes the precision of the values specified by the
+  ##       other attributes.
+  attribute precision { "high" | "medium" | "low" | "unknown" }?
+
+att.dimensions.attribute.scope =
+  ## where the measurement summarizes more than one
+  ##       observation, specifies the applicability of this measurement.
+  ## Sample values include: 1] all; 2] most; 3] range
+  attribute scope { xsd:Name }?
+att.datable.w3c.attributes =
+  att.datable.w3c.attribute.period,
+  att.datable.w3c.attribute.when,
+  att.datable.w3c.attribute.notBefore,
+  att.datable.w3c.attribute.notAfter,
+  att.datable.w3c.attribute.from,
+  att.datable.w3c.attribute.to,
+  empty
+
+att.datable.w3c.attribute.period =
+  ## supplies a pointer to some location defining a named
+  ##       period of time within which the datable item is understood to
+  ##       have occurred.
+  attribute period { xsd:anyURI }?
+
+att.datable.w3c.attribute.when =
+  ## supplies the value of the date or time in a standard form,
+  ##       e.g. yyyy-mm-dd.
+  attribute when {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+
+att.datable.w3c.attribute.notBefore =
+  ## specifies the earliest possible date for the event in
+  ##	  standard form, e.g. yyyy-mm-dd.
+  attribute notBefore {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+
+att.datable.w3c.attribute.notAfter =
+  ## specifies the latest possible date for the event in
+  ##	  standard form, e.g. yyyy-mm-dd.
+  attribute notAfter {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+
+att.datable.w3c.attribute.from =
+  ## indicates the starting point of the period in standard form, e.g. yyyy-mm-dd.
+  attribute from {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+
+att.datable.w3c.attribute.to =
+  ## indicates the ending point of the period in standard
+  ##	  form, e.g. yyyy-mm-dd.
+  attribute to {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+att.duration.w3c.attributes = att.duration.w3c.attribute.dur, empty
+
+att.duration.w3c.attribute.dur =
+  ## (duration) indicates the length of this element in time.
+  attribute dur { xsd:duration }?
+att.editLike.attributes =
+  att.dimensions.attributes,
+  att.editLike.attribute.cert,
+  att.editLike.attribute.resp,
+  att.editLike.attribute.evidence,
+  att.editLike.attribute.source,
+  empty
+
+att.editLike.attribute.cert =
+  ## (certainty) signifies the degree of certainty associated with the
+  ##	intervention or interpretation.
+  attribute cert { "high" | "medium" | "low" | "unknown" }?
+
+att.editLike.attribute.resp =
+  ## (responsible party) indicates the agency responsible for the
+  ##	intervention or interpretation, for example an editor or transcriber.
+  attribute resp {
+    list { xsd:anyURI+ }
+  }?
+
+att.editLike.attribute.evidence =
+  ## indicates the nature of the evidence supporting the reliability or
+  ##   accuracy of the intervention or interpretation.
+  ## Suggested values include: 1] internal; 2] external; 3] conjecture
+  attribute evidence {
+    ## there is internal evidence to support the intervention.
+    "internal" | ## there is external evidence to support the intervention.
+      "external" | ## the intervention or interpretation has been made by
+      ##	    the editor, cataloguer, or scholar on the basis of their
+      ##	    expertise.
+      "conjecture"
+    | xsd:Name
+  }?
+
+att.editLike.attribute.source =
+  ## contains a list of one or more pointers indicating the
+  ##       sources which support the given reading.
+  attribute source {
+    list { xsd:anyURI+ }
+  }?
+att.naming.attributes =
+  att.canonical.attributes, att.naming.attribute.nymRef, empty
+
+att.naming.attribute.nymRef =
+  ## (reference to the canonical name) provides a means of locating the canonical form
+  ##       (nym) of the names associated with the object
+  ##        named by
+  ##       the element bearing it.
+  attribute nymRef {
+    list { xsd:anyURI+ }
+  }?
+all.attributes =
+  all.attribute.id, all.attribute.class, all.attribute.style, empty
+
+all.attribute.id =
+  attribute id { xsd:ID }?
+
+all.attribute.class =
+  attribute class {
+    list {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }+
+    }
+  }?
+
+all.attribute.style =
+  attribute style { text }?
+i18n.attributes = i18n.attribute.lang, i18n.attribute.dir, empty
+
+i18n.attribute.lang =
+  attribute lang { xsd:language }?
+
+i18n.attribute.dir =
+  [ a:defaultValue = "ltr" ] attribute dir { xsd:Name }?
+basic.attributes = i18n.attributes, all.attributes, empty
+align.attributes = align.attribute.align, empty
+
+align.attribute.align =
+  attribute align { xsd:Name }?
+compact.attributes = compact.attribute.compact, empty
+
+compact.attribute.compact =
+  attribute compact { xsd:Name }?
+ibtwsh_local =
+  ibtwsh_CITE
+  | ibtwsh_CODE
+  | ibtwsh_DFN
+  | ibtwsh_EM
+  | ibtwsh_KBD
+  | ibtwsh_SAMP
+  | ibtwsh_STRONG
+  | ibtwsh_VAR
+  | ibtwsh_ABBR
+  | ibtwsh_ACRONYM
+  | ibtwsh_BIG
+  | ibtwsh_SMALL
+ibtwsh_horiz =
+  ibtwsh_local | ibtwsh_A | ibtwsh_BR | ibtwsh_SPAN | ibtwsh_XML
+ibtwsh_headers = ibtwsh_H1 | ibtwsh_H2 | ibtwsh_H3
+ibtwsh_vert = ibtwsh_horiz
+ibtwsh_struct = ibtwsh_headers | ibtwsh_ADDRESS
+
+ibtwsh_CITE =
+  ## Citation (italics)
+  element CITE { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_CODE =
+  ## Source code (monowidth)
+  element CODE { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_DFN =
+  ## Terms being defined (normal) 
+  element DFN { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_EM =
+  ## Emphasis (italics) 
+  element EM { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_KBD =
+  ## Keyboard input 
+  element KBD { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_SAMP =
+  ## Sample output text (monowidth)
+  element SAMP { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_STRONG =
+  ## Strong emphasis (boldface)
+  element STRONG { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_VAR =
+  ## Variable names (italics)
+  element VAR { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_ABBR =
+  ## Abbreviations (normal)
+  element ABBR { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_ACRONYM =
+  ## Acronyms (normal)
+  element ACRONYM { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_BIG =
+  ## Text importance (change of size)
+  element BIG { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_SMALL =
+  element SMALL { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_A =
+  ##  (Hypertext anchors) CONSTRAINT: A elements are not allowed inside other A elements, a fact that this
+  ##	  schema does not express.
+  element A {
+    ibtwsh_horiz.model,
+    basic.attributes,
+    attribute href { xsd:anyURI }?,
+    attribute name { xsd:ID }?,
+    ## Sorry, unable to create schema that uses actual counts minOccurs=1 and maxOccurs=15; approximating to minOccurs=1 and maxOccurs=unbounded.
+    attribute rel {
+      list {
+        (
+         ## Designates substitute versions for the document in which the link occurs.
+         ##		  When used together with the lang attribute, it implies a translated version of
+         ##		  the document. When used together with the media attribute, it implies a version
+         ##		  designed for a different medium (or media).
+         "Alternate" | ## Refers to an external style sheet. See the section on external style sheets
+           ##		  for details. This is used together with the link type "Alternate" for
+           ##		  user-selectable alternate style sheets.
+           "Stylesheet" | ## Refers to the first document in a collection of documents. This link type
+           ##		  tells search engines which document is considered by the author to be the
+           ##		  starting point of the collection.
+           "Start" | ## Refers to the next document in a linear sequence of documents. User agents
+           ##		  may choose to preload the "next" document, to reduce the perceived load
+           ##		  time.
+           "Next" | ## Refers to the previous document in an ordered series of documents. Some user
+           ##		  agents also support the synonym "Previous".
+           "Prev" | ## Refers to a document serving as a table of contents. Some user agents also
+           ##		  support the synonym ToC (from "Table of Contents").
+           "Contents" | ## Refers to a document providing an index for the current document.
+           "Index" | ## Refers to a document providing a glossary of terms that pertain to the
+           ##		  current document.
+           "Glossary" | ## Refers to a copyright statement for the current document.
+           "Copyright" | ## Refers to a document serving as a chapter in a collection of
+           ##		  documents.
+           "Chapter" | ## Refers to a document serving as a section in a collection of
+           ##		  documents.
+           "Section" | ## Refers to a document serving as a subsection in a collection of
+           ##		  documents.
+           "Subsection" | ## Refers to a document serving as an appendix in a collection of
+           ##		  documents.
+           "Appendix" | ## Refers to a document offering help (more information, links to other sources
+           ##		  information, etc.)
+           "Help" | ## Refers to a bookmark. A bookmark is a link to a key entry point within an
+           ##		  extended document. The title attribute may be used, for example, to label the
+           ##		  bookmark. Note that several bookmarks may be defined in each document.
+           "Bookmark"),
+        (
+         ## Designates substitute versions for the document in which the link occurs.
+         ##		  When used together with the lang attribute, it implies a translated version of
+         ##		  the document. When used together with the media attribute, it implies a version
+         ##		  designed for a different medium (or media).
+         "Alternate" | ## Refers to an external style sheet. See the section on external style sheets
+           ##		  for details. This is used together with the link type "Alternate" for
+           ##		  user-selectable alternate style sheets.
+           "Stylesheet" | ## Refers to the first document in a collection of documents. This link type
+           ##		  tells search engines which document is considered by the author to be the
+           ##		  starting point of the collection.
+           "Start" | ## Refers to the next document in a linear sequence of documents. User agents
+           ##		  may choose to preload the "next" document, to reduce the perceived load
+           ##		  time.
+           "Next" | ## Refers to the previous document in an ordered series of documents. Some user
+           ##		  agents also support the synonym "Previous".
+           "Prev" | ## Refers to a document serving as a table of contents. Some user agents also
+           ##		  support the synonym ToC (from "Table of Contents").
+           "Contents" | ## Refers to a document providing an index for the current document.
+           "Index" | ## Refers to a document providing a glossary of terms that pertain to the
+           ##		  current document.
+           "Glossary" | ## Refers to a copyright statement for the current document.
+           "Copyright" | ## Refers to a document serving as a chapter in a collection of
+           ##		  documents.
+           "Chapter" | ## Refers to a document serving as a section in a collection of
+           ##		  documents.
+           "Section" | ## Refers to a document serving as a subsection in a collection of
+           ##		  documents.
+           "Subsection" | ## Refers to a document serving as an appendix in a collection of
+           ##		  documents.
+           "Appendix" | ## Refers to a document offering help (more information, links to other sources
+           ##		  information, etc.)
+           "Help" | ## Refers to a bookmark. A bookmark is a link to a key entry point within an
+           ##		  extended document. The title attribute may be used, for example, to label the
+           ##		  bookmark. Note that several bookmarks may be defined in each document.
+           "Bookmark")*
+      }
+    }?,
+    attribute title { text }?,
+    empty
+  }
+
+ibtwsh_BR =
+  ## Mandatory line breaks 
+  element BR { empty, all.attributes, empty }
+
+ibtwsh_SPAN =
+  ## Spans of text with changes in basic attributes 
+  element SPAN { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_XML =
+  ## Arbitrary embedded XML (not HTML-compatible yet) 
+  element XML {
+    element * { ibtwsh_macro.anyXML* }*,
+    basic.attributes,
+    empty
+  }
+
+ibtwsh_H1 =
+  element H1 {
+    ibtwsh_horiz.model, align.attributes, basic.attributes, empty
+  }
+
+ibtwsh_H2 =
+  element H2 {
+    ibtwsh_horiz.model, align.attributes, basic.attributes, empty
+  }
+
+ibtwsh_H3 =
+  element H3 {
+    ibtwsh_horiz.model, align.attributes, basic.attributes, empty
+  }
+
+ibtwsh_DL =
+  ##  (Definition list ) 
+  element DL {
+    (ibtwsh_DT | ibtwsh_DD)+,
+    compact.attributes,
+    basic.attributes,
+    empty
+  }
+
+ibtwsh_DT =
+  ##  (Defined term ) 
+  element DT { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_DD =
+  ##  (Definition ) 
+  element DD { ibtwsh_vert*, basic.attributes, empty }
+
+ibtwsh_OL =
+  ##  (Ordered list ) 
+  element OL {
+    ibtwsh_LI+,
+    compact.attributes,
+    basic.attributes,
+    attribute start { xsd:NMTOKEN }?,
+    attribute type {
+      xsd:token { pattern = "1|a|A|i|I" }
+    }?,
+    empty
+  }
+
+ibtwsh_UL =
+  ##  (Unordered list ) 
+  element UL { ibtwsh_LI+, compact.attributes, basic.attributes, empty }
+
+ibtwsh_DIR =
+  ## Directory (minimal) list 
+  element DIR { ibtwsh_LI+, basic.attributes, empty }
+
+ibtwsh_LI =
+  ## List element 
+  element LI { ibtwsh_vert*, basic.attributes, empty }
+
+ibtwsh_ADDRESS =
+  ## Address block 
+  element ADDRESS {
+    (ibtwsh_horiz | ibtwsh_P)*, basic.attributes, empty
+  }
+
+ibtwsh_BLOCKQUOTE =
+  ##  (Block quotation ) 
+  element BLOCKQUOTE { ibtwsh_struct*, basic.attributes, empty }
+
+ibtwsh_DIV =
+  ## General text division 
+  element DIV {
+    ibtwsh_struct*, align.attributes, basic.attributes, empty
+  }
+
+ibtwsh_HR =
+  ##  (Horizontal rule ) 
+  element HR { empty, all.attributes, empty }
+
+ibtwsh_P =
+  ##  (Paragraph ) 
+  element P { ibtwsh_horiz.model, basic.attributes, empty }
+
+ibtwsh_PRE =
+  ##  (Preformatted text ) 
+  element PRE {
+    ibtwsh_horiz.model,
+    basic.attributes,
+    attribute width { xsd:NMTOKEN }?,
+    empty
+  }
+
+ibtwsh_HTML =
+  element HTML { ibtwsh_HEAD?, ibtwsh_BODY, i18n.attributes, empty }
+
+ibtwsh_HEAD =
+  element HEAD {
+    ((ibtwsh_TITLE, ibtwsh_STYLE?) | (ibtwsh_STYLE, ibtwsh_TITLE)),
+    i18n.attributes,
+    empty
+  }
+
+ibtwsh_TITLE =
+  element TITLE { text, i18n.attributes, empty }
+
+ibtwsh_STYLE =
+  element STYLE {
+    text,
+    i18n.attributes,
+    attribute type { text },
+    empty
+  }
+
+ibtwsh_BODY =
+  element BODY { ibtwsh_struct*, all.attributes, empty }
+start = ibtwsh_HTML
