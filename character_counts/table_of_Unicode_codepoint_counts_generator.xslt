@@ -19,8 +19,8 @@
   <xsl:variable name="myself" select="tokenize( $me,'/')[last()]"/>
   <xsl:param name="namespaceof" as="map( xs:string, xs:string )">
     <xsl:map>
-      <xsl:map-entry key="'TEI'" select="'http://www.wwp.northeastern.edu/ns/textbase'"/>
-      <xsl:map-entry key="'WWP'" select="'http://www.tei-c.org/ns/1.0'"/>
+      <xsl:map-entry key="'TEI'" select="'http://www.tei-c.org/ns/1.0'"/>
+      <xsl:map-entry key="'WWP'" select="'http://www.wwp.northeastern.edu/ns/textbase'"/>
       <xsl:map-entry key="'XHTML'" select="'http://www.w3.org/1999/xhtml'"/>
       <xsl:map-entry key="'yaps'" select="'http://www.wwp.northeastern.edu/ns/yaps'"/>
     </xsl:map>
