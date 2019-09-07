@@ -39,23 +39,25 @@
       it meets the syntactic constraints of a URI. I have to admit, I did not
       expect "Relax NG" to work as an xsd:anyURI (that is, to be castable as
       xs:anyURI), but it did. In any case, the point is that the user can
-      specify whether to generate RELAX NG output (the default) or XSLT output
-      by specifying any one of a number of tokens, including the namespace URI
+      specify whether to generate RELAX NG output (the default), XSLT output,
+      or (primarily for initial debugging) just plain text output by
+      specifying any one of a number of tokens, including the namespace URI
       for the language.
     </xd:desc>
   </xd:doc>
-  <xsl:param name="output" as="xs:anyURI" select="'Relax NG' cast as xs:anyURI"/>
+  <xsl:param name="output" as="xs:anyURI" select="'Debug' cast as xs:anyURI"/>
   <xsl:variable name="outLang">
     <xsl:choose>
       <xsl:when test="$output = ('rng','rnc','RNG','RNC','RELAXNG','RELAX NG','RelaxNG','Relax NG','http://relaxng.org/ns/structure/1.0')">RNG</xsl:when>
       <xsl:when test="$output = ('xsl','xslt','XSL','XSLT','http://www.w3.org/1999/XSL/Transform')">XSL</xsl:when>
+      <xsl:when test="$output = ('txt','text','TXT','TEXT','regex','regexp','debug','Debug','DEBUG')">TXT</xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="yes" select="'Fatal error: output type &quot;'||$output||'&quot; not recognized.'"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
   <xd:doc scope="component">
-    <xd:desc>$now is the current timestamp w/o timezone, as a string.</xd:desc>
+    <xd:desc>store the current timestamp w/o timezone, as a string</xd:desc>
   </xd:doc>
   <xsl:variable name="now" select="substring( current-dateTime() cast as xs:string, 1, 19 )"/>
   <xd:doc scope="stylesheet">
@@ -65,12 +67,12 @@
   </xd:doc>
   
   <xsl:variable name="xmlName" select="'\\i\\c*'"/>
-  <xsl:variable name="nonASCII" select="'\&amp;#x00A0;-\&amp;#x10FFFF;'"/>
+  <xsl:variable name="nonASCII" select="'&amp;'||'#x00A0;-'||'&amp;'||'#x10FFFF;'"/>
   <xsl:variable name="lettersPlus" select="'a-zA-Z_'"/>
   <!-- define escape chars as identifier chars - (hex digit or newline) -->
-  <xsl:variable name="identSansNewlineNorHexDigit" select="'['||$lettersPlus||$nonASCII||'-[a-fA-F0-9\&amp;#x0A;\&amp;#x0C;\&amp;#x0D;]]'"/>
+  <xsl:variable name="identSansNewlineNorHexDigit" select="'['||$lettersPlus||$nonASCII||'-[a-fA-F0-9&amp;#x0A;&amp;#x0C;&amp;#x0D;]]'"/>
   <!--  OR define as ALL chars - (hex digit or newline) ? -->
-  <xsl:variable name="allSansNewlineNorHexDigit" select="'[&amp;#x21;-&amp;#x10FFFF;-[a-fA-F0-9\\n\\r\\t]]'"/>
+  <xsl:variable name="allSansNewlineNorHexDigit" select="'['||'&amp;'||'#x21;-'||'&amp;'||'#x10FFFF;-[a-fA-F0-9\\n\\r\\t]]'"/>
   <xsl:variable name="neitherNewlineNorHexDigit" select="$allSansNewlineNorHexDigit"/>
   <xsl:variable name="escape" select="'\\\\('||$neitherNewlineNorHexDigit||'|[0-9a-fA-F]{1,6}\\s?)'"/>
   
@@ -90,8 +92,8 @@
   <xsl:variable name="attrop" select="'[\$~\*|^]?='"/>		<!--  operator -->
   <!--  attr value ID is a CSS 2.1 identifier (top value of U+10FFFF found in 10.2 of L3 spec) -->
   <!--  attr value string (w/ enclosing quotes escaped) -->
-  <xsl:variable name="sqav" select="'\&amp;apos;([^\&amp;apos;]|\\\\&amp;apos;)*\&amp;apos;'"/> <!--  single quoted attr value -->
-  <xsl:variable name="dqav" select="'\&amp;quot;([^\&amp;quot;]|\\\\&amp;quot;)*\&amp;quot;'"/> <!--  double quoted attr value -->
+  <xsl:variable name="sqav" select="'&amp;apos;([^&amp;apos;]|\\&amp;apos;)*&amp;apos;'"/> <!--  single quoted attr value -->
+  <xsl:variable name="dqav" select="'&amp;quot;([^&amp;quot;]|\\&amp;quot;)*&amp;quot;'"/> <!--  double quoted attr value -->
   <xsl:variable name="attval" select="'('||$sqav||'|'||$dqav||'|'||$ident||')'"/>        <!--  attr value - an ID or a string  -->
   <xsl:variable name="attribute" select="'\\[\\s*'||$attname||'\\s*('||$attrop||'\\s*'||$attval||'\\s*)?\\]'"/> <!--  attribute selector -->
   
@@ -150,7 +152,7 @@
   <xsl:variable name="selectors" select="$selector||'(,\\s*'||$selector||')*'"/>
   <!--  DEBUGGing can be performed by changing the value of $regexp from -->
   <!--  $selectors to some component thereof, e.g. $pseudo_class -->
-  <xsl:variable name="regexp" select="'\\s\*'||$selectors||'\\s\*'"/>	<!--  we add the anchors (if needed) later -->
+  <xsl:variable name="regexp" select="'\s*'||$selectors||'\s*'"/>	<!--  we add the anchors (if needed) later -->
   
   <xd:doc>
     <xd:desc>OK, let's do this thing.</xd:desc>
@@ -243,6 +245,13 @@
           <xsl:call-template name="debuggingOutput"/>
 
         </out:stylesheet>
+      </xsl:when>
+      <xsl:when test="$outLang eq 'TXT'">
+        <regex xmlns="http://bauman.zapto.org/debug">
+          <xsl:text>&#x0A;</xsl:text>
+          <xsl:value-of select="$regexp"/>
+          <xsl:text>&#x0A;</xsl:text>
+        </regex>
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="yes" select="'Internal fatal error: incomprehensible $outLang ('||$outLang||').'"/>
