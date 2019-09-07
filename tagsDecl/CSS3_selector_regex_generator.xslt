@@ -72,39 +72,39 @@
   <!-- define escape chars as identifier chars - (hex digit or newline) -->
   <xsl:variable name="identSansNewlineNorHexDigit" select="'['||$lettersPlus||$nonASCII||'-[a-fA-F0-9&amp;#x0A;&amp;#x0C;&amp;#x0D;]]'"/>
   <!--  OR define as ALL chars - (hex digit or newline) ? -->
-  <xsl:variable name="allSansNewlineNorHexDigit" select="'['||'&amp;'||'#x21;-'||'&amp;'||'#x10FFFF;-[a-fA-F0-9\\n\\r\\t]]'"/>
+  <xsl:variable name="allSansNewlineNorHexDigit" select="'['||'&amp;'||'#x21;-'||'&amp;'||'#x10FFFF;-[a-fA-F0-9\n\r\t]]'"/>
   <xsl:variable name="neitherNewlineNorHexDigit" select="$allSansNewlineNorHexDigit"/>
-  <xsl:variable name="escape" select="'\\\\('||$neitherNewlineNorHexDigit||'|[0-9a-fA-F]{1,6}\\s?)'"/>
+  <xsl:variable name="escape" select="'\\('||$neitherNewlineNorHexDigit||'|[0-9a-fA-F]{O,S}\s?)'"/>
   
   <!--  CSS 3 uses CSS 2.1 identifiers, which are very permissive -->
   <xsl:variable name="identinit" select="'(['||$lettersPlus||$nonASCII||']|'||$escape||')'"/>
-  <xsl:variable name="identalso" select="'(['||$lettersPlus||$nonASCII||'0-9\\-]|'||$escape||')'"/>
+  <xsl:variable name="identalso" select="'(['||$lettersPlus||$nonASCII||'0-9\-]|'||$escape||')'"/>
   <xsl:variable name="ident" select="'-?'||$identinit||$identalso||'*'"/>
   
   <!--  universal and type selectors, e.g. *, *|*, duck, tei|titleStmt, *|span, svg|* -->
-  <xsl:variable name="ns" select="'(('||$ident||'|\\*)?\\|)?'"/>	<!--  namespace prefix for univ or type -->
-  <xsl:variable name="univ" select="'\\*'"/>   <!--  universal selector sans NS -->
+  <xsl:variable name="ns" select="'(('||$ident||'|\*)?\|)?'"/>	<!--  namespace prefix for univ or type -->
+  <xsl:variable name="univ" select="'\*'"/>   <!--  universal selector sans NS -->
   <xsl:variable name="type" select="$ident"/>  <!--  type selector sans NS -->
   <xsl:variable name="univtype" select="$ns||'('||$univ||'|'||$type||')'"/> <!--  either universal or type selector w/ NS -->
   
   <!--  attribute selectors, e.g. [type='chap'], [type~=rhyme], [xml:lang|='en'] -->
   <xsl:variable name="attname" select="$ns||$ident"/>		<!--  attribute name -->
-  <xsl:variable name="attrop" select="'[\$~\*|^]?='"/>		<!--  operator -->
+  <xsl:variable name="attrop" select="'[$~*|^]?='"/>		<!--  operator -->
   <!--  attr value ID is a CSS 2.1 identifier (top value of U+10FFFF found in 10.2 of L3 spec) -->
   <!--  attr value string (w/ enclosing quotes escaped) -->
   <xsl:variable name="sqav" select="'&amp;apos;([^&amp;apos;]|\\&amp;apos;)*&amp;apos;'"/> <!--  single quoted attr value -->
   <xsl:variable name="dqav" select="'&amp;quot;([^&amp;quot;]|\\&amp;quot;)*&amp;quot;'"/> <!--  double quoted attr value -->
   <xsl:variable name="attval" select="'('||$sqav||'|'||$dqav||'|'||$ident||')'"/>        <!--  attr value - an ID or a string  -->
-  <xsl:variable name="attribute" select="'\\[\\s*'||$attname||'\\s*('||$attrop||'\\s*'||$attval||'\\s*)?\\]'"/> <!--  attribute selector -->
+  <xsl:variable name="attribute" select="'\[\s*'||$attname||'\s*('||$attrop||'\s*'||$attval||'\s*)?\]'"/> <!--  attribute selector -->
   
   <!--  class selectors, e.g. ".3d" — although 10.1 of spec says it must be an identifier -->
-  <xsl:variable name="CSS1class" select="'\\.\\c+'"/>	<!--  CSS1 allowed a class to start w/ a digit (unless followed by unit) -->
-  <xsl:variable name="CSS2class" select="'\\.(\\\\[0-9]\\c*|\\c+)'"/>	<!--  CSS2 says an initial digit must be backslash-escaped -->
-  <xsl:variable name="CSS21class" select="'\\.'||$ident"/>			<!--  CSS2.1 says an ID -->
+  <xsl:variable name="CSS1class" select="'\.\c+'"/>	<!--  CSS1 allowed a class to start w/ a digit (unless followed by unit) -->
+  <xsl:variable name="CSS2class" select="'\.(\\[0-9]\c*|\c+)'"/>	<!--  CSS2 says an initial digit must be backslash-escaped -->
+  <xsl:variable name="CSS21class" select="'\.'||$ident"/>			<!--  CSS2.1 says an ID -->
   <xsl:variable name="class" select="$CSS21class"/>
   
   <!--  ID selectors, e.g. "#threeDim" -->
-  <xsl:variable name="ID1" select="'#\\i\\c*'"/>	 <!--ID selector, reasonable -->
+  <xsl:variable name="ID1" select="'#\i\c*'"/>	 <!--ID selector, reasonable -->
   <xsl:variable name="ID2" select="'#'||$ident"/>	<!--ID selector in CSS 3 uses CSS 2.1 identifier -->
   <xsl:variable name="ID" select="$ID2"/>
   
@@ -136,11 +136,11 @@
   <!--  several of the structural pseudo-classes take an argument of the form "aN+b|odd|even", -->
   <!--  where N is a literal 'n', and 'a' and 'b' are optional (possibly signed) integers -->
   <!--  (but note that if 'b' is negative, the '+' is dropped, thus 12n-1, not 12n+-1). -->
-  <xsl:variable name="N" select="'\\s*([+\\-]?\\s*[0-9]*n(\\s*[+\\-]?\\s*[0-9]+)?|[+\\-]?\\s*[0-9]+|odd|even)\\s*'"/>
+  <xsl:variable name="N" select="'\s*([+\-]?\s*[0-9]*n(\s*[+\-]?\s*[0-9]+)?|[+\-]?\s*[0-9]+|odd|even)\s*'"/>
   
-  <xsl:variable name="pseudo_class_sans_not" select="':(link|visited|hover|active|focus|target|lang\\('||$languageTag||'\\)|enabled|disabled|checked|root|nth(-last)?-child\\('||$N||'\\)|nth(-last)?-of-type\\('||$N||'\\)|(first|last|only)-(child|of-type)|empty)'"/>
+  <xsl:variable name="pseudo_class_sans_not" select="':(link|visited|hover|active|focus|target|lang\('||$languageTag||'\)|enabled|disabled|checked|root|nth(-last)?-child\('||$N||'\)|nth(-last)?-of-type\('||$N||'\)|(first|last|only)-(child|of-type)|empty)'"/>
   <xsl:variable name="simple_selector_sans_not" select="'('||$univtype||'|'||$attribute||'|'||$class||'|'||$ID||'|'||$pseudo_class_sans_not||')'"/>
-  <xsl:variable name="not" select="':not\\('||$simple_selector_sans_not||'\\)'"/>
+  <xsl:variable name="not" select="':not\('||$simple_selector_sans_not||'\)'"/>
   <xsl:variable name="pseudo_class" select="$pseudo_class_sans_not||'|'||$not"/>
   <xsl:variable name="pseudo_element" select="'::?(first-(line|letter)|before|after)'"/> <!--  CSS3 requires the second colon, but CSS1 and CSS2 did not -->
   
@@ -148,8 +148,8 @@
   <xsl:variable name="simple_selector" select="'('||$univtype||'|'||$attribute||'|'||$class||'|'||$ID||'|'||$pseudo_class||')'"/> <!--  at the moment, unused -->
   <xsl:variable name="simple_sans" select="'('||$attribute||'|'||$class||'|'||$ID||'|'||$pseudo_class||')'"/> <!--  simple selector w/o Type and Universal selectors  -->
   <xsl:variable name="sequence_of_simple_selectors" select="'('||$univtype||')?('||$simple_sans||')*'"/> <!--  See [1]. -->
-  <xsl:variable name="selector" select="$sequence_of_simple_selectors||'(\\s*'||$combinator||'\\s*'||$sequence_of_simple_selectors||')*('||$pseudo_element||')?'"/>
-  <xsl:variable name="selectors" select="$selector||'(,\\s*'||$selector||')*'"/>
+  <xsl:variable name="selector" select="$sequence_of_simple_selectors||'(\s*'||$combinator||'\s*'||$sequence_of_simple_selectors||')*('||$pseudo_element||')?'"/>
+  <xsl:variable name="selectors" select="$selector||'(,\s*'||$selector||')*'"/>
   <!--  DEBUGGing can be performed by changing the value of $regexp from -->
   <!--  $selectors to some component thereof, e.g. $pseudo_class -->
   <xsl:variable name="regexp" select="'\s*'||$selectors||'\s*'"/>	<!--  we add the anchors (if needed) later -->
@@ -249,7 +249,7 @@
       <xsl:when test="$outLang eq 'TXT'">
         <regex xmlns="http://bauman.zapto.org/debug">
           <xsl:text>&#x0A;</xsl:text>
-          <xsl:value-of select="$regexp"/>
+          <xsl:value-of select="$regexp" disable-output-escaping="yes"/>
           <xsl:text>&#x0A;</xsl:text>
         </regex>
       </xsl:when>
