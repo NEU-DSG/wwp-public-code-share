@@ -5,7 +5,7 @@
   xmlns:rng="http://relaxng.org/ns/structure/1.0"
   xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
-  exclude-result-prefixes="#all"    version="3.0"
+  version="3.0"
   xmlns:sb="http://bauman.zapto.org/ns-for-testing-CSS"
   xmlns:wi="http://www.wwp.northeastern.edu/ns/textbase"
   xmlns:ws="http://www.wwp-test.northeastern.edu/"
@@ -17,7 +17,7 @@
     <xd:desc>Yes, that's a whole lot of namespaces. The majority
     are merely used to differentiate from where a given test case
     comes. The only ones actually used by the program are a:, rng:,
-    out:, xsl: and (of course) xsl:.</xd:desc>
+    out:, and (of course) xsl:.</xd:desc>
   </xd:doc>
   
   <xd:doc scope="stylesheet">
@@ -31,7 +31,15 @@
   </xd:doc>
   <xsl:namespace-alias stylesheet-prefix="out" result-prefix="xsl"/>
 
-  <xsl:output method="xml" exclude-result-prefixes="#all" indent="yes"/>
+  <xd:doc>
+    <xd:desc>Output is XML, even when requested output is TXT we
+    wrap it in a teeny XML file. We deliberately put in newlines
+    so that the command <xd:b>saxon -xsl:$0 -s:$0 output=TXT 2>
+    /dev/null | head -n 15 | tail -n -1</xd:b> produces exactly
+    the desired 1 line of output. (Where $0 is the path to this
+    file, of course.)</xd:desc>
+  </xd:doc>
+  <xsl:output method="xml" indent="yes"/>
   
   <xd:doc>
     <xd:desc>The $output parameter is defined as a URI, because sometimes
@@ -60,13 +68,8 @@
     <xd:desc>store the current timestamp w/o timezone, as a string</xd:desc>
   </xd:doc>
   <xsl:variable name="now" select="substring( current-dateTime() cast as xs:string, 1, 19 )"/>
-  <xd:doc scope="stylesheet">
-    <xd:desc>
-      <xd:p></xd:p>
-    </xd:desc>
-  </xd:doc>
   
-  <xsl:variable name="xmlName" select="'\\i\\c*'"/>
+  <xsl:variable name="xmlName" select="'\i\c*'"/>
   <xsl:variable name="nonASCII" select="'&amp;'||'#x00A0;-'||'&amp;'||'#x10FFFF;'"/>
   <xsl:variable name="lettersPlus" select="'a-zA-Z_'"/>
   <!-- define escape chars as identifier chars - (hex digit or newline) -->
@@ -74,7 +77,7 @@
   <!--  OR define as ALL chars - (hex digit or newline) ? -->
   <xsl:variable name="allSansNewlineNorHexDigit" select="'['||'&amp;'||'#x21;-'||'&amp;'||'#x10FFFF;-[a-fA-F0-9\n\r\t]]'"/>
   <xsl:variable name="neitherNewlineNorHexDigit" select="$allSansNewlineNorHexDigit"/>
-  <xsl:variable name="escape" select="'\\('||$neitherNewlineNorHexDigit||'|[0-9a-fA-F]{O,S}\s?)'"/>
+  <xsl:variable name="escape" select="'\\('||$neitherNewlineNorHexDigit||'|[0-9a-fA-F]{1,6}\s?)'"/>
   
   <!--  CSS 3 uses CSS 2.1 identifiers, which are very permissive -->
   <xsl:variable name="identinit" select="'(['||$lettersPlus||$nonASCII||']|'||$escape||')'"/>
@@ -172,6 +175,7 @@
           xmlns:wo="http://wwo.wwp-test.northeastern.edu/WWO/css/wwo/wwo.css"
           xmlns:pt="https://github.com/benfrain/css-performance-tests"    
           datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+          <xsl:text>&#x0A;</xsl:text>
           <xsl:comment> This grammar written <xsl:value-of select="$now"/> by ./CSS3_selector_regex_generator.xslt </xsl:comment>
           <start>
             <ref name="ANY"/>
@@ -191,7 +195,7 @@
               <optional>
                 <attribute name="selector">
                   <data type="string">
-                    <param name="pattern"><xsl:value-of select="$regexp"/></param>
+                    <param name="pattern"><xsl:value-of select="$regexp" disable-output-escaping="yes"/></param>
                   </data>
                 </attribute>
               </optional>
@@ -215,7 +219,6 @@
           xmlns:w3c="https://www.w3.org/Style/CSS/Test/CSS3/Selectors/current/"
           xmlns:wo="http://wwo.wwp-test.northeastern.edu/WWO/css/wwo/wwo.css"
           xmlns:pt="https://github.com/benfrain/css-performance-tests"    
-          xsl:exclude-result-prefixes="#all"
           version="3.0">
           <xsl:text>&#x0A;</xsl:text>
           <xsl:comment> This pgm written <xsl:value-of select="$now"/> by ./CSS3_selector_regex_generator.perl </xsl:comment>
@@ -292,10 +295,13 @@
     <xd:desc>Standard copy template, but it is only used to copy over
     elements that have a @selector attribute.</xd:desc>
   </xd:doc>
-  <xsl:template match="*[@selector] | @*" mode="copy" exclude-result-prefixes="#all">
-    <xsl:copy>
-      <xsl:apply-templates exclude-result-prefixes="#all" select="@*|node()" mode="copy"/>
-    </xsl:copy>
+  <xsl:template match="*[@selector]" mode="copy">
+    <xsl:element name="{name(.)}">
+      <xsl:apply-templates select="@*|node()" mode="copy"/>
+    </xsl:element>
+  </xsl:template>
+  <xsl:template match="@*|text()|comment()|processing-instruction()" mode="copy">
+    <xsl:copy-of select="."/>
   </xsl:template>
 
   <xd:doc>
@@ -304,7 +310,7 @@
     the output so that the output can be used on itself (either to validate
     itself iff RNG or to transform itself iff XSLT) to test the regexp.</xd:desc>
   </xd:doc>
-  <xsl:template name="debugging_storage_unit" exclude-result-prefixes="#all">
+  <xsl:template name="debugging_storage_unit">
   <wi:rendition selector="head">align(center)case(allcaps)post(#rule)</wi:rendition>
   <wi:rendition selector="mw">break(yes)</wi:rendition>
   <wi:rendition xml:id="a.cent" selector="speaker, head">align(center)</wi:rendition>
