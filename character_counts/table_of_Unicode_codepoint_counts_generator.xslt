@@ -75,7 +75,7 @@
             below.</doc:p>
             <doc:ul>
               <doc:li>debug: true() means output debugging messages and files;
-              files got to /tmp/ and may clobber stuff already there.</doc:li>
+              files go to /tmp/ and may clobber stuff already there.</doc:li>
               <doc:li>attrs:
                 <doc:ul>
                   <doc:li>attrs=0 means drop <doc:i>all</doc:i> attributes</doc:li>
@@ -388,20 +388,22 @@
           </out:apply-templates>
         </out:template>
         <out:template match="@*" mode="attrs0"/>
-        <out:template match="@*" mode="attrs1">
           <xsl:choose>
             <xsl:when test="$scheme eq 'TEI'">
-              <xsl:choose>
-                <xsl:when test="name(.) eq 'assertedValue' and ../@locus eq 'value'">
-                  <xsl:value-of select="wf:padme(.)"/>
-                </xsl:when>
-                <xsl:when test="name(.) = ('baseForm','lemma','orig')">
-                  <xsl:value-of select="wf:padme(.)"/>
-                </xsl:when>
-                <xsl:when test="name(.) eq 'expand'  and  not(parent::classRef)">
-                  <xsl:value-of select="wf:padme(.)"/>
-                </xsl:when>
-              </xsl:choose>
+              <out:template match="@*" mode="attrs1">
+                <out:choose>
+                  <out:when test="self::attribute(assertedValue) and ../@locus eq 'value'">
+                    <out:value-of select="wf:padme(.)"/>
+                  </out:when>
+                  <out:when test="self::attribute(baseForm) | self::attribute(lemma) | self::attribute(orig)">
+                    <!-- could use "name(.) = ('baseForm','lemma','orig')" instead -->
+                    <out:value-of select="wf:padme(.)"/>
+                  </out:when>
+                  <out:when test="self::attribute(expand)  and  not(parent::classRef)">
+                    <out:value-of select="wf:padme(.)"/>
+                  </out:when>
+                </out:choose>
+              </out:template>
             </xsl:when>
             <xsl:when test="$scheme eq 'WWP'">
               <out:apply-templates select="@rend[contains(., 'pre(')]" mode="WWPattrs1">
@@ -414,7 +416,6 @@
             <xsl:when test="$scheme eq 'XHTML'"></xsl:when>
             <xsl:when test="$scheme eq 'yaps'"></xsl:when>
           </xsl:choose>
-        </out:template>
         <out:template match="@*" mode="attrs9">
           <out:value-of select="wf:padme(.)"/>
         </out:template>
