@@ -5,6 +5,7 @@
   xmlns:map="http://www.w3.org/2005/xpath-functions/map"
   xmlns:doc="http://www.oxygenxml.com/ns/doc/xsl-NOT!"
   xmlns:ucd="http://www.unicode.org/ns/2003/ucd/1.0"
+  xmlns:wf="http://www.wwp.northeastern.edu/ns/functions"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
   xmlns:in="http://www.example.edu/no_matter,_input_not_actually_read"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -13,10 +14,10 @@
   <xsl:namespace-alias stylesheet-prefix="out" result-prefix="xsl"/>
   <xsl:namespace-alias stylesheet-prefix="doc" result-prefix="xd"/>
   <xsl:output method="xml" indent="yes"/>
-  <xsl:param name="UCD"
-    select="'https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml'"/>
+  <xsl:param name="UCD" select="'https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml'"/>
   <xsl:param name="me" select="base-uri(/)"/>
   <xsl:variable name="myself" select="tokenize( $me,'/')[last()]"/>
+  <xsl:variable name="andI" select="substring( $myself, 1, string-length( $myself )-5 )"/>
   <xsl:param name="namespaceof" as="map( xs:string, xs:string )">
     <xsl:map>
       <xsl:map-entry key="'TEI'" select="'http://www.tei-c.org/ns/1.0'"/>
@@ -26,7 +27,6 @@
     </xsl:map>
   </xsl:param>
   <xsl:variable name="schemes" select="map:keys( $namespaceof )" as="xs:string+"/>
-  
   
   <xsl:template match="/">
     <xsl:for-each select="$schemes">
@@ -74,33 +74,35 @@
             counts as a character is based on the various parameters,
             below.</doc:p>
             <doc:ul>
-	      <doc:li>attrs:
-	      <doc:ul>
-		<doc:li>attrs=0 means drop <doc:i>all</doc:i> attributes</doc:li>
-		<xsl:choose>
-		  <xsl:when test="$scheme eq 'TEI'">
-		    <doc:li>attrs=1 means drop all attributes except:
-                      <doc:ul>
-                        <doc:li>@assertedValue iff @locus is "value"</doc:li>
-                        <doc:li>@baseForm</doc:li>
-                        <doc:li>@expand, other than on &lt;classRef></doc:li>
-                        <doc:li>@lemma</doc:li>
-                        <doc:li>@orig</doc:li>
-                        <doc:li>the "content:" property of @style</doc:li>
-                      </doc:ul>
-                      [default]
-                    </doc:li>
-                  </xsl:when>
-                  <xsl:when test="$scheme eq 'WWP'">
-                    <doc:li>attrs=1 means keep pre() and post() of @rend only [default]</doc:li>
-                  </xsl:when>
-                  <xsl:when test="$scheme eq 'XHTML'">
-                    <doc:li>attrs=1 means to keep only @title and the "content:" property of @style [default]</doc:li>
-                  </xsl:when>
-                  <xsl:when test="$scheme eq 'yaps'">
-                    <doc:li>attrs=1 means to keep only the "content:" property of @style [default]</doc:li>
-                  </xsl:when>
-                </xsl:choose>
+              <doc:li>debug: true() means output debugging messages and files;
+              files got to /tmp/ and may clobber stuff already there.</doc:li>
+              <doc:li>attrs:
+                <doc:ul>
+                  <doc:li>attrs=0 means drop <doc:i>all</doc:i> attributes</doc:li>
+                  <xsl:choose>
+                    <xsl:when test="$scheme eq 'TEI'">
+                      <doc:li>attrs=1 means drop all attributes except:
+                        <doc:ul>
+                          <doc:li>@assertedValue iff @locus is "value"</doc:li>
+                          <doc:li>@baseForm</doc:li>
+                          <doc:li>@expand, other than on &lt;classRef></doc:li>
+                          <doc:li>@lemma</doc:li>
+                          <doc:li>@orig</doc:li>
+                          <doc:li>the "content:" property of @style</doc:li>
+                        </doc:ul>
+                        [default]
+                      </doc:li>
+                    </xsl:when>
+                    <xsl:when test="$scheme eq 'WWP'">
+                      <doc:li>attrs=1 means keep pre() and post() of @rend only [default]</doc:li>
+                    </xsl:when>
+                    <xsl:when test="$scheme eq 'XHTML'">
+                      <doc:li>attrs=1 means to keep only @title and the "content:" property of @style [default]</doc:li>
+                    </xsl:when>
+                    <xsl:when test="$scheme eq 'yaps'">
+                      <doc:li>attrs=1 means to keep only the "content:" property of @style [default]</doc:li>
+                    </xsl:when>
+                  </xsl:choose>
                   <doc:li>attrs=9 means keep <doc:i>all</doc:i> attributes</doc:li>
                 </doc:ul></doc:li>
               <doc:li>whitespace:
@@ -154,27 +156,29 @@
             </doc:ul>
           </doc:desc>
         </doc:doc>
-
+        
         <out:param name="debug" select="false()" as="xs:boolean"/>
-        <out:param name="attrs" select="1" as="xs:integer"/>
+        <out:param name="attrs" select="1" as="xs:integer" static="yes"/>
         <out:param name="whitespace" select="0" as="xs:integer"/>
         <out:param name="fold" select="0" as="xs:integer"/>
         <out:param name="skip" select="3" as="xs:integer" static="yes"/>
         <out:param name="fileName" select="tokenize(document-uri(/), '/')[last()]"/>
         <out:param name="UCD" select='{"&apos;"||$UCD||"&apos;"}'/>
-        <doc:doc>
-          <doc:desc>The following 2 parameters (protect open paren
-          &amp; protect close paren) should each be set to a character
-          string that will <doc:b>never</doc:b> occur in an input
-          document</doc:desc>
-        </doc:doc>
-        <out:param name="pop" select="'&#xFF08;'"/>
-        <out:param name="pcp" select="'&#xFF09;'"/>
-        <doc:doc>
-          <doc:desc>rendition ladder (open|close) paren:</doc:desc>
-        </doc:doc>
-        <out:variable name="rlop" select="'\\\('"/>
-        <out:variable name="rlcp" select="'\\\)'"/>
+        <xsl:if test="$scheme eq 'WWP'">
+          <doc:doc>
+            <doc:desc>The following 2 parameters (protect open paren
+              &amp; protect close paren) should each be set to a character
+              string that will <doc:b>never</doc:b> occur in an input
+              document</doc:desc>
+          </doc:doc>
+          <out:param name="pop" select="'&#xFF08;'"/>
+          <out:param name="pcp" select="'&#xFF09;'"/>
+          <doc:doc>
+            <doc:desc>rendition ladder (open|close) paren:</doc:desc>
+          </doc:doc>
+          <out:variable name="rlop" select="'\\\('"/>
+          <out:variable name="rlcp" select="'\\\)'"/>
+        </xsl:if>
         <out:variable name="ucd">
           <out:choose>
             <out:when test="doc-available(&#x24;UCD)">
@@ -199,16 +203,21 @@
               </xsl:attribute>
             </out:apply-templates>
           </out:variable>
+          <out:if test="$debug">
+            <out:result-document href="/tmp/{$andI}_debug_content.xml" indent="no" method="xml">
+              <out:sequence select="$content"/>
+            </out:result-document>
+          </out:if>
           <xsl:text>&#x0A;</xsl:text>
           <xsl:comment> We now have a reduced version of entire document in $content Turn it into a big string, collapsing whitespace as requested </xsl:comment>
           <xsl:text>&#x0A;</xsl:text>
           <out:variable name="bigString">
             <out:choose>
               <out:when test="$whitespace eq 0">
-                <out:value-of select="translate(normalize-space($content), '&#x20;', '')"/>
+                <out:value-of select="translate( normalize-space( $content ), '&#x20;', '')"/>
               </out:when>
               <out:when test="$whitespace eq 1">
-                <out:value-of select="normalize-space($content)"/>
+                <out:value-of select="normalize-space( $content )"/>
               </out:when>
               <out:when test="$whitespace eq 3">
                 <out:value-of select="$content"/>
@@ -218,6 +227,11 @@
               </out:otherwise>
             </out:choose>
           </out:variable>
+          <out:if test="$debug">
+            <out:result-document href="/tmp/{$andI}_debug_bigString1.txt" indent="no" method="text">
+              <out:sequence select="$bigString"/>
+            </out:result-document>
+          </out:if>
           <!-- Case-fold alphabetic characters as requested -->
           <out:variable name="bigString">
             <out:choose>
@@ -226,25 +240,31 @@
               </out:when>
               <out:when test="$fold eq 1">
                 <out:value-of
-                  select="translate($bigString, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"
+                  select="translate( $bigString, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"
                 />
               </out:when>
               <out:when test="$fold eq 2">
-                <out:value-of select="translate(lower-case($bigString), '&#x017F;', 's')"/>
+                <out:value-of
+                  select="translate( lower-case( $bigString ), '&#x017F;', 's')"/>
               </out:when>
               <out:otherwise>
                 <out:message terminate="yes" select="'Invalid fold param ' || $fold"/>
               </out:otherwise>
             </out:choose>
           </out:variable>
+          <out:if test="$debug">
+            <out:result-document href="/tmp/{$andI}_debug_bigString2.txt" indent="no" method="text">
+              <out:sequence select="$bigString"/>
+            </out:result-document>
+          </out:if>
           <!-- Convert the entire big string into a sequence of (decimal) codepoints -->
           <out:variable name="seq" select="string-to-codepoints($bigString)"/>
           <!--
-      Convert sequence of (decimal) codes into a variable that maps the
-      decimal codepoint into a count thereof. That is,
-      $count_by_decimal_char_num(44) returns the number of commas in the
-      (counted portion of) the input document.
-    -->
+            Convert sequence of (decimal) codes into a variable that maps the
+            decimal codepoint into a count thereof. That is,
+            $count_by_decimal_char_num(44) returns the number of commas in the
+            (counted portion of) the input document.
+          -->
           <out:variable name="count_by_decimal_char_num" as="map( xs:integer, xs:integer )">
             <out:map>
               <out:for-each select="distinct-values($seq)">
@@ -354,25 +374,51 @@
           </html>
         </out:template>
 
-        <out:template match="@* | node()" mode="#all">
+        <out:template match="@*|node()" mode="#all" priority="-1">
           <out:copy>
-            <out:choose>
-              <out:when test="$attrs eq 0"/>
-              <out:when test="$attrs eq 1">
-                <out:apply-templates select="@rend[contains(., 'pre(')]" mode="attrs1">
-                  <out:with-param name="keyword" select="'pre'"/>
-                </out:apply-templates>
-                <out:apply-templates select="@rend[contains(., 'post(')]" mode="attrs1">
-                  <out:with-param name="keyword" select="'post'"/>
-                </out:apply-templates>
-              </out:when>
-              <out:when test="$attrs eq 9">
-                <out:apply-templates select="@*" mode="#current"/>
-              </out:when>
-            </out:choose>
-            <out:apply-templates select="node()" mode="#current"/>
+            <out:apply-templates select="@*|node()" mode="#current"/>
           </out:copy>
         </out:template>
+
+        <out:template match="@*" mode="skip0 skip1 skip2 skip3 skip4" priority="2">
+          <out:apply-templates select=".">
+            <xsl:attribute name="_mode">
+              <xsl:text>{'attrs'||$attrs}</xsl:text>
+            </xsl:attribute>
+          </out:apply-templates>
+        </out:template>
+        <out:template match="@*" mode="attrs0"/>
+        <out:template match="@*" mode="attrs1">
+          <xsl:choose>
+            <xsl:when test="$scheme eq 'TEI'">
+              <xsl:choose>
+                <xsl:when test="name(.) eq 'assertedValue' and ../@locus eq 'value'">
+                  <xsl:value-of select="wf:padme(.)"/>
+                </xsl:when>
+                <xsl:when test="name(.) = ('baseForm','lemma','orig')">
+                  <xsl:value-of select="wf:padme(.)"/>
+                </xsl:when>
+                <xsl:when test="name(.) eq 'expand'  and  not(parent::classRef)">
+                  <xsl:value-of select="wf:padme(.)"/>
+                </xsl:when>
+              </xsl:choose>
+            </xsl:when>
+            <xsl:when test="$scheme eq 'WWP'">
+              <out:apply-templates select="@rend[contains(., 'pre(')]" mode="WWPattrs1">
+                <out:with-param name="keyword" select="'pre'"/>
+              </out:apply-templates>
+              <out:apply-templates select="@rend[contains(., 'post(')]" mode="WWPattrs1">
+                <out:with-param name="keyword" select="'post'"/>
+              </out:apply-templates>
+            </xsl:when>
+            <xsl:when test="$scheme eq 'XHTML'"></xsl:when>
+            <xsl:when test="$scheme eq 'yaps'"></xsl:when>
+          </xsl:choose>
+        </out:template>
+        <out:template match="@*" mode="attrs9">
+          <out:value-of select="wf:padme(.)"/>
+        </out:template>
+          
         <out:template match="processing-instruction() | comment()" mode="skip0" priority="2">
           <out:value-of select="."/>
         </out:template>
@@ -385,65 +431,66 @@
         <out:template match="choice[unclear | supplied]" mode="skip4" priority="2">
           <out:apply-templates select="*[1]" mode="#current"/>
         </out:template>
-        <out:template match="vuji" mode="skip4" priority="2">
-          <out:choose>
-            <out:when test=". eq 'i'">
-              <out:text>j</out:text>
-            </out:when>
-            <out:when test=". eq 'I'">
-              <out:text>J</out:text>
-            </out:when>
-            <out:when test=". eq 'j'">
-              <out:text>i</out:text>
-            </out:when>
-            <out:when test=". eq 'J'">
-              <out:text>I</out:text>
-            </out:when>
-            <out:when test=". eq 'u'">
-              <out:text>v</out:text>
-            </out:when>
-            <out:when test=". eq 'U'">
-              <out:text>V</out:text>
-            </out:when>
-            <out:when test=". eq 'v'">
-              <out:text>u</out:text>
-            </out:when>
-            <out:when test=". eq 'V'">
-              <out:text>U</out:text>
-            </out:when>
-            <out:when test=". eq 'vv'">
-              <out:text>w</out:text>
-            </out:when>
-            <out:when test=". eq 'VV'">
-              <out:text>W</out:text>
-            </out:when>
-            <out:otherwise>
-              <out:message select="'I don’t know what to do with VUJI content “' || . || '”.'"/>
-              <out:value-of select="."/>
-            </out:otherwise>
-          </out:choose>
-        </out:template>
-        <out:template match="@rend" mode="attrs1" priority="2">
-          <out:param name="keyword"/>
-          <out:variable name="kwsrch" select="concat('^.*', $keyword, '\(([^)]+)\).*$')"/>
-          <out:variable name="paren_protected"
-            select="replace(replace(., $rlop, $pop), $rlcp, $pcp)"/>
-          <out:variable name="keyw"
-            select="
-              if (contains($paren_protected, $keyword)) then
-                replace($paren_protected, $kwsrch, '$1')
+        <xsl:if test="$scheme eq 'WWP'">
+          <out:template match="vuji" mode="skip4" priority="2">
+            <out:choose>
+              <out:when test=". eq 'i'">
+                <out:text>j</out:text>
+              </out:when>
+              <out:when test=". eq 'I'">
+                <out:text>J</out:text>
+              </out:when>
+              <out:when test=". eq 'j'">
+                <out:text>i</out:text>
+              </out:when>
+              <out:when test=". eq 'J'">
+                <out:text>I</out:text>
+              </out:when>
+              <out:when test=". eq 'u'">
+                <out:text>v</out:text>
+              </out:when>
+              <out:when test=". eq 'U'">
+                <out:text>V</out:text>
+              </out:when>
+              <out:when test=". eq 'v'">
+                <out:text>u</out:text>
+              </out:when>
+              <out:when test=". eq 'V'">
+                <out:text>U</out:text>
+              </out:when>
+              <out:when test=". eq 'vv'">
+                <out:text>w</out:text>
+              </out:when>
+              <out:when test=". eq 'VV'">
+                <out:text>W</out:text>
+              </out:when>
+              <out:otherwise>
+                <out:message select="'I don’t know what to do with VUJI content “' || . || '”.'"/>
+                <out:value-of select="."/>
+              </out:otherwise>
+            </out:choose>
+          </out:template>
+          <out:template match="@rend" mode="WWPattrs1" priority="2">
+            <out:param name="keyword"/>
+            <out:variable name="kwsrch" select="concat('^.*', $keyword, '\(([^)]+)\).*$')"/>
+            <out:variable name="paren_protected"
+              select="replace(replace(., $rlop, $pop), $rlcp, $pcp)"/>
+            <out:variable name="keyw" select="
+              if ( contains( $paren_protected, $keyword ) ) then
+                 replace( $paren_protected, $kwsrch, '$1')
               else
-                ''"/>
-          <out:attribute>
-            <xsl:attribute name="name" select="'{$keyword}'"/>
-            <xsl:attribute name="select" select='"replace($keyw, &apos;#(rule|ornament)&apos;, &apos;&apos;)"'/>
-          </out:attribute>
-        </out:template>
+                 ''"/>
+            <out:attribute>
+              <xsl:attribute name="name" select="'{$keyword}'"/>
+              <xsl:attribute name="select" select='"replace($keyw, &apos;#(rule|ornament)&apos;, &apos;&apos;)"'/>
+            </out:attribute>
+          </out:template>
+        </xsl:if>
 
         <!--
-	    This function modified from the template at
-	    http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
-	-->
+          This function modified from the template at
+          http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
+        -->
         <out:function name="wf:decimal2hexDigits" as="xs:string+">
           <out:param name="number" as="xs:integer"/>
           <out:variable name="remainder" select="$number mod 16" as="xs:integer"/>
@@ -465,7 +512,12 @@
             </out:otherwise>
           </out:choose>
         </out:function>
-
+        
+        <out:function name="wf:padme" as="xs:string">
+          <out:param name="stringIN"/>
+          <out:value-of select="'&#x20;'||$stringIN||'&#x20;'"/>
+        </out:function>
+        
       </out:stylesheet>
     </xsl:result-document>
     
