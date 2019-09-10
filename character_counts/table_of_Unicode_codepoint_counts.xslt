@@ -6,13 +6,16 @@
   xmlns:ucd="http://www.unicode.org/ns/2003/ucd/1.0"
   xmlns:wf="http://www.wwp.northeastern.edu/ns/functions"
   xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
-  xmlns:in="http://www.example.edu/no_matter,_input_not_actually_read"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tei="http://www.tei-c.org/ns/1.0"
+  xmlns:wwp="http://www.wwp.northeastern.edu/ns/textbase"
+  xmlns:yaps="http://www.wwp.northeastern.edu/ns/yaps"
+  xmlns:html="http://www.w3.org/1999/xhtml"
   version="3.0">
   
-  <xsl:namespace-alias stylesheet-prefix="out" result-prefix="xsl"/>
   <xsl:output method="xhtml" indent="yes" encoding="UTF-8" html-version="5"/>
-  <xsl:param name="UCD" select="'https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml'"/>  <xsl:param name="debug" select="false()" as="xs:boolean"/>
+  <xsl:param name="UCD" select="'https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml'"/>
+  <xsl:param name="debug" select="false()" as="xs:boolean"/>
   <xsl:param name="attrs" select="1" as="xs:integer"/>
   <xsl:param name="whitespace" select="0" as="xs:integer"/>
   <xsl:param name="fold" select="0" as="xs:integer"/>
@@ -33,17 +36,6 @@
   <xsl:param name="me" select="base-uri(/)"/>
   <xsl:variable name="myself" select="tokenize( $me,'/')[last()]"/>
   <xsl:variable name="andI" select="substring( $myself, 1, string-length( $myself )-5 )"/>
-  <xsl:variable name="docType" as="map( xs:string, xs:string )">
-    <xsl:map>
-      <xsl:map-entry key="'http://www.tei-c.org/ns/1.0'"                 select="'TEI'"/>
-      <xsl:map-entry key="'http://www.wwp.northeastern.edu/ns/textbase'" select="'WWP'"/>
-      <xsl:map-entry key="'http://www.w3.org/1999/xhtml'"                select="'XHTML'"/>
-      <xsl:map-entry key="'http://www.wwp.northeastern.edu/ns/yaps'"     select="'yaps'"/>
-    </xsl:map>
-  </xsl:variable>
-  <!-- presumed default namespace -->
-  <xsl:variable name="pdns" select="namespace-uri(/*[1])" static="yes"/>
-  <xsl:variable name="scheme" select="$docType( $pdns )"/>
   <xsl:variable name="ucd">
     <xsl:choose>
       <xsl:when test="doc-available($UCD)">
@@ -61,7 +53,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="/" _xpath-default-namespace="{$pdns}">
+  <xsl:template match="/">
     <!-- pass1: generate a copy of input, handling skip= and attrs= -->
     <xsl:variable name="content">
       <xsl:apply-templates select="node()" mode="sa"/>
@@ -235,18 +227,30 @@
   </xsl:template>
   
   <!-- Handle mode "skip" and "attrs" here in mode "sa" -->
-  <xsl:template match="( processing-instruction() | comment() )[$skip eq 0]">
+  <xsl:template mode="sa" match="( processing-instruction() | comment() )[$skip eq 0]">
     <xsl:copy/>
   </xsl:template>
-  <xsl:template match="( processing-instruction() | comment() )[$skip gt 0]" mode="sa"/>
-  <xsl:template match="teiHeader[$skip ge 2][$scheme = ('TEI','WWP','yaps')]" _xpath-default-namespace="{$pdns}"/>
-  <xsl:template match="head[$skip ge 2][$scheme eq 'XHTML']" _xpath-default-namespace="{$pdns}"/>
-  <xsl:template match="(fw|figDesc)[$skip ge 3][$scheme eq 'TEI']" _xpath-default-namespace="{$pdns}"/>  
-  <xsl:template match="(mw|figDesc)[$skip ge 3][$scheme eq 'WWP']" _xpath-default-namespace="{$pdns}"/>
-  <xsl:template match="note[@type and (@type ne 'authorial')][$skip ge 3][$scheme eq 'WWP']" _xpath-default-namespace="{$pdns}"/>
-  <xsl:template match="(sic|orig|abbr)[$skip ge 4][$scheme = ('TEI','WWP')]" _xpath-default-namespace="{$pdns}"/>
-  <xsl:template match="choice[ unclear | supplied ][$skip ge 4][$scheme = ('TEI','WWP')]" _xpath-default-namespace="{$pdns}">
+  <xsl:template mode="sa" match="( processing-instruction() | comment() )[$skip gt 0]"/>
+  <xsl:template mode="sa" match="(tei:teiHeader|wwp:teiHeader|yaps:teiHeader|html:head)[$skip ge 2]" />
+  <xsl:template mode="sa" match="(tei:fw|tei:figDesc|wwp:mw|wwp:figDesc)[$skip ge 3]"/>
+  <xsl:template mode="sa" match="wwp:note[@type and (@type ne 'authorial')][$skip ge 3]"/>
+  <xsl:template mode="sa" match="(tei:sic|tei:orig|tei:abbr|wwp:sic|wwp:orig|wwp:abbr)[$skip ge 4]"/>
+  <xsl:template mode="sa" match="tei:choice[tei:unclear|tei:supplied ][$skip ge 4]" >
     <xsl:apply-templates select="*[1]" mode="#current"/>
+  </xsl:template>
+  
+  <xsl:template mode="sa" match="@*[$attrs eq 0]"/>
+  <xsl:template mode="sa" match="tei:*/@*[$attrs eq 1]">
+    <xsl:if test="
+         self::attribute(baseForm)
+      or self::attribute(lemma)
+      or self::attribute(orig)
+      or ( self::attribute(assertedValue) and ../@locus eq 'value' )
+      or ( self::attribute(expand) and not( parent::classRef ) )
+      "><xsl:copy/></xsl:if>
+  </xsl:template>
+  <xsl:template mode="sa" match="@*[$attrs eq 9]">
+    <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
   
   <!--
