@@ -161,7 +161,8 @@
       </head>
       <body>
         <h2>Character Counts in <xsl:value-of select="$fileName"/></h2>
-        <p>Character counts in <tt><xsl:value-of select="$me"/></tt>, using the
+        <p>Character counts in <tt><xsl:value-of
+          select="$fileName"/></tt><a href="#fn1">¹</a>, using the
           following parameters (see documentation for what they mean):</p>
         <ul>
           <li><span class="param">attrs</span> = <xsl:value-of select="$attrs"/></li>
@@ -222,6 +223,8 @@
           </tbody>
         </table>
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
+        <hr/>
+        <p name="fn1">¹ <xsl:value-of select="document-uri(/)"/></p>
       </body>
     </html>
   </xsl:template>
