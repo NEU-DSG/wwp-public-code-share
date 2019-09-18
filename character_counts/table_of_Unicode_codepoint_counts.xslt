@@ -45,6 +45,7 @@
   <xsl:variable name="myself" select="tokenize( $me,'/')[last()]"/>
   <!-- for now just cheating and chopping off last 5 chars: -->
   <xsl:variable name="andI" select="substring( $myself, 1, string-length( $myself )-5 )"/>
+  <xsl:variable name="input" select="/"/>
   <xsl:variable name="ucd">
     <xsl:choose>
       <xsl:when test="doc-available($UCD)">
@@ -191,7 +192,9 @@
             text-align: right;
             padding-right: 1.0em;
           }
-          .param, .val { font-family: monospace; font-size: 90%; }
+          .param  { font-family: monospace; font-size: 90%; }
+          .val { font-family: monospace; font-size: 120%; }
+          dl > dt { font-weight: bold; font-size: larger; }
         </style>
       </head>
       <body>
@@ -266,9 +269,9 @@
             <ul>
               <li><span class="val">0</span>: process entire document, including comments and processing instructions</li>
               <li><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
-              <li><span class="val">2</span>: 1+ also strip out metadata (<xsl:value-of select="wf:metadataGIs()"/>)</li>
-              <li><span class="val">3</span>: 2+ also strip out printing artifacts (<xsl:value-of select="wf:printArtifactsGIs()"/></li>
-              <li><span class="val">4</span>: 3+ also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
+              <li><span class="val">2</span>: do 1, and also strip out metadata (<tt>&lt;teiHeader></tt> or <tt>&lt;html:head></tt>)</li>
+              <li><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<tt>&lt;tei:fw></tt>, <tt>&lt;wwp:mw></tt>, <tt>&lt;figDesc></tt>) [default]</li>
+              <li><span class="val">4</span>: do 3, and also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
                 <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
                 <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP)</li>
             </ul>
@@ -276,25 +279,45 @@
           <dt><span class="param">attrs</span></dt>
           <dd>
             <ul>
-              <li><span class="val"></span>: </li>
-              <li><span class="val"></span>: </li>
-              <li><span class="val"></span>: </li>
+              <li><span class="val">0</span>: drop <emph>all</emph> attributes</li>
+              <li><span class="val">1</span>: keep all attributes except:
+                <xsl:choose>
+                  <xsl:when test="$input/tei:*">
+                    <ul>
+                      <li>@assertedValue iff @locus is "value"</li>
+                      <li>@baseForm</li>
+                      <li>@expand, other than on &lt;classRef&gt;</li>
+                      <li>@lemma</li>
+                      <li>@orig</li>
+                      <li>the "content:" property of @style</li>
+                    </ul>
+                  </xsl:when>
+                  <xsl:when test="$input/wwp:* | $input/yaps:*">
+                    not yet implimented, so same as 1 for now
+                  </xsl:when>
+                  <xsl:when test="$input/html:*">
+                    keep only @title and the "content:" property of @style
+                  </xsl:when>
+                </xsl:choose> [default]
+              </li>
+              <li><span class="val">9</span>: keep <emph>all</emph> attributes</li>
             </ul>
           </dd>
           <dt><span class="param">whitespace</span></dt>
           <dd>
             <ul>
-              <li><span class="val"></span>: </li>
-              <li><span class="val"></span>: </li>
-              <li><span class="val"></span>: </li>
+              <li><span class="val"></span>: strip all whitespace [default]</li>
+              <li><span class="val"></span>: normalize whitespace</li>
+              <li><span class="val"></span>: keep all whitespace</li>
             </ul>
           </dd>
           <dt><span class="param">fold</span></dt>
           <dd>
             <ul>
-              <li><span class="val"></span>: </li>
-              <li><span class="val"></span>: </li>
-              <li><span class="val"></span>: </li>
+              <li><span class="val">0</span>: no case folding [default]</li>
+              <li><span class="val">1</span>: case folding (upper to lower, but A-Z <strong>only</strong>)</li>
+              <li><span class="val">2</span>: case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
+                into LATIN SMALL LETTER S</li>
             </ul>
           </dd>
         </dl>
@@ -327,10 +350,16 @@
       or ( self::attribute(expand) and not( parent::classRef ) )
       "><xsl:copy/></xsl:if>
   </xsl:template>
+  <xsl:template mode="sa" match="html:*/@*[$attrs eq 1]">
+    <xsl:if test="self::attribute(title)"><xsl:copy/></xsl:if>
+  </xsl:template>
+  <xsl:template mode="sa" match="wwp:*/@*[$attrs eq 1]">
+  </xsl:template>
+  <xsl:template mode="sa" match="yaps:*/@*[$attrs eq 1]">
+  </xsl:template>
   <xsl:template mode="sa" match="@*[$attrs eq 9]">
     <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
-  
   <!--
     This function modified from the template at
     http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
@@ -361,31 +390,6 @@
     <xsl:value-of select="'&#x20;'||$stringIN||'&#x20;'"/>
   </xsl:function>
 
-  <xsl:function name="wf:metadataGIs" as="element(html:tt)">
-    <xsl:choose>
-      <xsl:when test="/tei:* | /wwp:* | /yaps:*">
-        <tt>&lt;teiHeader></tt>
-      </xsl:when>
-      <xsl:when test="/html:*">
-        <tt>&lt;head></tt>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:function>
-  
-  <xsl:function name="wf:printArtifactsGIs" as="node()+">
-    <xsl:choose>
-      <xsl:when test="/tei:*">
-        <tt>&lt;fw></tt> and <tt>&lt;figDesc></tt>
-      </xsl:when>
-      <xsl:when test="/wwp:*">
-        <tt>&lt;mw></tt>, <tt>&lt;figDesc></tt>, and non-authorial <tt>&lt;note></tt>s
-      </xsl:when>
-      <xsl:when test="/yaps:* | /html:*">
-        [none]
-      </xsl:when>
-    </xsl:choose>
-  </xsl:function>
-  
 <!--  <xsl:template name="generator">
         <out:template match="@*" mode="skip0 skip1 skip2 skip3 skip4" priority="2">
           <out:apply-templates select=".">
