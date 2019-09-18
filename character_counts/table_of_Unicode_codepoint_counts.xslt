@@ -29,12 +29,21 @@
   <xsl:param name="pcp" select="'&#xFF09;'"/>
   <xd:doc>
     <xd:desc>rendition ladder (open|close) paren: escape sequence to match an
-    open or close paren in a WWP rendition ladder</xd:desc>
+    open or close paren in a rendition ladder. Only used for WWP.</xd:desc>
   </xd:doc>
   <xsl:variable name="rlop" select="'\\\('"/>
   <xsl:variable name="rlcp" select="'\\\)'"/>
+  <xd:doc>
+    <xd:desc>Me, myself, and I: 
+    <xd:ul>
+      <xd:li><xd:i>me</xd:i>: complete URI to the input document</xd:li>
+      <xd:li><xd:i>myself</xd:i>: filename component of $me with extension</xd:li>
+      <xd:li><xd:i>andI</xd:i>: filename component of $me without extension</xd:li>
+    </xd:ul></xd:desc>
+  </xd:doc>
   <xsl:param name="me" select="base-uri(/)"/>
   <xsl:variable name="myself" select="tokenize( $me,'/')[last()]"/>
+  <!-- for now just cheating and chopping off last 5 chars: -->
   <xsl:variable name="andI" select="substring( $myself, 1, string-length( $myself )-5 )"/>
   <xsl:variable name="ucd">
     <xsl:choose>
@@ -54,6 +63,30 @@
   </xsl:template>
 
   <xsl:template match="/">
+    <!-- 
+      Die early if there's an unprocessable param (just because dying
+      at the right time takes a long time, at least in $whitespace case).
+    -->
+    <xsl:choose>
+      <xsl:when test="not( $whitespace = (0, 1, 3) )">
+        <xsl:message terminate="yes">Invalid $whitespace: should be 0, 1, or 3</xsl:message>
+      </xsl:when>
+      <xsl:when test="not( $UCD castable as xs:anyURI )">
+        <xsl:message terminate="yes">Invalid $UCD — not a URI</xsl:message>
+      </xsl:when>
+      <xsl:when test="not( $attrs = (0, 1, 9) )">
+        <xsl:message terminate="yes">Invalid $attrs — should be 0, 1, or 9</xsl:message>
+      </xsl:when>
+      <xsl:when test="not( $fold = (0, 1, 2) )">
+        <xsl:message terminate="yes">Invalid $fold — should be 0, 1, or 2</xsl:message>
+      </xsl:when>
+      <xsl:when test="not( $skip = ( 0 to 4 ) )">
+        <xsl:message terminate="yes">Invalid $skip — should be 0, 1, 2, 3, or 4</xsl:message>
+      </xsl:when>
+      <xsl:when test="not( $fold = ( 0 to 2 ) )">
+        <xsl:message terminate="yes">Invalid $fold — should be 0, 1, 2</xsl:message>
+      </xsl:when>
+    </xsl:choose>
     <!-- pass1: generate a copy of input, handling skip= and attrs= -->
     <xsl:variable name="content">
       <xsl:apply-templates select="node()" mode="sa"/>
@@ -157,7 +190,9 @@
             font-family: monospace;
             text-align: right;
             padding-right: 1.0em;
-          }</style>
+          }
+          .param, .val { font-family: monospace; font-size: 90%; }
+        </style>
       </head>
       <body>
         <h2>Character Counts in <xsl:value-of select="$fileName"/></h2>
@@ -165,10 +200,10 @@
           select="$fileName"/></tt><a href="#fn1">¹</a>, using the
           following parameters (see documentation for what they mean):</p>
         <ul>
+          <li><span class="param">skip</span> = <xsl:value-of select="$skip"/></li>
           <li><span class="param">attrs</span> = <xsl:value-of select="$attrs"/></li>
           <li><span class="param">whitespace</span> = <xsl:value-of select="$whitespace"/></li>
           <li><span class="param">fold</span> = <xsl:value-of select="$fold"/></li>
-          <li><span class="param">skip</span> = <xsl:value-of select="$skip"/></li>
         </ul>
         <p>Click on a column header to sort by that column.</p>
         <table class="sortable" border="1">
@@ -223,6 +258,46 @@
           </tbody>
         </table>
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
+        <hr/>
+        <h3>Possible Parameter Values</h3>
+        <dl>
+          <dt><span class="param">skip</span></dt>
+          <dd>
+            <ul>
+              <li><span class="val">0</span>: process entire document, including comments and processing instructions</li>
+              <li><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
+              <li><span class="val">2</span>: 1+ also strip out metadata (<xsl:value-of select="wf:metadataGIs()"/>)</li>
+              <li><span class="val">3</span>: 2+ also strip out printing artifacts (<xsl:value-of select="wf:printArtifactsGIs()"/></li>
+              <li><span class="val">4</span>: 3+ also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
+                <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
+                <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP)</li>
+            </ul>
+          </dd>
+          <dt><span class="param">attrs</span></dt>
+          <dd>
+            <ul>
+              <li><span class="val"></span>: </li>
+              <li><span class="val"></span>: </li>
+              <li><span class="val"></span>: </li>
+            </ul>
+          </dd>
+          <dt><span class="param">whitespace</span></dt>
+          <dd>
+            <ul>
+              <li><span class="val"></span>: </li>
+              <li><span class="val"></span>: </li>
+              <li><span class="val"></span>: </li>
+            </ul>
+          </dd>
+          <dt><span class="param">fold</span></dt>
+          <dd>
+            <ul>
+              <li><span class="val"></span>: </li>
+              <li><span class="val"></span>: </li>
+              <li><span class="val"></span>: </li>
+            </ul>
+          </dd>
+        </dl>
         <hr/>
         <p name="fn1">¹ <xsl:value-of select="document-uri(/)"/></p>
       </body>
@@ -286,6 +361,31 @@
     <xsl:value-of select="'&#x20;'||$stringIN||'&#x20;'"/>
   </xsl:function>
 
+  <xsl:function name="wf:metadataGIs" as="element(html:tt)">
+    <xsl:choose>
+      <xsl:when test="/tei:* | /wwp:* | /yaps:*">
+        <tt>&lt;teiHeader></tt>
+      </xsl:when>
+      <xsl:when test="/html:*">
+        <tt>&lt;head></tt>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:function>
+  
+  <xsl:function name="wf:printArtifactsGIs" as="node()+">
+    <xsl:choose>
+      <xsl:when test="/tei:*">
+        <tt>&lt;fw></tt> and <tt>&lt;figDesc></tt>
+      </xsl:when>
+      <xsl:when test="/wwp:*">
+        <tt>&lt;mw></tt>, <tt>&lt;figDesc></tt>, and non-authorial <tt>&lt;note></tt>s
+      </xsl:when>
+      <xsl:when test="/yaps:* | /html:*">
+        [none]
+      </xsl:when>
+    </xsl:choose>
+  </xsl:function>
+  
 <!--  <xsl:template name="generator">
         <out:template match="@*" mode="skip0 skip1 skip2 skip3 skip4" priority="2">
           <out:apply-templates select=".">
