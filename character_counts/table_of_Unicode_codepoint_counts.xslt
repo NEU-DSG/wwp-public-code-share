@@ -22,8 +22,9 @@
   <xsl:param name="skip" select="3" as="xs:integer"/>
   <xsl:param name="fileName" select="tokenize(document-uri(/), '/')[last()]"/>
   <xd:doc>
-    <xd:desc>protect open paren, protect close paren: these variable should be set to
-    any single character you *know* will not be in the document. Only used for WWP.</xd:desc>
+    <xd:desc>protect open paren, protect close paren: these variable should be
+    set to any single character you *know* will not be in the input document.
+    Only used for WWP.</xd:desc>
   </xd:doc>
   <xsl:param name="pop" select="'&#xFF08;'"/>
   <xsl:param name="pcp" select="'&#xFF09;'"/>
@@ -43,8 +44,7 @@
   </xd:doc>
   <xsl:param name="me" select="base-uri(/)"/>
   <xsl:variable name="myself" select="tokenize( $me,'/')[last()]"/>
-  <!-- for now just cheating and chopping off last 5 chars: -->
-  <xsl:variable name="andI" select="substring( $myself, 1, string-length( $myself )-5 )"/>
+  <xsl:variable name="andI" select="replace( $myself, '\.[^.]*$','')"/>
   <xsl:variable name="input" select="/"/>
   <xsl:variable name="ucd">
     <xsl:choose>
@@ -192,22 +192,75 @@
             text-align: right;
             padding-right: 1.0em;
           }
-          .param  { font-family: monospace; font-size: 90%; }
           .val { font-family: monospace; font-size: 120%; }
-          dl > dt { font-weight: bold; font-size: larger; }
+          dl &#x003E; dt { font-weight: bold; font-size: 120%; font-family: monospace; margin: 3em 0em 0em 0em; }
+          li.false { color:  grey; font-size: 95%; }
+          li.true { color: black; font-size: 105%; }
         </style>
       </head>
       <body>
         <h2>Character Counts in <xsl:value-of select="$fileName"/></h2>
         <p>Character counts in <tt><xsl:value-of
           select="$fileName"/></tt><a href="#fn1">¹</a>, using the
-          following parameters (see documentation for what they mean):</p>
-        <ul>
-          <li><span class="param">skip</span> = <xsl:value-of select="$skip"/></li>
-          <li><span class="param">attrs</span> = <xsl:value-of select="$attrs"/></li>
-          <li><span class="param">whitespace</span> = <xsl:value-of select="$whitespace"/></li>
-          <li><span class="param">fold</span> = <xsl:value-of select="$fold"/></li>
-        </ul>
+          following parameters:</p>
+        <dl>
+          <dt><span class="param">skip</span></dt>
+          <dd>
+            <ul>
+              <li class="{$skip eq 0}"><span class="val">0</span>: process entire document, including comments and processing instructions</li>
+              <li class="{$skip eq 1}"><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
+              <li class="{$skip eq 2}"><span class="val">2</span>: do 1, and also strip out metadata (<tt>&lt;teiHeader></tt> or <tt>&lt;html:head></tt>)</li>
+              <li class="{$skip eq 3}"><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<tt>&lt;tei:fw></tt>, <tt>&lt;wwp:mw></tt>, <tt>&lt;figDesc></tt>) [default]</li>
+              <li class="{$skip eq 4}"><span class="val">4</span>: do 3, and also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
+                <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
+                <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP)</li>
+            </ul>
+          </dd>
+          <dt><span class="param">attrs</span></dt>
+          <dd>
+            <ul>
+              <li class="{$attrs eq 0}"><span class="val">0</span>: drop <emph>all</emph> attributes</li>
+              <li class="{$attrs eq 1}"><span class="val">1</span>: keep all attributes except:
+                <xsl:choose>
+                  <xsl:when test="$input/tei:*">
+                    <ul>
+                      <li>@assertedValue iff @locus is "value"</li>
+                      <li>@baseForm</li>
+                      <li>@expand, other than on &lt;classRef&gt;</li>
+                      <li>@lemma</li>
+                      <li>@orig</li>
+                      <li>the "content:" property of @style</li>
+                    </ul>
+                  </xsl:when>
+                  <xsl:when test="$input/wwp:* | $input/yaps:*">
+                    not yet implimented, so same as 0 for now
+                  </xsl:when>
+                  <xsl:when test="$input/html:*">
+                    keep only @title and the "content:" property of @style
+                  </xsl:when>
+                </xsl:choose> [default]
+              </li>
+              <li class="{$attrs eq 9}"><span class="val">9</span>: keep <emph>all</emph> attributes</li>
+            </ul>
+          </dd>
+          <dt><span class="param">whitespace</span></dt>
+          <dd>
+            <ul>
+              <li class="{$whitespace eq 0}"><span class="val">0</span>: strip all whitespace [default]</li>
+              <li class="{$whitespace eq 1}"><span class="val">1</span>: normalize whitespace</li>
+              <li class="{$whitespace eq 3}"><span class="val">3</span>: keep all whitespace</li>
+            </ul>
+          </dd>
+          <dt><span class="param">fold</span></dt>
+          <dd>
+            <ul>
+              <li class="{$fold eq 0}"><span class="val">0</span>: no case folding [default]</li>
+              <li class="{$fold eq 1}"><span class="val">1</span>: case folding (upper to lower, but A-Z <em>only</em>)</li>
+              <li class="{$fold eq 2}"><span class="val">2</span>: case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
+                into LATIN SMALL LETTER S</li>
+            </ul>
+          </dd>
+        </dl>
         <p>Click on a column header to sort by that column.</p>
         <table class="sortable" border="1">
           <thead>
@@ -263,64 +316,6 @@
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
         <hr/>
         <h3>Possible Parameter Values</h3>
-        <dl>
-          <dt><span class="param">skip</span></dt>
-          <dd>
-            <ul>
-              <li><span class="val">0</span>: process entire document, including comments and processing instructions</li>
-              <li><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
-              <li><span class="val">2</span>: do 1, and also strip out metadata (<tt>&lt;teiHeader></tt> or <tt>&lt;html:head></tt>)</li>
-              <li><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<tt>&lt;tei:fw></tt>, <tt>&lt;wwp:mw></tt>, <tt>&lt;figDesc></tt>) [default]</li>
-              <li><span class="val">4</span>: do 3, and also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
-                <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
-                <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP)</li>
-            </ul>
-          </dd>
-          <dt><span class="param">attrs</span></dt>
-          <dd>
-            <ul>
-              <li><span class="val">0</span>: drop <emph>all</emph> attributes</li>
-              <li><span class="val">1</span>: keep all attributes except:
-                <xsl:choose>
-                  <xsl:when test="$input/tei:*">
-                    <ul>
-                      <li>@assertedValue iff @locus is "value"</li>
-                      <li>@baseForm</li>
-                      <li>@expand, other than on &lt;classRef&gt;</li>
-                      <li>@lemma</li>
-                      <li>@orig</li>
-                      <li>the "content:" property of @style</li>
-                    </ul>
-                  </xsl:when>
-                  <xsl:when test="$input/wwp:* | $input/yaps:*">
-                    not yet implimented, so same as 1 for now
-                  </xsl:when>
-                  <xsl:when test="$input/html:*">
-                    keep only @title and the "content:" property of @style
-                  </xsl:when>
-                </xsl:choose> [default]
-              </li>
-              <li><span class="val">9</span>: keep <emph>all</emph> attributes</li>
-            </ul>
-          </dd>
-          <dt><span class="param">whitespace</span></dt>
-          <dd>
-            <ul>
-              <li><span class="val"></span>: strip all whitespace [default]</li>
-              <li><span class="val"></span>: normalize whitespace</li>
-              <li><span class="val"></span>: keep all whitespace</li>
-            </ul>
-          </dd>
-          <dt><span class="param">fold</span></dt>
-          <dd>
-            <ul>
-              <li><span class="val">0</span>: no case folding [default]</li>
-              <li><span class="val">1</span>: case folding (upper to lower, but A-Z <strong>only</strong>)</li>
-              <li><span class="val">2</span>: case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
-                into LATIN SMALL LETTER S</li>
-            </ul>
-          </dd>
-        </dl>
         <hr/>
         <p name="fn1">¹ <xsl:value-of select="document-uri(/)"/></p>
       </body>
