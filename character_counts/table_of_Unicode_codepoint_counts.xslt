@@ -17,9 +17,9 @@
   <xsl:param name="UCD" select="'https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml'"/>
   <xsl:param name="debug" select="false()" as="xs:boolean"/>
   <xsl:param name="attrs" select="1" as="xs:integer"/>
-  <xsl:param name="whitespace" select="0" as="xs:integer"/>
   <xsl:param name="fold" select="0" as="xs:integer"/>
   <xsl:param name="skip" select="3" as="xs:integer"/>
+  <xsl:param name="whitespace" select="0" as="xs:integer"/>
   <xsl:param name="fileName" select="tokenize(document-uri(/), '/')[last()]"/>
   <xd:doc>
     <xd:desc>protect open paren, protect close paren: these variable should be
@@ -69,23 +69,20 @@
       at the right time takes a long time, at least in $whitespace case).
     -->
     <xsl:choose>
-      <xsl:when test="not( $whitespace = (0, 1, 3) )">
-        <xsl:message terminate="yes">Invalid $whitespace: should be 0, 1, or 3</xsl:message>
-      </xsl:when>
       <xsl:when test="not( $UCD castable as xs:anyURI )">
         <xsl:message terminate="yes">Invalid $UCD — not a URI</xsl:message>
       </xsl:when>
       <xsl:when test="not( $attrs = (0, 1, 9) )">
         <xsl:message terminate="yes">Invalid $attrs — should be 0, 1, or 9</xsl:message>
       </xsl:when>
-      <xsl:when test="not( $fold = (0, 1, 2) )">
+      <xsl:when test="not( $fold = ( 0 to 2 ) )">
         <xsl:message terminate="yes">Invalid $fold — should be 0, 1, or 2</xsl:message>
       </xsl:when>
       <xsl:when test="not( $skip = ( 0 to 4 ) )">
         <xsl:message terminate="yes">Invalid $skip — should be 0, 1, 2, 3, or 4</xsl:message>
       </xsl:when>
-      <xsl:when test="not( $fold = ( 0 to 2 ) )">
-        <xsl:message terminate="yes">Invalid $fold — should be 0, 1, 2</xsl:message>
+      <xsl:when test="not( $whitespace = (0, 1, 3) )">
+        <xsl:message terminate="yes">Invalid $whitespace: should be 0, 1, or 3</xsl:message>
       </xsl:when>
     </xsl:choose>
     <!-- pass1: generate a copy of input, handling skip= and attrs= -->
@@ -171,31 +168,36 @@
         <meta name="generated_at" content="{current-dateTime()}"/>
         <script type="application/javascript" src="http://www.wwp.neu.edu/utils/bin/javascript/sorttable.js"/>
         <style type="text/css">
-          body {
-            margin: 1em 1em 1em 3em;
-            padding: 1em 1em 1em 3em;
-          }
-          thead {
-            background-color: #DEE3E6;
-          }
-          th, td {
-            padding: 0.5ex;
-          }
-          td.Ucp {
-            text-align: center;
-          }
-          td.chr {
-            text-align: center;
-          }
-          td.cnt {
-            font-family: monospace;
-            text-align: right;
-            padding-right: 1.0em;
-          }
-          .val { font-family: monospace; font-size: 120%; }
-          dl &#x003E; dt { font-weight: bold; font-size: 120%; font-family: monospace; margin: 3em 0em 0em 0em; }
-          li.false { color:  grey; font-size: 95%; }
-          li.true { color: black; font-size: 105%; }
+          <xsl:text disable-output-escaping="yes">
+            body {
+              margin: 1em 1em 1em 3em;
+              padding: 1em 1em 1em 3em;
+            }
+            thead {
+              background-color: #DEE3E6;
+            }
+            th, td {
+              padding: 0.5ex;
+            }
+            td.Ucp {
+              text-align: center;
+            }
+            td.chr {
+              text-align: center;
+            }
+            td.cnt {
+              font-family: monospace;
+              text-align: right;
+              padding-right: 1.0em;
+            }
+            .val { font-family: monospace; font-size: 120%; }
+            dt { font-weight: bold; font-size: 120%; font-family: monospace; margin: 1ex 0em 0em 0em; }
+            li.true::marker { color: green; }
+            li.false::marker { color: red; }
+            li.true { list-style-type: square; }
+            li.false { color:  grey; font-size: 97%; }
+            li.true { color: black; font-size: 103%; }
+          </xsl:text>
         </style>
       </head>
       <body>
@@ -204,18 +206,6 @@
           select="$fileName"/></tt><a href="#fn1">¹</a>, using the
           following parameters:</p>
         <dl>
-          <dt><span class="param">skip</span></dt>
-          <dd>
-            <ul>
-              <li class="{$skip eq 0}"><span class="val">0</span>: process entire document, including comments and processing instructions</li>
-              <li class="{$skip eq 1}"><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
-              <li class="{$skip eq 2}"><span class="val">2</span>: do 1, and also strip out metadata (<tt>&lt;teiHeader></tt> or <tt>&lt;html:head></tt>)</li>
-              <li class="{$skip eq 3}"><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<tt>&lt;tei:fw></tt>, <tt>&lt;wwp:mw></tt>, <tt>&lt;figDesc></tt>) [default]</li>
-              <li class="{$skip eq 4}"><span class="val">4</span>: do 3, and also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
-                <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
-                <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP)</li>
-            </ul>
-          </dd>
           <dt><span class="param">attrs</span></dt>
           <dd>
             <ul>
@@ -229,7 +219,6 @@
                       <li>@expand, other than on &lt;classRef&gt;</li>
                       <li>@lemma</li>
                       <li>@orig</li>
-                      <li>the "content:" property of @style</li>
                     </ul>
                   </xsl:when>
                   <xsl:when test="$input/wwp:* | $input/yaps:*">
@@ -243,14 +232,6 @@
               <li class="{$attrs eq 9}"><span class="val">9</span>: keep <emph>all</emph> attributes</li>
             </ul>
           </dd>
-          <dt><span class="param">whitespace</span></dt>
-          <dd>
-            <ul>
-              <li class="{$whitespace eq 0}"><span class="val">0</span>: strip all whitespace [default]</li>
-              <li class="{$whitespace eq 1}"><span class="val">1</span>: normalize whitespace</li>
-              <li class="{$whitespace eq 3}"><span class="val">3</span>: keep all whitespace</li>
-            </ul>
-          </dd>
           <dt><span class="param">fold</span></dt>
           <dd>
             <ul>
@@ -258,6 +239,26 @@
               <li class="{$fold eq 1}"><span class="val">1</span>: case folding (upper to lower, but A-Z <em>only</em>)</li>
               <li class="{$fold eq 2}"><span class="val">2</span>: case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
                 into LATIN SMALL LETTER S</li>
+            </ul>
+          </dd>
+          <dt><span class="param">skip</span></dt>
+          <dd>
+            <ul>
+              <li class="{$skip eq 0}"><span class="val">0</span>: process entire document, including comments and processing instructions</li>
+              <li class="{$skip eq 1}"><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
+              <li class="{$skip eq 2}"><span class="val">2</span>: do 1, and also strip out metadata (<tt>&lt;teiHeader></tt> or <tt>&lt;html:head></tt>)</li>
+              <li class="{$skip eq 3}"><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<tt>&lt;tei:fw></tt>, <tt>&lt;wwp:mw></tt>, <tt>&lt;figDesc></tt>) [default]</li>
+              <li class="{$skip eq 4}"><span class="val">4</span>: do 3, and also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
+                <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
+                <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP)</li>
+            </ul>
+          </dd>
+          <dt><span class="param">whitespace</span></dt>
+          <dd>
+            <ul>
+              <li class="{$whitespace eq 0}"><span class="val">0</span>: strip all whitespace [default]</li>
+              <li class="{$whitespace eq 1}"><span class="val">1</span>: normalize whitespace</li>
+              <li class="{$whitespace eq 3}"><span class="val">3</span>: keep all whitespace</li>
             </ul>
           </dd>
         </dl>
@@ -331,12 +332,20 @@
   <xsl:template mode="sa" match="(tei:fw|tei:figDesc|wwp:mw|wwp:figDesc)[$skip ge 3]"/>
   <xsl:template mode="sa" match="wwp:note[@type and (@type ne 'authorial')][$skip ge 3]"/>
   <xsl:template mode="sa" match="(tei:sic|tei:orig|tei:abbr|wwp:sic|wwp:orig|wwp:abbr)[$skip ge 4]"/>
-  <xsl:template mode="sa" match="tei:choice[tei:unclear|tei:supplied ][$skip ge 4]" >
+  <xsl:template mode="sa" match="tei:choice[tei:unclear|tei:supplied][not(tei:sic|tei:corr|tei:orig|tei:reg|tei:abbr|tei:expan)][$skip ge 4]" >
+    <xsl:apply-templates select="*[1]" mode="#current"/>
+  </xsl:template>
+  <xsl:template mode="sa" match="wwp:choice[wwp:unclear|wwp:supplied][$skip ge 4]" >
+    <!--
+      We don't have to be so precise for the WWP <choice>, because the WWP content model is
+      much more restrictive than TEI, and does not allow bizarre combinations like
+      <choice><sic/><expan/><supplied/></choice>, anyway
+    -->
     <xsl:apply-templates select="*[1]" mode="#current"/>
   </xsl:template>
   
   <xsl:template mode="sa" match="@*[$attrs eq 0]"/>
-  <xsl:template mode="sa" match="tei:*/@*[$attrs eq 1]">
+  <xsl:template mode="sa" match="tei:*/@*[$attrs eq 1]" priority="1">
     <xsl:if test="
          self::attribute(baseForm)
       or self::attribute(lemma)
