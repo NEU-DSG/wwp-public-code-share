@@ -29,11 +29,14 @@
   <xsl:param name="pop" select="'&#xFF08;'"/>
   <xsl:param name="pcp" select="'&#xFF09;'"/>
   <xd:doc>
-    <xd:desc>rendition ladder (open|close) paren: escape sequence to match an
-    open or close paren in a rendition ladder. Only used for WWP.</xd:desc>
+    <xd:desc>rendition ladder (open|close) paren for search, and rendition ladder
+      (open|close) paren for replace: escape sequence to match an open or close
+      paren in a rendition ladder. Only used for WWP.</xd:desc>
   </xd:doc>
-  <xsl:variable name="rlop" select="'\\\('"/>
-  <xsl:variable name="rlcp" select="'\\\)'"/>
+  <xsl:variable name="rlops" select="'\\\('"/>
+  <xsl:variable name="rlcps" select="'\\\)'"/>
+  <xsl:variable name="rlopr" select="'\\('"/>
+  <xsl:variable name="rlcpr" select="'\\)'"/>
   <xd:doc>
     <xd:desc>Me, myself, and I: 
     <xd:ul>
@@ -85,7 +88,7 @@
         <xsl:message terminate="yes">Invalid $whitespace: should be 0, 1, or 3</xsl:message>
       </xsl:when>
     </xsl:choose>
-    <!-- pass1: generate a copy of input, handling skip= and attrs= -->
+    <!-- pass1: generate a copy of input, handling the $skip and $attrs parameters -->
     <xsl:variable name="content">
       <xsl:apply-templates select="node()" mode="sa"/>
     </xsl:variable>
@@ -155,7 +158,7 @@
     <xsl:variable name="count_by_decimal_char_num" as="map( xs:integer, xs:integer )">
       <xsl:map>
         <xsl:for-each select="distinct-values($seq)">
-          <xsl:map-entry key="." select="count($seq[. eq current()])"/>
+          <xsl:map-entry key="." select="count($seq[ . eq current() ])"/>
         </xsl:for-each>
       </xsl:map>
     </xsl:variable>
@@ -210,9 +213,10 @@
           <dd>
             <ul>
               <li class="{$attrs eq 0}"><span class="val">0</span>: drop <emph>all</emph> attributes</li>
-              <li class="{$attrs eq 1}"><span class="val">1</span>: keep all attributes except:
+              <li class="{$attrs eq 1}"><span class="val">1</span>: 
                 <xsl:choose>
                   <xsl:when test="$input/tei:*">
+                    keep all attributes except:
                     <ul>
                       <li>@assertedValue iff @locus is "value"</li>
                       <li>@baseForm</li>
@@ -222,10 +226,10 @@
                     </ul>
                   </xsl:when>
                   <xsl:when test="$input/wwp:* | $input/yaps:*">
-                    not yet implimented, so same as 0 for now
+                    keep only pre() and post() of @rend
                   </xsl:when>
                   <xsl:when test="$input/html:*">
-                    keep only @title and the "content:" property of @style
+                    keep only @title and @alt
                   </xsl:when>
                 </xsl:choose> [default]
               </li>
@@ -236,7 +240,7 @@
           <dd>
             <ul>
               <li class="{$fold eq 0}"><span class="val">0</span>: no case folding [default]</li>
-              <li class="{$fold eq 1}"><span class="val">1</span>: case folding (upper to lower, but A-Z <em>only</em>)</li>
+              <li class="{$fold eq 1}"><span class="val">1</span>: case folding (upper to lower, but A–Z <em>only</em>)</li>
               <li class="{$fold eq 2}"><span class="val">2</span>: case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
                 into LATIN SMALL LETTER S</li>
             </ul>
@@ -274,6 +278,7 @@
           </thead>
           <tbody>
             <xsl:for-each select="map:keys($count_by_decimal_char_num)">
+              <xsl:sort order="descending" select="$count_by_decimal_char_num(.)"/>
               <xsl:variable name="hexNum" select="wf:decimal2hexDigits(.) ! translate(., '&#x20;', '') => string-join()"/>
               <xsl:variable name="hexNum4digit" select="substring('0000', string-length($hexNum) + 1)||$hexNum"/>
               <tr>
@@ -287,36 +292,13 @@
                   <xsl:value-of select="codepoints-to-string(.)"/>
                 </td>
                 <td class="ucn">
-                  <xsl:variable name="thisChar"
-                    select="$ucd/ucd:ucd/ucd:repertoire/ucd:group/ucd:char[@cp eq $hexNum4digit]"/>
-                  <xsl:choose>
-                    <xsl:when test="$thisChar[@na  and  normalize-space(@na1) ne '']">
-                      <xsl:value-of select="$thisChar/@na||' or '||$thisChar/@na1"/>
-                    </xsl:when>
-                    <xsl:when test="$thisChar[@na or @na1]">
-                      <xsl:value-of select="( $thisChar/@na, $thisChar/@na1 )[1]"/>
-                    </xsl:when>
-                    <xsl:when test="$thisChar/parent::ucd:group[@na or normalize-space(@na1) ne '']">
-                      <xsl:choose>
-                        <xsl:when test="$thisChar/parent::ucd:group[@na and normalize-space(@na1) ne '']">
-                          <xsl:value-of
-                            select="$thisChar/parent::ucd:group/@na||' or '||$thisChar/parent::ucd:group/@na1"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                          <xsl:value-of select="$thisChar/parent::ucd:group/@na"/>
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:when>
-                    <xsl:otherwise>Unicode name not available</xsl:otherwise>
-                  </xsl:choose>
+                  <xsl:value-of select="wf:unicodeCharName($ucd/ucd:ucd/ucd:repertoire/ucd:group/ucd:char[@cp eq $hexNum4digit])"/>
                 </td>
               </tr>
             </xsl:for-each>
           </tbody>
         </table>
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
-        <hr/>
-        <h3>Possible Parameter Values</h3>
         <hr/>
         <p name="fn1">¹ <xsl:value-of select="document-uri(/)"/></p>
       </body>
@@ -352,15 +334,36 @@
       or self::attribute(orig)
       or ( self::attribute(assertedValue) and ../@locus eq 'value' )
       or ( self::attribute(expand) and not( parent::classRef ) )
-      "><xsl:copy/></xsl:if>
+      "><xsl:value-of select="wf:padme(.)"/></xsl:if>
   </xsl:template>
   <xsl:template mode="sa" match="html:*/@*[$attrs eq 1]">
-    <xsl:if test="self::attribute(title)"><xsl:copy/></xsl:if>
+    <xsl:if test="self::attribute(title) or self::attribute(alt)"><xsl:value-of select="wf:padme(.)"/></xsl:if>
   </xsl:template>
   <xsl:template mode="sa" match="wwp:*/@*[$attrs eq 1]">
+    <xsl:if test="self::attribute(rend)">
+      <xsl:if test="matches( .,'p(re|ost)\(')">
+        <xsl:variable name="rend" select="."/>
+        <xsl:variable name="rend" select="replace( $rend, $rlops, $pop )"/>
+        <xsl:variable name="rend" select="replace( $rend, $rlcps, $pcp )"/>
+        <xsl:variable name="pre">
+          <xsl:analyze-string select="$rend" regex="pre\(([^)]*)\)">
+            <xsl:matching-substring>
+              <xsl:value-of select="replace( regex-group(1), $pop, $rlopr )"/>
+            </xsl:matching-substring>
+          </xsl:analyze-string>
+        </xsl:variable>
+        <xsl:variable name="post">
+          <xsl:analyze-string select="$rend" regex="post\(([^)]*)\)">
+            <xsl:matching-substring>
+              <xsl:value-of select="replace( regex-group(1), $pcp, $rlcpr )"/>
+            </xsl:matching-substring>
+          </xsl:analyze-string>
+        </xsl:variable>
+        <xsl:value-of select="wf:padme($pre||$post)"/>
+      </xsl:if>
+    </xsl:if>
   </xsl:template>
-  <xsl:template mode="sa" match="yaps:*/@*[$attrs eq 1]">
-  </xsl:template>
+  <xsl:template mode="sa" match="yaps:*/@*[$attrs eq 1]"/>
   <xsl:template mode="sa" match="@*[$attrs eq 9]">
     <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
@@ -394,6 +397,29 @@
     <xsl:value-of select="'&#x20;'||$stringIN||'&#x20;'"/>
   </xsl:function>
 
+  <xsl:function name="wf:unicodeCharName" as="xs:string">
+    <xsl:param name="thisChar" as="element(ucd:char)"/>
+    <xsl:choose>
+      <xsl:when test="$thisChar[@na  and  normalize-space(@na1) ne '']">
+        <xsl:value-of select="$thisChar/@na||' or '||$thisChar/@na1"/>
+      </xsl:when>
+      <xsl:when test="$thisChar[@na or @na1]">
+        <xsl:value-of select="( $thisChar/@na, $thisChar/@na1 )[1]"/>
+      </xsl:when>
+      <xsl:when test="$thisChar/parent::ucd:group[@na or normalize-space(@na1) ne '']">
+        <xsl:choose>
+          <xsl:when test="$thisChar/parent::ucd:group[@na and normalize-space(@na1) ne '']">
+            <xsl:value-of
+              select="$thisChar/parent::ucd:group/@na||' or '||$thisChar/parent::ucd:group/@na1"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$thisChar/parent::ucd:group/@na"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>Unicode name not available</xsl:otherwise>
+    </xsl:choose>
+  </xsl:function>
 <!--  <xsl:template name="generator">
         <out:template match="@*" mode="skip0 skip1 skip2 skip3 skip4" priority="2">
           <out:apply-templates select=".">
