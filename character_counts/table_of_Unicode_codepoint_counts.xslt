@@ -254,7 +254,8 @@
               <li class="{$skip eq 3}"><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<tt>&lt;tei:fw></tt>, <tt>&lt;wwp:mw></tt>, <tt>&lt;figDesc></tt>) [default]</li>
               <li class="{$skip eq 4}"><span class="val">4</span>: do 3, and also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
                 <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
-                <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP)</li>
+                <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP; and for WWP this
+                means counting the regularized version of each <tt>&lt;vuji></tt> character)</li>
             </ul>
           </dd>
           <dt><span class="param">whitespace</span></dt>
@@ -324,6 +325,19 @@
       <choice><sic/><expan/><supplied/></choice>, anyway
     -->
     <xsl:apply-templates select="*[1]" mode="#current"/>
+  </xsl:template>
+  <xsl:template mode="sa" match="wwp:vuji[$skip ge 4]">
+    <xsl:copy>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:apply-templates select="node()" mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template mode="sa" match="wwp:vuji/text()[$skip ge 4]">
+    <xsl:choose>
+      <xsl:when test=". eq 'VV' or . eq 'Vv'">W</xsl:when>
+      <xsl:when test=". eq 'vv'">w</xsl:when>
+      <xsl:otherwise><xsl:value-of select="translate( ., 'VUJIvuji','UVIJuvij')"/></xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:template mode="sa" match="@*[$attrs eq 0]"/>
