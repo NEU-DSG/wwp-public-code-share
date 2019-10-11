@@ -63,6 +63,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+  
   <xsl:variable name="ucd">
     <xsl:choose>
       <xsl:when test="count( $ucdTemp/ucd:ucd/ucd:repertoire/ucd:group/ucd:char ) ge 128">
@@ -305,9 +306,7 @@
                   <xsl:value-of select="codepoints-to-string(.)"/>
                 </td>
                 <td class="ucn">
-                  <xsl:variable as="element(ucd:char)" name="char"
-                    select="($ucd/ucd:ucd/ucd:repertoire/ucd:group/ucd:char[@cp eq $hexNum4digit],$ucd/*)[1]"/>
-                  <xsl:value-of select="wf:unicodeCharName($char)"/>
+                  <xsl:value-of select="wf:unicodeCharName( $hexNum4digit )"/>
                 </td>
               </tr>
             </xsl:for-each>
@@ -426,8 +425,14 @@
   </xsl:function>
 
   <xsl:function name="wf:unicodeCharName" as="xs:string">
-    <xsl:param name="thisChar" as="element(ucd:char)"/>
+    <xsl:param name="thisCodePoint" as="xs:string"/> <!-- should be 4-digit positive hexadecimal integer -->
+    <xsl:variable name="thisChar" select="$ucd/ucd:ucd/ucd:repertoire/ucd:group/ucd:char[@cp eq $thisCodePoint]"/>
     <xsl:choose>
+      <xsl:when test="not( exists( $thisChar) )">
+        <xsl:variable name="msg" select="'Unable to ascertain Unicode name for '||$thisCodePoint"/>
+        <xsl:message select="$msg"/>
+        <xsl:value-of select="$msg"/>
+      </xsl:when>
       <xsl:when test="$thisChar[@na  and  normalize-space(@na1) ne '']">
         <xsl:value-of select="$thisChar/@na||' or '||$thisChar/@na1"/>
       </xsl:when>
