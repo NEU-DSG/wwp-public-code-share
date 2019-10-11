@@ -49,12 +49,27 @@
   <xsl:variable name="myself" select="tokenize( $me,'/')[last()]"/>
   <xsl:variable name="andI" select="replace( $myself, '\.[^.]*$','')"/>
   <xsl:variable name="input" select="/"/>
-  <xsl:variable name="ucd">
+  <xsl:variable name="ucdTemp">
     <xsl:choose>
+      <xsl:when test="not( $UCD castable as xs:anyURI )">
+        <xsl:message terminate="no">Warning: Invalid $UCD — not a URI</xsl:message>
+      </xsl:when>
       <xsl:when test="doc-available($UCD)">
         <xsl:copy-of select="document($UCD)"/>
       </xsl:when>
       <xsl:otherwise>
+        <xsl:message>Warning: Unicode Character Database URI (<xsl:value-of select="$UCD"/>) not readable.</xsl:message>
+        <ucd:char>Unicode character name not available</ucd:char>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="ucd">
+    <xsl:choose>
+      <xsl:when test="count( $ucdTemp/ucd:ucd/ucd:repertoire/ucd:group/ucd:char ) ge 128">
+        <xsl:copy-of select="$ucdTemp"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message terminate="no">Warning: $UCD (<xsl:value-of select="$UCD"/>) does not seem to be a valid Unicode Character Database (grouped).</xsl:message>
         <ucd:char>Unicode character name not available</ucd:char>
       </xsl:otherwise>
     </xsl:choose>
@@ -72,9 +87,6 @@
       at the right time takes a long time, at least in $whitespace case).
     -->
     <xsl:choose>
-      <xsl:when test="not( $UCD castable as xs:anyURI )">
-        <xsl:message terminate="yes">Invalid $UCD — not a URI</xsl:message>
-      </xsl:when>
       <xsl:when test="not( $attrs = (0, 1, 9) )">
         <xsl:message terminate="yes">Invalid $attrs — should be 0, 1, or 9</xsl:message>
       </xsl:when>
@@ -293,7 +305,9 @@
                   <xsl:value-of select="codepoints-to-string(.)"/>
                 </td>
                 <td class="ucn">
-                  <xsl:value-of select="wf:unicodeCharName($ucd/ucd:ucd/ucd:repertoire/ucd:group/ucd:char[@cp eq $hexNum4digit])"/>
+                  <xsl:variable as="element(ucd:char)" name="char"
+                    select="($ucd/ucd:ucd/ucd:repertoire/ucd:group/ucd:char[@cp eq $hexNum4digit],$ucd/*)[1]"/>
+                  <xsl:value-of select="wf:unicodeCharName($char)"/>
                 </td>
               </tr>
             </xsl:for-each>
