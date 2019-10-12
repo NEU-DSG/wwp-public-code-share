@@ -22,15 +22,16 @@
   <xsl:param name="whitespace" select="0" as="xs:integer"/>
   <xsl:param name="fileName" select="tokenize(document-uri(/), '/')[last()]"/>
   <xd:doc>
-    <xd:desc>protect open paren, protect close paren: these variable should be
-    set to any single character you *know* will not be in the input document.
-    Only used for WWP.</xd:desc>
+    <xd:desc>protect open paren, protect close paren: theses variables should
+      each be set to any single character you *know* will not be in the input
+      document. And they have to be different from each other, too.
+      Only used for WWP.</xd:desc>
   </xd:doc>
   <xsl:param name="pop" select="'&#xFF08;'"/>
   <xsl:param name="pcp" select="'&#xFF09;'"/>
   <xd:doc>
     <xd:desc>rendition ladder (open|close) paren for search, and rendition ladder
-      (open|close) paren for replace: escape sequence to match an open or close
+      (open|close) paren for replace: escape sequences to match an open or close
       paren in a rendition ladder. Only used for WWP.</xd:desc>
   </xd:doc>
   <xsl:variable name="rlops" select="'\\\('"/>
@@ -49,6 +50,10 @@
   <xsl:variable name="myself" select="tokenize( $me,'/')[last()]"/>
   <xsl:variable name="andI" select="replace( $myself, '\.[^.]*$','')"/>
   <xsl:variable name="input" select="/"/>
+  <xd:doc>
+    <xd:desc>get a copy of the Unicode Character Database in which to
+    look up character names.</xd:desc>
+  </xd:doc>
   <xsl:variable name="ucdTemp">
     <xsl:choose>
       <xsl:when test="not( $UCD castable as xs:anyURI )">
@@ -63,7 +68,6 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-  
   <xsl:variable name="ucd">
     <xsl:choose>
       <xsl:when test="count( $ucdTemp/ucd:ucd/ucd:repertoire/ucd:group/ucd:char ) ge 128">
@@ -76,6 +80,9 @@
     </xsl:choose>
   </xsl:variable>
   
+  <xd:doc>
+    <xd:desc>Generic identity template (low priority)</xd:desc>
+  </xd:doc>
   <xsl:template match="@*|node()" mode="#all" priority="-1">
     <xsl:copy>
       <xsl:apply-templates select="@*|node()" mode="#current"/>
@@ -125,9 +132,7 @@
         <xsl:when test="$whitespace eq 3">
           <xsl:value-of select="$content"/>
         </xsl:when>
-        <xsl:otherwise>
-          <xsl:message terminate="yes" select="'Invalid whitespace param '||$whitespace"/>
-        </xsl:otherwise>
+        <!-- Because of unpocessable parameter test, above, we know no other value is possible -->
       </xsl:choose>
     </xsl:variable>
     <xsl:if test="$debug">
@@ -150,9 +155,7 @@
           <xsl:value-of
             select="translate( lower-case( $bigString ), '&#x017F;', 's')"/>
         </xsl:when>
-        <xsl:otherwise>
-          <xsl:message terminate="yes" select="'Invalid fold param '||$fold"/>
-        </xsl:otherwise>
+        <!-- Because of unpocessable parameter test, above, we know no other value is possible -->
       </xsl:choose>
     </xsl:variable>
     <xsl:if test="$debug">
@@ -453,114 +456,5 @@
       <xsl:otherwise>Unicode name not available</xsl:otherwise>
     </xsl:choose>
   </xsl:function>
-<!--  <xsl:template name="generator">
-        <out:template match="@*" mode="skip0 skip1 skip2 skip3 skip4" priority="2">
-          <out:apply-templates select=".">
-            <xsl:attribute name="_mode">
-              <xsl:text>{'attrs'||$attrs}</xsl:text>
-            </xsl:attribute>
-          </out:apply-templates>
-        </out:template>
-        <out:template match="@*" mode="attrs0"/>
-          <xsl:choose>
-            <xsl:when test="$scheme eq 'TEI'">
-              <out:template match="@*" mode="attrs1">
-                <out:choose>
-                  <out:when test="self::attribute(assertedValue) and ../@locus eq 'value'">
-                    <out:value-of select="wf:padme(.)"/>
-                  </out:when>
-                  <out:when test="self::attribute(baseForm) | self::attribute(lemma) | self::attribute(orig)">
-                    <!-\- could use "name(.) = ('baseForm','lemma','orig')" instead -\->
-                    <out:value-of select="wf:padme(.)"/>
-                  </out:when>
-                  <out:when test="self::attribute(expand)  and  not(parent::classRef)">
-                    <out:value-of select="wf:padme(.)"/>
-                  </out:when>
-                </out:choose>
-              </out:template>
-            </xsl:when>
-            <xsl:when test="$scheme eq 'WWP'">
-              <out:apply-templates select="@rend[contains(., 'pre(')]" mode="WWPattrs1">
-                <out:with-param name="keyword" select="'pre'"/>
-              </out:apply-templates>
-              <out:apply-templates select="@rend[contains(., 'post(')]" mode="WWPattrs1">
-                <out:with-param name="keyword" select="'post'"/>
-              </out:apply-templates>
-            </xsl:when>
-            <xsl:when test="$scheme eq 'XHTML'"></xsl:when>
-            <xsl:when test="$scheme eq 'yaps'"></xsl:when>
-          </xsl:choose>
-        <out:template match="@*" mode="attrs9">
-          <out:value-of select="wf:padme(.)"/>
-        </out:template>
-          
-        <out:template match="processing-instruction() | comment()" mode="skip0" priority="2">
-          <out:value-of select="."/>
-        </out:template>
-        <out:template match="comment() | processing-instruction()" mode="skip1 skip2 skip3 skip4"
-          priority="2"/>
-        <out:template match="teiHeader" mode="skip2 skip3 skip4" priority="2"/>
-        <out:template match="fw | note[@type and (@type ne 'authorial')] | figDesc"
-          mode="skip3 skip4" priority="2"/>
-        <out:template match="sic | orig | abbr" mode="skip4" priority="2"/>
-        <out:template match="choice[unclear | supplied]" mode="skip4" priority="2">
-          <out:apply-templates select="*[1]" mode="#current"/>
-        </out:template>
-        <xsl:if test="$scheme eq 'WWP'">
-          <out:template match="vuji" mode="skip4" priority="2">
-            <out:choose>
-              <out:when test=". eq 'i'">
-                <out:text>j</out:text>
-              </out:when>
-              <out:when test=". eq 'I'">
-                <out:text>J</out:text>
-              </out:when>
-              <out:when test=". eq 'j'">
-                <out:text>i</out:text>
-              </out:when>
-              <out:when test=". eq 'J'">
-                <out:text>I</out:text>
-              </out:when>
-              <out:when test=". eq 'u'">
-                <out:text>v</out:text>
-              </out:when>
-              <out:when test=". eq 'U'">
-                <out:text>V</out:text>
-              </out:when>
-              <out:when test=". eq 'v'">
-                <out:text>u</out:text>
-              </out:when>
-              <out:when test=". eq 'V'">
-                <out:text>U</out:text>
-              </out:when>
-              <out:when test=". eq 'vv'">
-                <out:text>w</out:text>
-              </out:when>
-              <out:when test=". eq 'VV'">
-                <out:text>W</out:text>
-              </out:when>
-              <out:otherwise>
-                <out:message select="'I don’t know what to do with VUJI content “' || . || '”.'"/>
-                <out:value-of select="."/>
-              </out:otherwise>
-            </out:choose>
-          </out:template>
-          <out:template match="@rend" mode="WWPattrs1" priority="2">
-            <out:param name="keyword"/>
-            <out:variable name="kwsrch" select="concat('^.*', $keyword, '\(([^)]+)\).*$')"/>
-            <out:variable name="paren_protected"
-              select="replace(replace(., $rlop, $pop), $rlcp, $pcp)"/>
-            <out:variable name="keyw" select="
-              if ( contains( $paren_protected, $keyword ) ) then
-                 replace( $paren_protected, $kwsrch, '$1')
-              else
-                 ''"/>
-            <out:attribute>
-              <xsl:attribute name="name" select="'{$keyword}'"/>
-              <xsl:attribute name="select" select='"replace($keyw, &apos;#(rule|ornament)&apos;, &apos;&apos;)"'/>
-            </out:attribute>
-          </out:template>
-        </xsl:if>
-  </xsl:template>
--->
+
 </xsl:stylesheet>
