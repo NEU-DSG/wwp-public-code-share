@@ -220,7 +220,7 @@
         </style>
       </head>
       <body>
-        <h2>Character Counts in <xsl:value-of select="$fileName"/></h2>
+        <h2>Character counts in <xsl:value-of select="$fileName"/></h2>
         <p>Character counts in <tt><xsl:value-of
           select="$fileName"/></tt><a href="#fn1">¹</a>, using the
           following parameters:</p>
@@ -397,10 +397,18 @@
   <xsl:template mode="sa" match="@*[$attrs eq 9]">
     <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
-  <!--
-    This function modified from the template at
-    http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
-  -->
+  
+  <xd:doc>
+    <xd:desc>
+      <xd:p>This function modified from the template at
+        http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
+      </xd:p>
+    </xd:desc>
+    <xd:param name="number">a string that represents a positive (base 10)
+    integer</xd:param>
+    <xd:return>a string that represents the same integer in base 16 (using
+    only uppercase letters)</xd:return>
+  </xd:doc>
   <xsl:function name="wf:decimal2hexDigits" as="xs:string+">
     <xsl:param name="number" as="xs:integer"/>
     <xsl:variable name="remainder" select="$number mod 16" as="xs:integer"/>
@@ -427,8 +435,27 @@
     <xsl:value-of select="'&#x20;'||$stringIN||'&#x20;'"/>
   </xsl:function>
 
+  <xd:doc>
+    <xd:desc>
+      <xd:p>Given a code point, return the Unicode name(s) of a character.</xd:p>
+      <xd:p>In the UCD, each character (other than those in certain groups of
+      CJK, Tangut, or Nüshu ideographic characters) has at least one name;
+      many have two names. The names are typically expressed on the
+      <tt>@na</tt> attribute, and second names on the <tt>@na1</tt>
+      attribute. But in some cases only one name is expressed on
+      <tt>@na1</tt>. Furthermore, when a name is not expressed on a
+      <tt>@na</tt> or <tt>@na1</tt> attribute, sometimes the attribute
+      is still present but just has no value. However, <tt>@na</tt>
+      is only specified without a value for characters we should never
+      see: DELETE and the PUA block.</xd:p>
+    </xd:desc>
+    <xd:param name="thisCodePoint">a 4-digit positive hexadecimal integer
+      (expressed as a 4-character long xs:string).</xd:param>
+    <xd:return>An xs:string that is either the Unicode name(s) or
+      an error message.</xd:return>
+  </xd:doc>
   <xsl:function name="wf:unicodeCharName" as="xs:string">
-    <xsl:param name="thisCodePoint" as="xs:string"/> <!-- should be 4-digit positive hexadecimal integer -->
+    <xsl:param name="thisCodePoint" as="xs:string"/>
     <xsl:variable name="thisChar" select="$ucd/ucd:ucd/ucd:repertoire/ucd:group/ucd:char[@cp eq $thisCodePoint]"/>
     <xsl:choose>
       <xsl:when test="not( exists( $thisChar) )">
@@ -436,12 +463,15 @@
         <xsl:message select="$msg"/>
         <xsl:value-of select="$msg"/>
       </xsl:when>
+      <!-- both @na and @na1 -->
       <xsl:when test="$thisChar[@na  and  normalize-space(@na1) ne '']">
         <xsl:value-of select="$thisChar/@na||' or '||$thisChar/@na1"/>
       </xsl:when>
+      <!-- either @na or @na1 -->
       <xsl:when test="$thisChar[@na or @na1]">
         <xsl:value-of select="( $thisChar/@na, $thisChar/@na1 )[1]"/>
       </xsl:when>
+      <!-- neither? look to parent <ucd:group> -->
       <xsl:when test="$thisChar/parent::ucd:group[@na or normalize-space(@na1) ne '']">
         <xsl:choose>
           <xsl:when test="$thisChar/parent::ucd:group[@na and normalize-space(@na1) ne '']">
