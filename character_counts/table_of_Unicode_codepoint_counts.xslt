@@ -442,7 +442,7 @@
       CJK, Tangut, or Nüshu ideographic characters) has at least one name;
       many have two names. The names are typically expressed on the
       <tt>@na</tt> attribute, and second names on the <tt>@na1</tt>
-      attribute. But in some cases only one name is expressed on
+      attribute. But in some cases the only one name is expressed on
       <tt>@na1</tt>. Furthermore, when a name is not expressed on a
       <tt>@na</tt> or <tt>@na1</tt> attribute, sometimes the attribute
       is still present but just has no value. However, <tt>@na</tt>
