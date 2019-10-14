@@ -1,0 +1,338 @@
+<!--
+	ibtwsh.dtd
+	This is the Itsy Bitsy Teeny Weeny Simple Hypertext DTD.
+	Its public identifier is -//XML-DEV List//DTD IBTWSH 1.0//EN
+	The contents are dedicated to the public domain by
+		the author, John Cowan <cowan@ccil.org>, except that
+		John Cowan retains the moral right to be known as the author.
+	This is draft 5.0
+-->
+
+<!-- 
+======================================================================
+This is an XML DTD which describes a subset of HTML 4.0 for embedded
+use within other XML DTDs.  It is by intention equivalent
+(within its scope) to -//W3C//DTD HTML 4.0 Transitional//EN, but is
+not a derived work in the copyright sense.  (Brief excerpts from
+HTML 4.0 Transitional appear here and there.)
+
+It is often convenient for XML documents to have a bit of
+documentation somewhere in them.  In the absence of a DTD like
+this one, that documentation winds up being #PCDATA only, which is
+a pity, because rich text adds measurably to the readability of
+documents.  By incorporating this DTD by reference (as an
+external parameter entity) into another DTD, that DTD inherits
+the capabilities of this one.  Using HTML-compatible elements
+and attributes allows the documentation to be passed straight
+through to HTML renderers.
+
+Current HTML renderers can cope with most XML tags, but empty
+tags require special treatment.  Inserting a space before the
+terminating "/>" usually makes the "/" (which is not HTML)
+invisible.  Using "<TAG></TAG>" is not as effective, as the
+latter is often misinterpreted as a second "<TAG>".
+
+Note that since the elements of this DTD are intended to be
+used within domain-specific elements of the surrounding DTD,
+there is no "root element" corresponding to the HTML
+element in HTML.  Recommended content models for elements
+containing documentation are "%horiz.model;" for simple
+text fragments, and "%struct.model;" for documents in extenso.
+
+You can use the XML element to embed arbitrary XML content
+into elements declared in this DTD.  If you'd rather use
+some other element instead, define it (or a group of alternatives)
+as the value of the parameter entity "ibtwsh.include".
+
+Note on draft 4.0:  This draft removes the ugly FONT
+element in favor of BIG and SMALL, and no longer provides
+ways to set color, the support for which is broken
+in many browsers anyhow.
+
+Draft 5.0 adds support for using IBTWSH as a replacement for full HTML.
+It now defines the elements HTML, HEAD, TITLE, STYLE, and BODY, with
+appropriate content models and attributes.   You can suppress
+these elements by defining the parameter entity "ibtwsh.document" as "IGNORE".
+======================================================================
+-->
+
+
+<!-- =========== Common attributes =========== -->
+
+<!-- All elements (except full-document elements) have these attributes -->
+<!ENTITY % all		"id ID #IMPLIED
+			class CDATA #IMPLIED
+			style CDATA #IMPLIED">
+
+<!-- All non-empty elements have these attributes -->
+<!ENTITY % i18n		"lang CDATA #IMPLIED
+			dir (ltr|rtl) 'ltr'">
+
+<!ENTITY % basic	"%all; %i18n;">
+
+
+<!-- =========== Models =========== -->
+
+<!ENTITY % local "CITE | CODE | DFN | EM | BIG | SMALL
+		| KBD | SAMP | STRONG | VAR
+		| ABBR | ACRONYM">
+
+<!-- default definition of "ibtwsh.include" is "XML" -->
+<!ENTITY % ibtwsh.include "XML">
+
+<!ENTITY % horiz "#PCDATA | %local; | A | BR | SPAN | %ibtwsh.include;">
+
+<!ENTITY % lists "DL | UL | OL | DIR">
+
+<!ENTITY % blocks "BLOCKQUOTE | DIV | HR | P | PRE">
+
+<!ENTITY % vert "%horiz; | %blocks; | %lists;">
+
+<!ENTITY % headers "H1 | H2 | H3">
+
+<!ENTITY % struct "%vert; | %headers; | ADDRESS">
+
+<!ENTITY % horiz.model "(%horiz;)*">
+
+<!ENTITY % vert.model "(%vert;)*">
+
+<!ENTITY % struct.model "(%struct;)*">
+
+
+<!-- =========== Horizontal formatting elements =========== -->
+
+<!-- Citation (italics) -->
+<!ELEMENT CITE %horiz.model;>
+<!ATTLIST CITE
+	%basic;>
+
+<!-- Source code (monowidth) -->
+<!ELEMENT CODE %horiz.model;>
+<!ATTLIST CODE
+	%basic;>
+
+<!--Terms being defined (normal) -->
+<!ELEMENT DFN %horiz.model;>
+<!ATTLIST DFN
+	%basic;>
+
+<!--Emphasis (italics) -->
+<!ELEMENT EM %horiz.model;>
+<!ATTLIST EM
+	%basic;>
+
+<!--Keyboard input -->
+<!ELEMENT KBD %horiz.model;>
+<!ATTLIST KBD
+	%basic;>
+
+<!-- Sample output text (monowidth) -->
+<!ELEMENT SAMP %horiz.model;>
+<!ATTLIST SAMP
+	%basic;>
+
+<!-- Strong emphasis (boldface) -->
+<!ELEMENT STRONG %horiz.model;>
+<!ATTLIST STRONG
+	%basic;>
+
+<!-- Variable names (italics) -->
+<!ELEMENT VAR %horiz.model;>
+<!ATTLIST VAR
+	%basic;>
+
+<!-- Abbreviations (normal) -->
+<!ELEMENT ABBR %horiz.model;>
+<!ATTLIST ABBR
+	%basic;>
+
+<!-- Acronyms (normal) -->
+<!ELEMENT ACRONYM %horiz.model;>
+<!ATTLIST ACRONYM
+	%basic;>
+
+<!-- Text importance (change of size) -->
+<!ELEMENT BIG %horiz.model;>
+<!ATTLIST BIG
+	%basic;>
+
+<!ELEMENT SMALL %horiz.model;>
+<!ATTLIST SMALL
+	%basic;>
+
+<!-- Hypertext anchors.
+	CONSTRAINT: A elements are not allowed inside
+	other A elements, a fact that XML cannot express. -->
+<!ELEMENT A %horiz.model;>
+<!ATTLIST A
+	%basic;
+	href CDATA #IMPLIED
+	name CDATA #IMPLIED
+	rel CDATA #IMPLIED
+	title CDATA #IMPLIED>
+
+<!-- Mandatory line breaks -->
+<!ELEMENT BR EMPTY>
+<!ATTLIST BR
+	%all;>
+
+<!-- Spans of text with changes in basic attributes -->
+<!ELEMENT SPAN %horiz.model;>
+<!ATTLIST SPAN
+	%basic;>
+
+<!-- Arbitrary embedded XML (not HTML-compatible yet) -->
+<!ELEMENT XML ANY>
+<!ATTLIST XML
+	%basic;>
+
+
+<!-- =========== Headers =========== -->
+
+<!ENTITY % align	"align (left|center|right) #IMPLIED">
+
+<!ELEMENT H1 %horiz.model;>
+<!ATTLIST H1
+	%align;
+	%basic;>
+
+<!ELEMENT H2 %horiz.model;>
+<!ATTLIST H2
+	%align;
+	%basic;>
+
+<!ELEMENT H3 %horiz.model;>
+<!ATTLIST H3
+	%align;
+	%basic;>
+
+
+<!-- =========== Lists =========== -->
+
+<!ENTITY % compact "compact (compact) #IMPLIED">
+
+<!-- Definition list -->
+<!ELEMENT DL (DT|DD)+>
+<!ATTLIST DL
+	%compact;
+	%basic;>
+
+<!-- Defined term -->
+<!ELEMENT DT %horiz.model;>
+<!ATTLIST DT
+	%basic;>
+
+<!-- Definition -->
+<!ELEMENT DD %vert.model;>
+<!ATTLIST DD
+	%basic;>
+
+<!-- Ordered list -->
+<!ELEMENT OL (LI)+>
+<!ATTLIST OL
+	%compact;
+	%basic;
+	start NMTOKEN #IMPLIED
+	type (1|a|A|i|I) #IMPLIED>
+
+<!-- Unordered list -->
+<!ELEMENT UL (LI)+>
+<!ATTLIST UL
+	%compact;
+	%basic;>
+
+<!-- Directory (minimal) list -->
+<!ELEMENT DIR (LI)+>
+<!ATTLIST DIR
+	%basic;>
+
+<!-- List element -->
+<!ELEMENT LI %vert.model;>
+<!ATTLIST LI
+	%basic;>
+
+
+
+<!-- =========== Other vertical elements =========== -->
+
+<!-- Address block -->
+<!ELEMENT ADDRESS (%horiz; | P)*>
+<!ATTLIST ADDRESS
+	%basic;>
+
+<!-- Block quotation -->
+<!ELEMENT BLOCKQUOTE %struct.model;>
+<!ATTLIST BLOCKQUOTE
+	%basic;>
+
+<!-- General text division -->
+<!ELEMENT DIV %struct.model;>
+<!ATTLIST DIV
+	%align;
+	%basic;>
+
+<!-- Horizontal rule -->
+<!ELEMENT HR EMPTY>
+<!ATTLIST HR
+	%all;>
+
+<!-- Paragraph -->
+<!ELEMENT P %horiz.model;>
+<!ATTLIST P
+	%basic;>
+
+<!-- Preformatted text -->
+<!ELEMENT PRE %horiz.model;>
+<!ATTLIST PRE
+	%basic;
+	width NMTOKEN #IMPLIED>
+
+
+<!-- =========== Standard XML and HTML entities =========== -->
+
+<!ENTITY % XMLlat1 PUBLIC
+    "-//XML-DEV List//ENTITIES Latin1//EN"
+    "XMLlat1.ent">
+ %XMLlat1;
+
+ <!ENTITY % XMLsymbol PUBLIC
+    "-//XML-DEV List//ENTITIES Symbols//EN"
+    "XMLsymbol.ent">
+ %XMLsymbol;
+
+ <!ENTITY % XMLspecial PUBLIC
+    "-//XML-DEV List//ENTITIES Special//EN"
+    "XMLspecial.ent">
+ %XMLspecial;
+
+
+<!-- =========== Support for complete HTML documents =========== -->
+
+<!ENTITY % ibtwsh.document "INCLUDE">
+<!-- These elements included by default -->
+
+<![%ibtwsh.document;[
+
+	<!ELEMENT HTML (HEAD?, BODY)>
+	<!ATTLIST HTML
+		%i18n;>
+
+	<!ELEMENT HEAD ((TITLE, STYLE?) | (STYLE, TITLE))>
+	<!ATTLIST HEAD
+		%i18n;>
+
+	<!ELEMENT TITLE (#PCDATA)>
+	<!ATTLIST TITLE
+		%i18n;>
+
+	<!ELEMENT STYLE (#PCDATA)>
+	<!ATTLIST STYLE
+		%i18n;
+		type CDATA #REQUIRED>
+
+	<!ELEMENT BODY %struct.model;>
+	<!ATTLIST BODY
+		%all;>
+	]]>
+
+<!-- =========== END OF ibtwsh.dtd =========== -->
