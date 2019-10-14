@@ -13,9 +13,18 @@
     and any other activity where having access to semi-regularized, complete words 
     might be useful.
     
-    Author: Ashley M. Clark
+    Author: Ashley M. Clark, Northeastern University Women Writers Project
+    See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-07-26, v2.4: Added MIT license and descriptive comments.
+      2019-05-31, v2.3: Ensured that the non-<group> children of `//text[group]` are
+        processed with unifier mode.
+        If $move-notes-to-anchors is toggled on, each <text> inherits pre-processed 
+        <note>s from its ancestors. Nested <text>s are copied forward during 
+        "unifier" mode, since its descendents would already have been run through 
+        unifier (and possibly "noted") mode.
+        The unused function wf:get-first-word() has been deleted.
       2019-01-30, v2.2: Added "noted" mode to ensure that <note>s will not break 
         up words. Instead of being resolved in "unifier" mode, these interrupting 
         <note>s are withheld and put back where they were in a third pass.
@@ -59,6 +68,28 @@
       2017-04-13: Added templates to include whitespace around elements which imply 
         some sort of spacing. Added @type to <seg>s to allow tracking of 
         intervention types.
+    
+    MIT License
+    
+    Copyright (c) 2019 Northeastern University Women Writers Project
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
   -->
   
   <xsl:output encoding="UTF-8" indent="no"/>
@@ -85,20 +116,20 @@
     content of <mw>. -->
   <xsl:param name="keep-metawork-text"            as="xs:boolean" select="false()"/>
   
-  <!-- Parameter option to keep/remove modern, WWP-authored content within <text>, 
+  <!-- Parameter option to keep/remove modern era, WWP-authored content within <text>, 
     such as <figDesc> and <note type="WWP">. The default is to keep WWP content. If 
     WWP content is removed, no @read is used to capture deleted content. -->
   <xsl:param name="keep-wwp-text"                 as="xs:boolean" select="true()"/>
   
-  <!-- Parameter option to move notes from the <hyperDiv> or endnotes section, to 
-    their anchorpoint. This could be useful for proximity-based text analysis. The 
-    default is to keep the notes where they appeared in the input XML. -->
+  <!-- Parameter option to move notes from the <hyperDiv> section, to their 
+    anchorpoint. This could be useful for proximity-based text analysis. The default 
+    is to keep the notes where they appeared in the input XML. -->
   <xsl:param name="move-notes-to-anchors"         as="xs:boolean" select="false()"/>
   
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.2'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.4'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
@@ -106,37 +137,35 @@
   
 <!-- FUNCTIONS -->
   
-  <xsl:function name="wf:get-first-word" as="xs:string">
-    <xsl:param name="text" as="xs:string"/>
-    <xsl:variable name="slim-text" select="normalize-space($text)"/>
-    <xsl:variable name="pattern">
-      <xsl:text>^\s*([\w'-]+[\.,;:!?”/)\]]?)((\s+|[―—]*|-{2,}).*)?$</xsl:text>
-    </xsl:variable>
-    <xsl:value-of select="replace($slim-text, $pattern, '$1')"/>
-  </xsl:function>
-  
+  <!-- Determine if a given element has both element and text node children. -->
   <xsl:function name="wf:has-mixed-content" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
     <xsl:value-of select="exists($element[*][text()])"/>
   </xsl:function>
   
+  <!-- Determine if a node meets the criteria for belonging to a pbGroup. This 
+    function does not imply that the given node *is* a part of a pbGroup, only that 
+    it could belong to one. -->
   <xsl:function name="wf:is-pbGroup-candidate" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
-    <xsl:value-of select="exists( $node[  self::mw[@type = ('catch', 'pageNum', 'sig', 'vol')] 
-                                       (: The XPath above tests for mw with types that could trigger a pbGroup. 
-                                          The XPath below tests for mw that could belong to a pbGroup. :)
-                                       or self::mw[@type = ('border', 'border-ornamental', 'border-rule', 'other', 'pressFig', 'unknown')]
-                                       or self::pb 
-                                       or self::milestone
-                                       or self::text()[normalize-space() eq ''] ] )"/>
+    <xsl:value-of 
+      select="exists( $node[  self::mw[@type = ('catch', 'pageNum', 'sig', 'vol')] 
+                           (: The XPath above tests for mw with types that could trigger a pbGroup. 
+                              The XPath below tests for mw that could belong to a pbGroup. :)
+                           or self::mw[@type = ('border', 'border-ornamental', 'border-rule', 'other', 'pressFig', 'unknown')]
+                           or self::pb 
+                           or self::milestone
+                           or self::text()[normalize-space() eq ''] ] )"/>
   </xsl:function>
   
+  <!-- Determine if a node appears in between parts of a single word. -->
   <xsl:function name="wf:is-splitting-a-word" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
     <xsl:value-of select="exists($node/preceding::text()[not(normalize-space(.) eq '')][1]
                                                         [matches(., $shyEndingPattern)])"/>
   </xsl:function>
   
+  <!-- Given a string, remove any soft hyphens and return the result. -->
   <xsl:function name="wf:remove-shy" as="xs:string">
     <xsl:param name="text" as="xs:string"/>
     <xsl:value-of select="replace($text, $shyEndingPattern, '')"/>
@@ -145,21 +174,12 @@
   
 <!-- TEMPLATES -->
   
-  <xsl:template match="/">
-    <xsl:for-each select="processing-instruction()">
-      <xsl:text>&#x0A;</xsl:text>
-      <xsl:copy-of select="."/>
-    </xsl:for-each>
-    <xsl:text>&#x0A;</xsl:text>
-    <xsl:apply-templates/>
-  </xsl:template>
-  
   <!-- Move a <note> to its anchor, making sure to set it off with whitespace if 
     needed. -->
   <xsl:template name="insert-preprocessed-note">
     <xsl:param name="processed-notes" as="node()*" tunnel="yes"/>
     <xsl:variable name="idref" select="@corresp/data(.)"/>
-    <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref]"/>
+    <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref][1]" as="node()?"/>
     <xsl:variable name="whitespaceSeg">
       <seg read="">
         <xsl:call-template name="set-provenance-attributes">
@@ -192,7 +212,7 @@
     </xsl:if>
   </xsl:template>
   
-  <!-- Test if the current element has whitespace preceding it explicitly. If the 
+  <!-- Test if the current element has, explicitly, whitespace preceding it. If the 
     current element is <lb> or <cb> (read: empty), then test the following node for 
     whitespace too. Add a single space as needed. -->
   <xsl:template name="make-whitespace-explicit">
@@ -254,64 +274,86 @@
   
 <!-- MODE: #default -->
   
+  <!-- Begin processing the document by giving each leading processing instruction 
+    its own line, for readability. (Based on code by Syd Bauman.) -->
+  <xsl:template match="/">
+    <xsl:for-each select="processing-instruction()">
+      <xsl:text>&#x0A;</xsl:text>
+      <xsl:copy-of select="."/>
+    </xsl:for-each>
+    <xsl:text>&#x0A;</xsl:text>
+    <xsl:apply-templates/>
+  </xsl:template>
+  
   <!-- Copy the <teiHeader>. -->
   <xsl:template match="teiHeader">
     <xsl:copy-of select="."/>
   </xsl:template>
   
-  <!-- Do not apply fulltexting transformations on any <text> containing a <group> 
-    of <text>s. -->
-  <xsl:template match="text[group]" priority="5">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-  
-  <!-- Run default mode on the descendants of <text>, then resolve soft hyphens. -->
+  <!-- Run default mode on the outermost <text> elements, then resolve soft hyphens. -->
   <xsl:template match="text">
+    <!-- Include any notes from an ancestor with a <hyperDiv>. -->
+    <xsl:param name="notes-preprocessed" as="node()*" tunnel="yes"/>
+    <!-- The first pass makes most whitespace explicit, creates pbGroups, makes 
+      <choice>s, etc. -->
     <xsl:variable name="first-pass" as="node()*">
       <xsl:apply-templates/>
     </xsl:variable>
-    <!-- If $move-notes-to-anchors is toggled on, pre-process soft hyphens for notes 
-      in the <hyperDiv>. These notes will be tunnelled to anchors. -->
-    <xsl:variable name="notes" as="node()*">
-      <xsl:if test="$move-notes-to-anchors">
-        <xsl:apply-templates select="$first-pass[self::hyperDiv]//note[@xml:id]" mode="unifier">
-          <xsl:with-param name="is-anchored" select="true()"/>
-        </xsl:apply-templates>
-      </xsl:if>
-    </xsl:variable>
-    <xsl:variable name="unified" as="node()*">
+    <!-- Now that most processing has taken place, enter unifier mode to connect up 
+      wordparts which were separated by soft hyphens. If $move-notes-to-anchors is 
+      toggled on, notes also are placed after their anchors. -->
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
       <xsl:apply-templates select="$first-pass" mode="unifier">
-        <xsl:with-param name="processed-notes" select="$notes" as="node()*" tunnel="yes"/>
+        <xsl:with-param name="processed-notes" select="$notes-preprocessed" as="node()*" tunnel="yes"/>
       </xsl:apply-templates>
+    </xsl:copy>
+  </xsl:template>
+  
+  <!-- If $move-notes-to-anchors is toggled on, preprocess the notes in the 
+    <hyperDiv> before continuing to apply templates. -->
+  <xsl:template match="text[hyperDiv][$move-notes-to-anchors]" priority="5">
+    <!-- Include any notes from an ancestor with a <hyperDiv>. -->
+    <xsl:param name="notes-preprocessed" as="node()*" tunnel="yes"/>
+    <!-- Pre-process notes in the <hyperDiv>. These notes will be tunnelled to 
+      anchors. -->
+    <xsl:variable name="notes-processed" as="node()*">
+      <xsl:variable name="first-pass" as="node()*">
+        <xsl:apply-templates select="hyperDiv//note[@xml:id]"/>
+      </xsl:variable>
+      <xsl:apply-templates select="$first-pass" mode="unifier">
+        <xsl:with-param name="is-anchored" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <!-- Use all preprocessed notes currently available and apply the default 
+      template for <text> (above). -->
+    <xsl:variable name="notes-full" as="node()*" 
+      select="( $notes-preprocessed, $notes-processed )"/>
+    <xsl:variable name="default-transform" as="node()">
+      <xsl:next-match>
+        <xsl:with-param name="notes-preprocessed" select="$notes-full" tunnel="yes"/>
+      </xsl:next-match>
     </xsl:variable>
     <!-- Check for and copy any <note>s that haven't been moved into the text yet. -->
     <xsl:variable name="unmoved-notes" as="node()*">
-      <xsl:if test="$move-notes-to-anchors">
-        <xsl:variable name="moved-notes" select="$unified//note/@sameAs/data(.)"/>
-        <xsl:copy-of select="$notes[@sameAs[not(data(.) = $moved-notes)]]"/>
-      </xsl:if>
+      <xsl:variable name="moved-notes" select="$default-transform//note/@sameAs/data(.)"/>
+      <xsl:copy-of select="$notes-processed[not(@sameAs[. = $moved-notes])]"/>
     </xsl:variable>
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:choose>
-        <!-- If $move-notes-to-anchors is toggled on and there are anchored notes 
-          that could not be inserted (because they break up a word), make sure the
-          processed notes are put back in their original locations. -->
-        <xsl:when test="$move-notes-to-anchors and exists($unmoved-notes)">
-          <xsl:apply-templates select="$unified" mode="noted">
-            <xsl:with-param name="unmoved-notes" select="$unmoved-notes" as="node()*" tunnel="yes"/>
-          </xsl:apply-templates>
-        </xsl:when>
-        <!-- If a third pass isn't needed, just copy the results from applying 
-          "unified" mode. -->
-        <xsl:otherwise>
-          <xsl:copy-of select="$unified"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:copy>
+    <xsl:choose>
+      <!-- If there are anchored notes from this <text>'s <hyperDiv> that could not 
+        be inserted (because they break up a word), make sure the processed notes 
+        are put back in their original locations. -->
+      <xsl:when test="exists($unmoved-notes)">
+        <xsl:apply-templates select="$default-transform" mode="noted">
+          <xsl:with-param name="unmoved-notes" select="$unmoved-notes" as="node()*" tunnel="yes"/>
+        </xsl:apply-templates>
+      </xsl:when>
+      <!-- If a third pass isn't needed, just copy the results from the default 
+        transformation. -->
+      <xsl:otherwise>
+        <xsl:copy-of select="$default-transform"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <!-- Normalize 'ſ' to 's'. Soft hyphens are replaced with $shyDelimiter, which is 
@@ -339,7 +381,9 @@
   </xsl:template>
   
   <!-- Add a single space before any element that implies some kind of whitespace 
-    separator. This implementation may be incomplete. -->
+    separator. This implementation may be incomplete. See the WWP’s internal 
+    documentation (https://wwp.northeastern.edu/research/publications/documentation/internal/#!/entry/break_narrative)
+    for more information. -->
   <xsl:template match="ab | argument | bibl | castGroup | castItem | castList | closer 
                       | dateline | div | docEdition | docImprint | docSale | epigraph 
                       | figDesc | figure | head | imprimatur | item | l | lg | list 
@@ -354,8 +398,8 @@
     </xsl:copy>
   </xsl:template>
   
-  <!-- Add a single space if there is no whitespace around <lb>s or <cb>s.
-     OPTIONAL: remove <lb>s and <cb>s. -->
+  <!-- Add a single space if there is no whitespace around <lb>s or <cb>s. If 
+    $keep-line-and-column-breaks is toggled on, <lb>s and <cb>s are then removed. -->
   <xsl:template match="lb | cb">
     <xsl:call-template name="make-whitespace-explicit"/>
     <xsl:if test="$keep-line-and-column-breaks">
@@ -421,21 +465,32 @@
     </xsl:call-template>
   </xsl:template>
   
-  <!-- Working assumptions:
-        * Elements in a "pbGroup" will always share the same parent.
-          * This apparently isn't always true in our textbase, but it probably should be?
-        * If there are text nodes in between pbGroup elements, they will contain only whitespace.
-        * Relevant <mw>s have a @type of "catch", "pageNum", "sig", or "vol".
-        * Each pbGroup must contain, at minimum, one <pb> and one <milestone> (2 members minimum).
-        * Each pbGroup may contain one <mw> of each relevant @type (6 members maximum).
-        * With intermediate whitespace, the final member of an pbGroup may be 11 
-          positions away from the first, at most.
-        * However, blank pages can be grouped closely, increasing the maximum number of members.
-        * pbGroups don't currently distinguish between the metawork around a single 
-          <pb>. If they did, the following would apply:
-          * Catchwords must appear before <pb>.
-          * <milestone> must appear immediately after <pb>.
-          * Other @types of <mw> can appear either before or after <pb>, depending on the text.
+  <!-- Identify artifacts around page breaks in a "pbGroup". If this pbGroup 
+    candidate is not preceded by another candidate, it is made the first child of 
+    the pbGroup. If the candidate does have preceding siblings which are candidates, 
+    it has already been wrapped, and nothing more needs to be done.
+    
+    Working assumptions:
+      * Elements in a "pbGroup" will always share the same parent.
+        * This apparently isn't always true in our textbase, but it probably should 
+           be.
+      * If there are text nodes in between pbGroup elements, they will contain only 
+         whitespace.
+      * Relevant <mw>s have a @type of "catch", "pageNum", "sig", or "vol" 
+         (catchwords, page numbers, signature marks, printed volume numbers).
+         https://wwp.northeastern.edu/research/publications/documentation/internal/#!/entry/mw_element
+      * Each pbGroup must contain, at minimum, one <pb> and one <milestone> (2 
+         members minimum).
+      * Each pbGroup may contain one <mw> of each relevant @type (6 members maximum).
+      * With intermediate whitespace, the final member of an pbGroup may be 11 
+         positions away from the first, at most.
+      * However, blank pages can be grouped closely, increasing the maximum number 
+         of members.
+      * pbGroups don't currently distinguish between the metawork around a single 
+         <pb>. If they did, the following would apply:
+        * Catchwords must appear before <pb>.
+        * <milestone> must appear immediately after <pb>.
+        * Other @types of <mw> can appear either before or after <pb>, depending on the text.
   -->
   <xsl:template match="mw[@type = ('catch', 'pageNum', 'sig', 'vol')] | pb | milestone">
     <!-- If this is the first in an pbGroup, start pbGrouper mode to collect this 
@@ -449,7 +504,6 @@
           <xsl:with-param name="subtype" select="'add-element'"/>
         </xsl:call-template>
         <xsl:variable name="my-position" select="position()"/>
-        <!--<xsl:text>&#xa;</xsl:text>-->
         <xsl:call-template name="pbSubsequencer">
           <xsl:with-param name="start-position" select="$my-position"/>
         </xsl:call-template>
@@ -463,8 +517,11 @@
   <xsl:template name="pbSubsequencer">
     <xsl:param name="start-position" as="xs:integer"/>
     <xsl:variable name="max-length" select="14"/>
+    <!-- Continue only if there are text or element siblings after this 
+      $start-position. -->
     <xsl:if test="count(subsequence(parent::*/(* | text()),1,$start-position)) gt 0">
       <xsl:variable name="groupmates">
+        <!-- Get the next $max-length siblings... -->
         <xsl:variable name="siblings-after" as="node()*">
           <xsl:variable name="all-after" 
             select="subsequence(parent::*/(* | text()), $start-position, last())"/>
@@ -472,6 +529,8 @@
                                  subsequence($all-after, 1, $max-length)
                                else $all-after"/>
         </xsl:variable>
+        <!-- ...and test them to find the first which doesn't qualify as a pbGroup 
+          candidate. -->
         <xsl:variable name="first-nonmatch">
           <xsl:variable name="nonmatches" as="xs:boolean*">
             <xsl:for-each select="$siblings-after">
@@ -481,22 +540,27 @@
           </xsl:variable>
           <xsl:value-of select="index-of($nonmatches,true())[1]"/>
         </xsl:variable>
+        <!-- Identify and copy the pbGroup candidates in this set. -->
         <xsl:variable name="potential-group" 
           select="if ( $first-nonmatch ne '' ) then 
                     subsequence($siblings-after, 1, $first-nonmatch - 1) 
                   else $siblings-after"/>
         <xsl:copy-of select="$potential-group"/>
+        <!-- Run this template again if all $max-length nodes were pbGroup 
+          candidates. -->
         <xsl:if test="$first-nonmatch eq '' and count($siblings-after) eq $max-length">
           <xsl:call-template name="pbSubsequencer">
             <xsl:with-param name="start-position" select="$start-position + $max-length"/>
           </xsl:call-template>
         </xsl:if>
       </xsl:variable>
+      <!-- Run all pbGroup-mates through pbGrouper mode. -->
       <xsl:apply-templates select="$groupmates" mode="pbGrouper"/>
     </xsl:if>
   </xsl:template>
   
-  <!-- Delete whitespace and certain types of <mw> when they trail along with a pbGroup. -->
+  <!-- Delete whitespace and certain types of <mw> when they trail along with a 
+    pbGroup. -->
   <xsl:template match="mw [@type = ('border', 'border-ornamental', 'border-rule', 'other', 'pressFig', 'unknown')]
                           [preceding-sibling::*[1][wf:is-pbGroup-candidate(.)]]
                       | text()[normalize-space(.) eq '']
@@ -505,8 +569,8 @@
   
 <!-- MODE: text2attr -->
   
-  <!-- Create @read and provenance attributes from text nodes. This template will 
-    only work if the matched text node is the first or only child of its parent, 
+  <!-- Create @read and any provenance attributes from text nodes. This template 
+    will only work if the matched text node is the first or only child of its parent, 
     since attributes cannot be inserted after an element's child nodes. -->
   <xsl:template name="read-text-node" match="text()" mode="text2attr">
     <xsl:param name="intervention-type" select="''" as="xs:string" tunnel="yes"/>
@@ -553,6 +617,11 @@
   
 <!-- MODE: unifier -->
   
+  <!-- Nested <text>s should have already been handled; here they are copied forward. -->
+  <xsl:template match="text" mode="unifier">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  
   <!-- Copy whitespace-only text nodes forward, unless they occur between a soft 
     hyphen and a subsequent wordpart. -->
   <xsl:template match="text()[normalize-space(.) eq '']" mode="unifier" priority="10">
@@ -571,7 +640,8 @@
     </xsl:choose>
   </xsl:template>
   
-  <!-- OPTIONAL: remove the auto-generated @type of 'implicit-whitespace'. -->
+  <!-- If $include-provenance-attributes is toggled off, remove the auto-generated 
+    @type of 'implicit-whitespace'. -->
   <xsl:template match="seg[@type eq 'implicit-whitespace'][not($include-provenance-attributes)]" mode="unifier">
     <xsl:copy>
       <xsl:copy-of select="@* except @type"/>
@@ -580,7 +650,7 @@
   </xsl:template>
   
   <!-- Delete the results of the 'make-whitespace-explicit' template, if (1) they 
-    occur between a soft hyphen and following wordparts, or (2) they are the first 
+    occur between a soft hyphen and following wordparts, OR, (2) they are the first 
     child of a pbGroup that has preceding whitespace. -->
   <xsl:template match="seg[@type eq 'implicit-whitespace'][wf:is-splitting-a-word(.)]
     | ab[@type eq 'pbGroup'][preceding::node()[self::text() and matches(., '\s+$')]]
@@ -623,7 +693,8 @@
     </xsl:if>
   </xsl:template>
   
-  <!-- If metawork will not be reconstituted, keep <ab> wrappers around pbGroups. -->
+  <!-- If metawork will not be reconstituted ($keep-metawork-text is toggled off), 
+    keep <ab> wrappers around pbGroups. -->
   <xsl:template match="ab[@type eq 'pbGroup'][not($keep-metawork-text)]" mode="unifier">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
@@ -661,7 +732,8 @@
   
   <!-- If $move-notes-to-anchors is toggled on, anchored notes are suppressed where 
     they appeared in the XML, and copied alongside their referencing context. -->
-  <xsl:template match="hyperDiv/notes/note[@xml:id][$move-notes-to-anchors]" mode="unifier">
+  <xsl:template match="note[@xml:id][$move-notes-to-anchors]
+                           [exists(parent::notes) or not(exists(parent::*))]" mode="unifier">
     <xsl:param name="is-anchored" select="false()" as="xs:boolean"/>
     <xsl:choose>
       <xsl:when test="$is-anchored">
@@ -698,7 +770,7 @@
     <xsl:param name="unmoved-notes" as="node()*" tunnel="yes"/>
     <xsl:variable name="idref" select="concat('#', @xml:id)"/>
     <xsl:choose>
-      <xsl:when test="$idref = $unmoved-notes/@sameAs">
+      <xsl:when test="$idref = $unmoved-notes/@sameAs/data(.)">
         <xsl:copy>
           <xsl:copy-of select="@* except (@resp[starts-with(., 'fulltextBot')], @subtype)"/>
           <xsl:copy-of select="$unmoved-notes[@sameAs eq $idref]/node()"/>
