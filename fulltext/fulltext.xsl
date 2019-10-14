@@ -17,6 +17,10 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-09-23, v2.5: Tweaked note insertion such that notes on notes are inserted 
+        at the same time as the annotated notes. At the time of this writing, only 
+        documents in the textbase sandbox have notes with @corresp pointing to other 
+        notes.
       2019-07-26, v2.4: Added MIT license and descriptive comments.
       2019-05-31, v2.3: Ensured that the non-<group> children of `//text[group]` are
         processed with unifier mode.
@@ -129,7 +133,7 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.4'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.5'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
@@ -178,8 +182,6 @@
     needed. -->
   <xsl:template name="insert-preprocessed-note">
     <xsl:param name="processed-notes" as="node()*" tunnel="yes"/>
-    <xsl:variable name="idref" select="@corresp/data(.)"/>
-    <xsl:variable name="matchedNote" select="$processed-notes[@sameAs eq $idref][1]" as="node()?"/>
     <xsl:variable name="whitespaceSeg">
       <seg read="">
         <xsl:call-template name="set-provenance-attributes">
@@ -188,6 +190,21 @@
         </xsl:call-template>
         <xsl:text> </xsl:text>
       </seg>
+    </xsl:variable>
+    <xsl:variable name="idref" select="@corresp/data(.)"/>
+    <xsl:variable name="matchedNote" 
+      select="$processed-notes[@sameAs eq $idref][1]" as="node()?"/>
+    <xsl:variable name="inserts" as="node()*">
+      <xsl:copy-of select="$matchedNote"/>
+      <xsl:if test="$matchedNote[@corresp[. = $processed-notes/@sameAs]]">
+        <xsl:variable name="matchedNoteForNote" 
+          select="$processed-notes[@sameAs eq $matchedNote/@corresp/data(.)]"/>
+        <xsl:if test="not($matchedNote[matches(data(.), '\s$')] 
+                      or $matchedNoteForNote[matches(data(.), '^\s')])">
+          <xsl:copy-of select="$whitespaceSeg"/>
+        </xsl:if>
+        <xsl:copy-of select="$matchedNoteForNote"/>
+      </xsl:if>
     </xsl:variable>
     <!-- Add a space before the note if needed. -->
     <xsl:variable name="hasPreSpacing" 
@@ -199,10 +216,10 @@
     <xsl:if test="not($hasPreSpacing)">
       <xsl:copy-of select="$whitespaceSeg"/>
     </xsl:if>
-    <xsl:copy-of select="$matchedNote"/>
+    <xsl:copy-of select="$inserts"/>
     <!-- Add a space after the note if needed. -->
     <xsl:variable name="hasPostSpacing" 
-      select=" matches($matchedNote/data(.), '\s$')
+      select=" matches($inserts[last()]/data(.), '\s$')
             or (
                 normalize-space() eq '' 
             and matches(following::node()[self::text() or self::*[text()]][1], '^\s') 
@@ -718,7 +735,7 @@
   
   <!-- If $move-notes-to-anchors is toggled on, elements with @corresp get copies of 
     any matching notes placed immediately after them. -->
-  <xsl:template match="*[@corresp][$move-notes-to-anchors]" mode="unifier">
+  <xsl:template match="*[@corresp][not(self::note)][$move-notes-to-anchors]" mode="unifier">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates mode="#current"/>
