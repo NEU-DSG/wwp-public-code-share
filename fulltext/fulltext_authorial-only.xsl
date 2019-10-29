@@ -54,10 +54,10 @@
     match="div[@type = ('advert', 'contents', 'corrigenda', 'frontispiece', 'docAuthorization', 'colophon', 'index')]
          | list[@type = ('errata', 'subscriber', 'toc')]
          | titleBlock | castList | advertisement | speaker | elision | figDesc | label
-           "/>
+           " priority="20"/>
   
   <!-- Only include content which was written by the author of the current document. -->
-  <xsl:template match="*[@hand] | *[@author]">
+  <xsl:template match="*[@hand] | *[@author]" priority="21">
     <xsl:variable name="attrData" select="(@hand | @author)/normalize-space()"/>
     <xsl:variable name="persRefs" select="replace(tokenize($attrData, '\s'), '^(#|p:)', '')"/>
     <xsl:variable name="wwoAuthor" 

@@ -17,6 +17,9 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-10-29, v2.6: Fixed a bug where notes in the <hyperDiv> were not deleted 
+        when copied to an anchor but its original parent was <add> instead of 
+        <notes>. All notes in the <hyperDiv> should be moved correctly now.
       2019-09-23, v2.5: Tweaked note insertion such that notes on notes are inserted 
         at the same time as the annotated notes. At the time of this writing, only 
         documents in the textbase sandbox have notes with @corresp pointing to other 
@@ -133,7 +136,7 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.5'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.6'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
@@ -750,7 +753,7 @@
   <!-- If $move-notes-to-anchors is toggled on, anchored notes are suppressed where 
     they appeared in the XML, and copied alongside their referencing context. -->
   <xsl:template match="note[@xml:id][$move-notes-to-anchors]
-                           [exists(parent::notes) or not(exists(parent::*))]" mode="unifier">
+                           [exists(ancestor::hyperDiv) or not(exists(parent::*))]" mode="unifier">
     <xsl:param name="is-anchored" select="false()" as="xs:boolean"/>
     <xsl:choose>
       <xsl:when test="$is-anchored">
