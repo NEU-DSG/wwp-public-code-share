@@ -16,7 +16,7 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
-      2019-10-29: Created this stylesheet from Sarah Connell's .
+      2019-10-29: Created this stylesheet from XPaths gathered during Sarah Connell's research.
     
     MIT License
     
