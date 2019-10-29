@@ -46,25 +46,58 @@
     want to use. -->
   <xsl:import href="fulltext.xsl"/>
   
-  <xsl:output encoding="UTF-8" indent="no"/>
-  <xsl:preserve-space elements="*"/>
+  <!-- Override the standard fulltextBot name with a custom one. -->
+  <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion,'-authorial')"/>
+  <!-- The name of the phenomenon upon which we are performing changes (deleting content, etc.). -->
+  <xsl:variable name="intervention-name" select="'nonauthorialParatext'"/>
   
   <!-- Delete these elements. -->
   <xsl:template
     match="div[@type = ('advert', 'contents', 'corrigenda', 'frontispiece', 'docAuthorization', 'colophon', 'index')]
          | list[@type = ('errata', 'subscriber', 'toc')]
          | titleBlock | castList | advertisement | speaker | elision | figDesc | label
-           " priority="20"/>
+           " priority="20">
+    <xsl:variable name="wrapperGi" 
+      select="if ( self::speaker | self::elision | self::label ) then 'ab' else 'div'"/>
+    <!-- Add a wrapper element which can be tested when <note>s are moved. -->
+    <xsl:element name="{$wrapperGi}">
+      <xsl:attribute name="type" select="$intervention-name"/>
+      <xsl:call-template name="set-provenance-attributes">
+        <xsl:with-param name="subtype" select="'add-element'"/>
+      </xsl:call-template>
+      <xsl:apply-templates select="." mode="text2attr">
+        <xsl:with-param name="intervention-type" select="$intervention-name" tunnel="yes"/>
+      </xsl:apply-templates>
+    </xsl:element>
+  </xsl:template>
   
-  <!-- Only include content which was written by the author of the current document. -->
+  <!-- Follow the WWO author's decision when choosing to hide a child of <subst>. -->
+  <xsl:template match="subst" priority="20">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <!-- Only include content which was written by the author of the current document. Deleted text, 
+    however, is only removed if the WWO author has been identified as making that deletion. -->
   <xsl:template match="*[@hand] | *[@author]" priority="21">
     <xsl:variable name="attrData" select="(@hand | @author)/normalize-space()"/>
     <xsl:variable name="persRefs" select="replace(tokenize($attrData, '\s'), '^(#|p:)', '')"/>
     <xsl:variable name="wwoAuthor" 
       select="/TEI/teiHeader/fileDesc/titleStmt/author[1]/persName/@ref/substring-after(., 'p:')"/>
-    <xsl:if test="$persRefs = $wwoAuthor">
-      <xsl:next-match/>
-    </xsl:if>
+    <xsl:variable name="isAuthorial" select="$persRefs = $wwoAuthor"/>
+    <xsl:variable name="isDeletion" select="exists(self::del)" as="xs:boolean"/>
+    <xsl:choose>
+      <xsl:when test="($isAuthorial and not($isDeletion)) or (not($isAuthorial) and $isDeletion)">
+        <xsl:next-match/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="read-as-copy">
+          <xsl:with-param name="intervention-type" select="$intervention-name" tunnel="yes"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
 </xsl:stylesheet>
