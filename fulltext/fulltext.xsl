@@ -449,6 +449,25 @@
     </xsl:copy>
   </xsl:template>
   
+  <!-- Favor <add> within <subst>. -->
+  <xsl:template match="subst">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="subst"/>
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template match="del" mode="subst">
+    <xsl:call-template name="read-as-copy">
+      <xsl:with-param name="intervention-type" select="'subst'" tunnel="yes"/>
+    </xsl:call-template>
+  </xsl:template>
+  <xsl:template match="add" mode="subst">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="#default"/>
+    </xsl:copy>
+  </xsl:template>
+  
   <!-- Make sure Distinct Initial Capitals are uppercased. -->
   <xsl:template match="hi[@rend][contains(@rend,'class(#DIC)')]">
     <xsl:variable name="up">
@@ -786,7 +805,7 @@
   
   <!-- If $move-notes-to-anchors is toggled on, and a <note> cannot be moved 
     without interrupting a word, move it back into the <hyperDiv>. -->
-  <xsl:template match="hyperDiv/notes/note[@xml:id][not(node())]" mode="noted">
+  <xsl:template match="hyperDiv//note[@xml:id][not(node())]" mode="noted">
     <xsl:param name="unmoved-notes" as="node()*" tunnel="yes"/>
     <xsl:variable name="idref" select="concat('#', @xml:id)"/>
     <xsl:choose>
