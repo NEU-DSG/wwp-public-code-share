@@ -61,7 +61,7 @@
       select="if ( self::speaker | self::elision | self::label ) then 'ab' else 'div'"/>
     <!-- Add a wrapper element which can be tested when <note>s are moved. -->
     <xsl:element name="{$wrapperGi}">
-      <xsl:attribute name="type" select="$intervention-name"/>
+      <xsl:attribute name="type" select="concat($intervention-name,'Wrapper')"/>
       <xsl:call-template name="set-provenance-attributes">
         <xsl:with-param name="subtype" select="'add-element'"/>
       </xsl:call-template>
@@ -96,6 +96,34 @@
         <xsl:call-template name="read-as-copy">
           <xsl:with-param name="intervention-type" select="$intervention-name" tunnel="yes"/>
         </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <!-- In unifier mode, strip the intervention wrapper. -->
+  <xsl:template match="ab[@type eq concat($intervention-name,'Wrapper')] 
+     | div[@type eq concat($intervention-name,'Wrapper')]" mode="unifier">
+    <xsl:apply-templates mode="unifier">
+      <xsl:with-param name="note-to-attributes" select="true()" as="xs:boolean" tunnel="yes"/>
+    </xsl:apply-templates>
+  </xsl:template>
+  
+  <xsl:template match="*[@corresp][not(self::note)][$move-notes-to-anchors]" mode="unifier" priority="50">
+    <xsl:param name="note-to-attributes" select="false()" as="xs:boolean" tunnel="yes"/>
+    <xsl:variable name="note-insertion" as="node()*">
+      <xsl:call-template name="insert-preprocessed-note"/>
+    </xsl:variable>
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="#current"/>
+    </xsl:copy>
+    <xsl:choose>
+      <xsl:when test="$note-to-attributes">
+        <xsl:message>note2attr</xsl:message>
+        <xsl:apply-templates select="$note-insertion" mode="text2attr"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="$note-insertion"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
