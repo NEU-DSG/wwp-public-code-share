@@ -50,25 +50,48 @@
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion,'-authorial')"/>
   <!-- The name of the phenomenon upon which we are performing changes (deleting content, etc.). -->
   <xsl:variable name="intervention-name" select="'nonauthorialParatext'"/>
+
+
+<!--  TEMPLATES  -->
   
-  <!-- Delete these elements. -->
-  <xsl:template
-    match="div[@type = ('advert', 'contents', 'corrigenda', 'frontispiece', 'docAuthorization', 'colophon', 'index')]
-         | list[@type = ('errata', 'subscriber', 'toc')]
-         | titleBlock | castList | advertisement | speaker | elision | figDesc | label
-           " priority="20">
+  <!-- Wrap content in an element intended to signal non-authorial content. -->
+  <xsl:template name="add-intervention-wrapper">
+    <xsl:param name="content" as="node()*"/>
     <xsl:variable name="wrapperGi" 
       select="if ( self::speaker | self::elision | self::label ) then 'ab' else 'div'"/>
-    <!-- Add a wrapper element which can be tested when <note>s are moved. -->
     <xsl:element name="{$wrapperGi}">
       <xsl:attribute name="type" select="concat($intervention-name,'Wrapper')"/>
       <xsl:call-template name="set-provenance-attributes">
         <xsl:with-param name="subtype" select="'add-element'"/>
       </xsl:call-template>
-      <xsl:apply-templates select="." mode="text2attr">
-        <xsl:with-param name="intervention-type" select="$intervention-name" tunnel="yes"/>
-      </xsl:apply-templates>
+      <xsl:copy-of select="$content"/>
     </xsl:element>
+  </xsl:template>
+
+
+<!-- MODE: #default -->
+  
+  <!-- Delete the text content of these elements. -->
+  <xsl:template
+    match="div[@type = ('advert', 'contents', 'corrigenda', 'frontispiece', 'docAuthorization', 'colophon', 'index')]
+         | list[@type = ('errata', 'subscriber', 'toc')]
+         | titleBlock" priority="20">
+    <xsl:call-template name="add-intervention-wrapper">
+      <xsl:with-param name="content" as="node()*">
+        <xsl:apply-templates select="." mode="text2attr">
+          <xsl:with-param name="intervention-type" select="$intervention-name" tunnel="yes"/>
+        </xsl:apply-templates>
+      </xsl:with-param>
+    </xsl:call-template>
+  </xsl:template>
+  
+  <xsl:template match="castList | advertisement | speaker | elision | figDesc | label" priority="20">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:call-template name="set-provenance-attributes">
+        <xsl:with-param name="subtype" select="'del-content'"/>
+      </xsl:call-template>
+    </xsl:copy>
   </xsl:template>
   
   <!-- Follow the WWO author's decision when choosing to hide a child of <subst>. -->
@@ -93,14 +116,21 @@
         <xsl:next-match/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:call-template name="read-as-copy">
-          <xsl:with-param name="intervention-type" select="$intervention-name" tunnel="yes"/>
+        <xsl:call-template name="add-intervention-wrapper">
+          <xsl:with-param name="content" as="node()*">
+            <xsl:call-template name="read-as-copy">
+              <xsl:with-param name="intervention-type" select="$intervention-name" tunnel="yes"/>
+            </xsl:call-template>
+          </xsl:with-param>
         </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
   
-  <!-- In unifier mode, strip the intervention wrapper. -->
+  
+<!--  MODE: unifier  -->
+  
+  <!-- Strip away the intervention wrapper; it's no longer necessary. -->
   <xsl:template match="ab[@type eq concat($intervention-name,'Wrapper')] 
      | div[@type eq concat($intervention-name,'Wrapper')]" mode="unifier">
     <xsl:apply-templates mode="unifier">
@@ -108,6 +138,8 @@
     </xsl:apply-templates>
   </xsl:template>
   
+  <!-- If $move-notes-to-anchors is toggled on, copy a note after its anchor. However, if the note 
+    appears inside non-authorial content, its contents are moved into attributes. -->
   <xsl:template match="*[@corresp][not(self::note)][$move-notes-to-anchors]" mode="unifier" priority="50">
     <xsl:param name="note-to-attributes" select="false()" as="xs:boolean" tunnel="yes"/>
     <xsl:variable name="note-insertion" as="node()*">
@@ -119,7 +151,6 @@
     </xsl:copy>
     <xsl:choose>
       <xsl:when test="$note-to-attributes">
-        <xsl:message>note2attr</xsl:message>
         <xsl:apply-templates select="$note-insertion" mode="text2attr"/>
       </xsl:when>
       <xsl:otherwise>
