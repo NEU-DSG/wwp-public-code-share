@@ -17,6 +17,7 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-10-31, v2.7: Added code to favor <add> over <del> inside <subst>.
       2019-10-29, v2.6: Fixed a bug where notes in the <hyperDiv> were not deleted 
         when copied to an anchor but its original parent was <add> instead of 
         <notes>. All notes in the <hyperDiv> should be moved correctly now.
