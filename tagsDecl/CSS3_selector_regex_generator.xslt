@@ -21,7 +21,21 @@
   </xd:doc>
   
   <xd:doc scope="stylesheet">
-    <xd:desc>Generate a regex to validate CSS3 selectors</xd:desc>
+    <xd:desc>
+      <xd:p>Generate a regex to validate CSS3 selectors</xd:p>
+      <xd:p>INPUT: Any XML file. Most of the input file is ignored. However,
+      any elements that have a <xd:pre>@selector</xd:pre> attribute are
+        copied into the output. (This allows for easy debugging — put
+      the tests of interest into any file, run this on that file,
+      then either validate the RNG output against itself or execute
+      the XSLT output on itself.)</xd:p>
+      <xd:p>OUTPUT is to STDOUT, and is based on the <xd:pre>$output</xd:pre> parameter (which must be set):
+      <xd:ul>
+        <xd:li><xd:i>rng:</xd:i> a RELAX NG schema</xd:li>
+        <xd:li><xd:i>xslt:</xd:i> an XSLT stylesheet</xd:li>
+        <xd:li><xd:i>txt:</xd:i> a one-element </xd:li>
+      </xd:ul></xd:p>
+    </xd:desc>
   </xd:doc>
   
   <xd:doc scope="component">
