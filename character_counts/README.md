@@ -42,12 +42,21 @@ The quotation marks around the boolean value of $debug are required to protect t
 
 ### one
 
-[1] The default $UCD is currently `https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml` which is a bit problematic, as that is version 6.2.0 of Unicode. (The current version is 12.1.0). If you need a newer version, or need some Unihan characters, you can point to a different copy of the Unicode database via this parameter. I have not yet found one readily available lying around the web. (If you know of one, feel free to let us know.) The ones [provided by the Unicode Consortium](https://www.unicode.org/Public/UCD/latest/ucdxml/) are ZIPped. Thus, if you are using Saxon you can download a copy of the database (e.g., [the complete latest version](https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.all.grouped.zip)), and point to the downloaded ZIP file using the prefix `jar:` and the suffix `/!filename`, where _filename_ is the name of the file in the ZIP archive you would like to read. In the UCD case, there is only 1 file in each archive. Thus, e.g. `UCD='jar:file:/tmp/ucd.nounihan.grouped.zip!/ucd.nounihan.grouped.xml'`. (Note that the single straight quotation marks around the parameter value protect the `!` from being interpreted as a history command by the bash shell &#x2014; your shell may vary.)</p>
+**[1]** The default $UCD is currently `https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml` which is a bit problematic, as that is version 6.2.0 of Unicode. (The current version is 12.1.0). If you need a newer version, or need some Unihan characters, you can point to a different copy of the Unicode database via this parameter.
+
+I have not yet found one readily available lying around the web, i.e. available directly by URL. (If you know of one, feel free to let us know.) The ones [provided by the Unicode Consortium](https://www.unicode.org/Public/UCD/latest/ucdxml/) are ZIPped, and thus cannot be used directly by URL. But if you are using Saxon you can download a copy of the database (e.g., [the complete latest version](https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.all.grouped.zip)), and point to the downloaded ZIP file using the prefix `jar:` and the suffix `/!filename`, where _filename_ is the name of the file in the ZIP archive you would like to read. In the UCD case, there is only 1 file in each archive. Thus, e.g. `UCD='jar:file:/tmp/ucd.nounihan.grouped.zip!/ucd.nounihan.grouped.xml'`. (Note that the single straight quotation marks around the parameter value protect the `!` from being interpreted as a history command by the bash shell &#x2014; your shell may vary.)
 
 ---
-
 
 Brought to you by the [Women Writers
 Project](http://www.wwp.northeastern.edu/), part of the [Digital
 Scholarship Group](http://www.dsg.northeastern.edu/), [Northeastern
 University Libraries](http://library.northeastern.edu/).
+
+© 2019 Syd Bauman and the Women Writers Project; available under the terms of the MIT License:
+
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+> THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

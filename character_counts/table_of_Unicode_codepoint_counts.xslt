@@ -12,7 +12,11 @@
   xmlns:yaps="http://www.wwp.northeastern.edu/ns/yaps"
   xmlns:html="http://www.w3.org/1999/xhtml"
   version="3.0">
-  
+  <!--
+      Copyleft 2019 Syd Bauman and the Women Writers Project.
+      Available under the terms of the MIT License. (See the
+      accompanying README.md.)
+  -->
   <xsl:output method="xhtml" indent="yes" encoding="UTF-8" html-version="5"/>
   <xsl:param name="UCD" select="'https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml'"/>
   <xsl:param name="debug" select="false()" as="xs:boolean"/>
