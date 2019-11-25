@@ -23,17 +23,20 @@
       Output 2: The information from output 1 converted to a different, more “semantic”
          XML structure.
       Parameter $input = URL of input JSON
-      Parameter $direct_out = URL for storing output 1
-      Parameter $xmlified_out = URL for storing otuput 2
+      Parameter $direct_out = URL for storing output 1, “syntactic”
+      Parameter $xmlified_out = URL for storing otuput 2, “semantic”
+      Parameter $output:
+                “syntactic” or 1 = put output 1 on STDOUT[^1]
+                “semantic” or 2 = put output 2 on STDOUT[^1]
+                “both” or 3 = write output 1 to $direct_out and output 2 to $xmlified_out [default]
+  -->
 
-      In a future version I expect to give the user a choice of which
-      output to generate via a parameter; the chosen output will go to
-      STDOUT, the other will not be generated.
-
-      Note that this stylesheet is written as a standard 2-pass micropipeline
-      using different modes. The different modes are not strictly necessary,
-      as the first pass only matches elements in the fn: namespace, and the
-      second only matches things in no namespace.
+  <!-- Update Hx (in reverse chronological order): -->
+  <!-- 
+    * 2019-11-25 by Syd:
+      - Allow for only one of the output files to STDOUT, based on a parameter.
+      - Remove code that shoved all <Comments> into a single <comments>, as mattcg
+        has fixed the bug that made that hack necessary.[^3]      
   -->
 
   <!-- See also: https://www.w3.org/wiki/IANA_Language_Subtag_Registry_in_SKOS -->
@@ -42,38 +45,62 @@
   <xsl:output method="xml" indent="yes"/>
 
   <xsl:param name="input"
-             select="'https://raw.githubusercontent.com/mattcg/language-subtag-registry/master/data/json/registry.json'"/>
+    select="'https://raw.githubusercontent.com/mattcg/language-subtag-registry/master/data/json/registry.json'"/>
   <xsl:param name="direct_out"
              select="'/tmp/IANA_language_subtag_registry_syntactic.xml'"/>
   <xsl:param name="xmlified_out"
              select="'/tmp/IANA_language_subtag_registry_semantic.xml'"/>
+  <xsl:param name="output" select="'both'"/>
+  <xsl:variable name="outplace" as="xs:integer">
+    <xsl:choose>
+      <xsl:when test="$output cast as xs:string = ('1','syntactic')">1</xsl:when>
+      <xsl:when test="$output cast as xs:string = ('2','semantic')">2</xsl:when>
+      <xsl:when test="$output cast as xs:string = ('3','both')">3</xsl:when>
+      <xsl:otherwise>
+        <xsl:message>Unrecognized value of 'output' (<xsl:value-of select="$output"/>); using 'both'.</xsl:message>
+        <xsl:sequence select="3"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
   
   <xsl:template match="/">
     <!-- First step: get the real input file, and convert to XML: -->
-    <xsl:try select="doc-available( $input )">
-      <xsl:catch>
-        <xsl:message terminate="yes"
-                     select="'ERROR: Cannot read input document ('||$input||')'"/>
-      </xsl:catch>
-    </xsl:try>
-    <xsl:variable name="original" select="json-to-xml( unparsed-text( $input ) )"/>
-    <!-- 
-         Process the output of the first step in "pass1" mode to generate
-         output1.
-    -->
-    <xsl:variable name="direct">
+    <xsl:variable name="original" as="document-node()">
+      <xsl:try select="json-to-xml( unparsed-text( $input ) )">
+        <xsl:catch>
+          <xsl:message terminate="yes" select="'ERROR: Cannot read input document ('||$input||')'"/>
+        </xsl:catch>
+      </xsl:try>
+    </xsl:variable>
+    <!-- Process the output of the first step in "pass1" mode to generate output1. -->
+    <xsl:variable name="direct" as="element()">
       <xsl:apply-templates select="$original/fn:array" mode="pass1"/>
     </xsl:variable>
-    <xsl:result-document href="{$direct_out}">
-      <xsl:copy-of select="$direct"/>
-    </xsl:result-document>
-    <!--
-        Process output of mode "pass1" in "pass2" mode to generate
-        output2.
-    -->
-    <xsl:result-document href="{$xmlified_out}">
-      <xsl:apply-templates select="$direct" mode="pass2"/>
-    </xsl:result-document>
+    <!-- If asked for output2, then process output of mode "pass1" in "pass2" mode to generate output2. -->
+    <xsl:variable name="xmlified" as="element()?">
+      <xsl:if test="$outplace gt 1">
+        <xsl:apply-templates select="$direct" mode="pass2"/>
+      </xsl:if>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$outplace eq 1">
+        <xsl:copy-of select="$direct"/>
+      </xsl:when>
+      <xsl:when test="$outplace eq 2">
+        <xsl:copy-of select="$xmlified"/>
+      </xsl:when>
+      <xsl:when test="$outplace eq 3">
+        <xsl:result-document href="{$direct_out}">
+          <xsl:copy-of select="$direct"/>
+        </xsl:result-document>
+        <xsl:result-document href="{$xmlified_out}">
+          <xsl:copy-of select="$xmlified"/>
+        </xsl:result-document>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message terminate="yes">Internal error; outplace=<xsl:value-of select="$outplace"/>.</xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!-- Debugging: warn about anything unmatched -->
@@ -200,12 +227,7 @@
           for the vast majority) and every set of <Coments> should be
           a single element (which is true for most of them).
       -->
-      <xsl:apply-templates select="Description" mode="pass2"/>
-      <xsl:if test="Comments">
-        <xsl:element name="comments">
-          <xsl:apply-templates select="Comments" mode="pass2"/>
-        </xsl:element>
-      </xsl:if>
+      <xsl:apply-templates select="Description|Comments" mode="pass2"/>
     </xsl:element>
   </xsl:template>
 
@@ -218,25 +240,24 @@
   </xsl:template>
 
   <!--
-      The prose element <Description> just becomes a lower-caes copy
-      of itself
+      The prose elements <Description> and <Comments> just becomes
+      lower-caes copy of themselves
   -->
-  <xsl:template match="Description" mode="pass2" priority="3">
+  <xsl:template match="Description|Comments" mode="pass2" priority="3">
     <xsl:element name="{lower-case(name(.))}">
       <!-- Never anything other than text, so no need to apply templates -->
-      <xsl:value-of select="."/>
+      <xsl:value-of select="normalize-space(.)"/>
     </xsl:element>
   </xsl:template>
 
   <!--
-      The content of prose elements <Comments> are all tucked into a
-      single <Comments>, so here we just about the content.
-  -->
-  <xsl:template match="Comments" mode="pass2" priority="3">
-    <xsl:value-of select="."/>
-    <xsl:if test="position() lt last()">
-      <xsl:text>&#x20;</xsl:text>
-    </xsl:if>
-  </xsl:template>
-  
+      Notes
+      =====
+      [^1] Or wherever your XSLT engine puts the main output.
+      [^2] Note that this stylesheet is written as a standard 2-pass micropipeline
+           using different modes. The different modes are not strictly necessary,
+           as the first pass only matches elements in the fn: namespace, and the
+           second only matches things in no namespace.
+      [^3] See https://github.com/mattcg/language-subtag-registry/issues/6
+    -->
 </xsl:stylesheet>
