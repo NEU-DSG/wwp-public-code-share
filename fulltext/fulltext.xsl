@@ -17,7 +17,12 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
-      2019-12-03, v2.8: Remove text nodes (whitespace) inside <choice> and <subst>.
+      2019-12-03, v2.8: When $choose-original-content is toggled on, the usual 
+        <choice> resolution is reversed: abbreviations, errors, and original text 
+        content are preferred over expansions, corrections, and regularizations. 
+        Similarly, when $substitute-deletions is toggled on, <subst> resolution 
+        prefers the deleted text content over later additions. Text nodes 
+        (whitespace) are removed inside <choice> and <subst>.
       2019-10-31, v2.7: Added code to favor <add> over <del> inside <subst>.
       2019-10-29, v2.6: Fixed a bug where notes in the <hyperDiv> were not deleted 
         when copied to an anchor but its original parent was <add> instead of 
@@ -106,6 +111,11 @@
   
 <!-- PARAMETERS -->
   
+  <!-- Parameter option to prefer abbreviations, errors, and other original text 
+    content within <choice>. The default is to use the full, modern variant of text 
+    content: expansions, corrections, and regularizations. -->
+  <xsl:param name="choose-original-content"       as="xs:boolean" select="false()"/>
+  
   <!-- Parameter option to include/disinclude explanatory attributes (@resp, @type, 
     @subtype) when an element's textual content is added, deleted, or modified. Such 
     signposts might be useful in determining the provenance of interventions made by 
@@ -135,10 +145,14 @@
     is to keep the notes where they appeared in the input XML. -->
   <xsl:param name="move-notes-to-anchors"         as="xs:boolean" select="false()"/>
   
+  <!-- Parameter option to prefer deletions over additions within <subst>. The 
+    default is to use the added text content. -->
+  <xsl:param name="substitute-deletions"          as="xs:boolean" select="false()"/>
+  
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.7'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.8'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
@@ -438,7 +452,8 @@
     </seg>
   </xsl:template>
   
-  <!-- Favor <expan>, <reg>, and <corr> within <choice>. -->
+  <!-- Favor <expan>, <reg>, and <corr> within <choice>. If $choose-original-content 
+    is toggled on, <abbr>, <sic>, and <orig> will be used instead. -->
   <xsl:template match="choice">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
@@ -446,21 +461,32 @@
     </xsl:copy>
   </xsl:template>
   <xsl:template match="abbr | sic | orig" mode="choice">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="text2attr">
-        <xsl:with-param name="intervention-type" select="'choice'" tunnel="yes"/>
-      </xsl:apply-templates>
-    </xsl:copy>
+    <xsl:choose>
+      <xsl:when test="$choose-original-content">
+        <xsl:apply-templates select="." mode="#default"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="read-as-copy">
+          <xsl:with-param name="intervention-type" select="'choice'" tunnel="yes"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   <xsl:template match="expan | corr | reg" mode="choice">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="#default"/>
-    </xsl:copy>
+    <xsl:choose>
+      <xsl:when test="$choose-original-content">
+        <xsl:call-template name="read-as-copy">
+          <xsl:with-param name="intervention-type" select="'choice'" tunnel="yes"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="." mode="#default"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
-  <!-- Favor <add> within <subst>. -->
+  <!-- Favor <add> within <subst>. If $substitute-deletions is toggled on, <del> 
+    will be used instead. -->
   <xsl:template match="subst">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
@@ -468,15 +494,28 @@
     </xsl:copy>
   </xsl:template>
   <xsl:template match="del" mode="subst">
-    <xsl:call-template name="read-as-copy">
-      <xsl:with-param name="intervention-type" select="'subst'" tunnel="yes"/>
-    </xsl:call-template>
+    <xsl:choose>
+      <xsl:when test="$substitute-deletions">
+        <xsl:apply-templates select="." mode="#default"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="read-as-copy">
+          <xsl:with-param name="intervention-type" select="'subst'" tunnel="yes"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   <xsl:template match="add" mode="subst">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="#default"/>
-    </xsl:copy>
+    <xsl:choose>
+      <xsl:when test="$substitute-deletions">
+        <xsl:call-template name="read-as-copy">
+          <xsl:with-param name="intervention-type" select="'subst'" tunnel="yes"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="." mode="#default"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <!-- Make sure Distinct Initial Capitals are uppercased. -->
