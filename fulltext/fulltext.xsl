@@ -17,6 +17,7 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-12-03, v2.8: Remove text nodes (whitespace) inside <choice> and <subst>.
       2019-10-31, v2.7: Added code to favor <add> over <del> inside <subst>.
       2019-10-29, v2.6: Fixed a bug where notes in the <hyperDiv> were not deleted 
         when copied to an anchor but its original parent was <add> instead of 
@@ -426,6 +427,15 @@
     <xsl:if test="$keep-line-and-column-breaks">
       <xsl:call-template name="not-as-shallow-copy"/>
     </xsl:if>
+  </xsl:template>
+  
+  <!-- By default, delete all text inside <choice> and <subst>. -->
+  <xsl:template match="text()" mode="choice subst">
+    <seg>
+      <xsl:call-template name="read-text-node">
+        <xsl:with-param name="adding-element" select="true()"/>
+      </xsl:call-template>
+    </seg>
   </xsl:template>
   
   <!-- Favor <expan>, <reg>, and <corr> within <choice>. -->
