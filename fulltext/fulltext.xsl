@@ -137,7 +137,7 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.6'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.7'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
