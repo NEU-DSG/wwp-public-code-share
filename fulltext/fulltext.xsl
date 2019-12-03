@@ -23,6 +23,11 @@
         Similarly, when $substitute-deletions is toggled on, <subst> resolution 
         prefers the deleted text content over later additions. Text nodes 
         (whitespace) are removed inside <choice> and <subst>.
+        Expanded handling of word breakage to include `@break="no"` encoding. 
+        Whitespace is deleted around a non-breaking <lb> or <pb>, but hard hyphen 
+        characters are not deleted. With this change, the FulltextBot produces much 
+        better results when run on the Mary Moody Emerson manuscript (currently the 
+        only document in WWO to use this method of encoding word breakage).
       2019-10-31, v2.7: Added code to favor <add> over <del> inside <subst>.
       2019-10-29, v2.6: Fixed a bug where notes in the <hyperDiv> were not deleted 
         when copied to an anchor but its original parent was <add> instead of 
@@ -137,7 +142,7 @@
   
   <!-- Parameter option to keep/remove modern era, WWP-authored content within <text>, 
     such as <figDesc> and <note type="WWP">. The default is to keep WWP content. If 
-    WWP content is removed, no @read is used to capture deleted content. -->
+    WWP content is removed, no @read attribute is used to capture deleted content. -->
   <xsl:param name="keep-wwp-text"                 as="xs:boolean" select="true()"/>
   
   <!-- Parameter option to move notes from the <hyperDiv> section, to their 
@@ -159,6 +164,14 @@
   
   
 <!-- FUNCTIONS -->
+  
+  <!-- Determine if a node has a @break attribute with a value of "no". This 
+    attribute-value combination is the TEI-approved way of handling words which 
+    break over lines and pages. -->
+  <xsl:function name="wf:has-break-attribute-no" as="xs:boolean">
+    <xsl:param name="node" as="node()"/>
+    <xsl:value-of select="exists($node[self::*][@break eq 'no'])"/>
+  </xsl:function>
   
   <!-- Determine if a given element has both element and text node children. -->
   <xsl:function name="wf:has-mixed-content" as="xs:boolean">
@@ -745,41 +758,64 @@
     | ab[@type eq 'pbGroup'][preceding::node()[self::text() and matches(., '\s+$')]]
       /*[1][self::seg[@type eq 'implicit-whitespace']]"  priority="15" mode="unifier"/>
   
-  <!-- Remove soft hyphen delimiters from text nodes. -->
+  <!-- Remove soft hyphen delimiters from text nodes.
+    If the document uses `@break="no"` to indicate that a word breaks over a line, 
+    leading and/or following whitespace will be removed as needed. -->
   <xsl:template match="text()" mode="unifier">
-    <!-- If the preceding non-whitespace text node ended with a soft hyphen, remove 
-      any leading whitespace. -->
-    <xsl:variable name="mungedStart" as="xs:string">
-      <xsl:choose>
-        <xsl:when test="preceding::text()[not(normalize-space(.) eq '')][1][matches(., $shyEndingPattern)]">
-          <xsl:value-of select="replace(., '^\s+', '')"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="."/>
-        </xsl:otherwise>
-      </xsl:choose>
+    <xsl:variable name="replaceLeadingRegex" as="xs:string?">
+      <xsl:if test="exists(preceding::text()[not(normalize-space(.) eq '')][1]
+                                            [matches(., $shyEndingPattern)]) 
+                    or exists(preceding::node()[1][wf:has-break-attribute-no(.)])">
+        <xsl:text>^\s+</xsl:text>
+      </xsl:if>
     </xsl:variable>
-    <!-- If the soft hyphen delimiter occurs at the end of the text node, remove it 
-      and mark where it was. -->
-    <xsl:value-of select="wf:remove-shy($mungedStart)"/>
-    <xsl:call-template name="wordpart-end"/>
+    <xsl:variable name="replaceEndingRegex" as="xs:string?">
+      <xsl:if test="matches(., $shyEndingPattern) 
+                    or exists(following::node()[1][wf:has-break-attribute-no(.)])">
+        <xsl:text>(­\s*|\s+)$</xsl:text>
+      </xsl:if>
+    </xsl:variable>
+    <xsl:variable name="nodeMungingRegex" as="xs:string"
+      select="string-join(($replaceLeadingRegex, $replaceEndingRegex), '|')"/>
+    <!-- Mark any deletions to the start of this text node. -->
+    <xsl:if test="exists($replaceLeadingRegex) and matches(., $replaceLeadingRegex)">
+      <xsl:call-template name="remove-breaking-whitespace">
+        <xsl:with-param name="replaceLeadingWhitespace" select="true()"/>
+      </xsl:call-template>
+    </xsl:if>
+    <!-- Replace any relevant whitespace. -->
+    <xsl:value-of select="if ( $nodeMungingRegex eq '' ) then .
+                          else replace(., $nodeMungingRegex, '')"/>
+    <!-- Mark any deletions to the end of this text node. -->
+    <xsl:if test="exists($replaceEndingRegex) and matches(., $replaceEndingRegex)">
+      <xsl:call-template name="remove-breaking-whitespace">
+        <xsl:with-param name="replaceLeadingWhitespace" select="false()"/>
+      </xsl:call-template>
+    </xsl:if>
   </xsl:template>
   
-  <!-- If text has a soft-hyphen delimiter at the end, grab the next part of the 
-    word from the next non-whitespace text node. -->
-  <xsl:template name="wordpart-end">
-    <xsl:if test="matches(., $shyEndingPattern)">
-      <xsl:variable name="endingWhitespace" 
-        select="if ( matches(., '\s+$') ) then '\s+'
-                else ''"/>
-      <seg>
-        <xsl:attribute name="read" select="concat('­',$endingWhitespace)"/>
-        <xsl:call-template name="set-provenance-attributes">
-          <xsl:with-param name="type" select="'shy-part'"/>
-          <xsl:with-param name="subtype" select="'add-element mod-content'"/>
-        </xsl:call-template>
-      </seg>
-    </xsl:if>
+  <!-- Create a <seg> to mark the removal of content from a text node. -->
+  <xsl:template name="remove-breaking-whitespace">
+    <xsl:param name="replaceLeadingWhitespace" as="xs:boolean"/>
+    <xsl:variable name="regex" 
+       select="if ( $replaceLeadingWhitespace ) then '^(\s+)' else '(\s+)$'"/>
+    <seg>
+      <xsl:attribute name="read">
+        <xsl:if test="not($replaceLeadingWhitespace) and matches(., $shyEndingPattern)">
+          <xsl:text>­</xsl:text>
+        </xsl:if>
+        <xsl:analyze-string select="." regex="{ $regex }">
+          <xsl:matching-substring>
+            <xsl:value-of select="regex-group(1)"/>
+          </xsl:matching-substring>
+          <xsl:non-matching-substring/>
+        </xsl:analyze-string>
+      </xsl:attribute>
+      <xsl:call-template name="set-provenance-attributes">
+        <xsl:with-param name="type" select="'shy-part'"/>
+        <xsl:with-param name="subtype" select="'add-element mod-content'"/>
+      </xsl:call-template>
+    </seg>
   </xsl:template>
   
   <!-- If metawork will not be reconstituted ($keep-metawork-text is toggled off), 
