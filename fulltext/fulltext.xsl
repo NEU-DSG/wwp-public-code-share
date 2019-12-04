@@ -19,14 +19,15 @@
     Changelog:
       2019-12-04, v2.9: Expanded handling of `@break="no"` to include intermediate 
         space and `//ab[@type eq 'pbGroup']/pb[@break eq 'no']`.
+        Added the option to remove hard hyphens occurring before `@break="no"`.
         Normalized the content of @read by reducing adjacent whitespace to a single 
         space. This improves parsability for humans and programs. To map a 
         fulltexted node back to the original version, test for equality after using
         normalize-space() on both nodes.
         When modern text content is not desired, editorial notes in the Mary Moody
         Emerson documents are removed.
-        When there are more than two options within <choice> and <subst>, use only 
-        the first relevant child. <unclear> is allowed as a child of <choice>.
+        When there are more than two options within <choice> and <subst>, only the
+        first relevant child is used. <unclear> is allowed as a child of <choice>. 
       2019-12-03, v2.8: When $choose-original-content is toggled on, the usual 
         <choice> resolution is reversed: abbreviations, errors, and original text 
         content are preferred over expansions, corrections, and regularizations. 
@@ -137,6 +138,13 @@
     this stylesheet, or for debugging, or for tracking types of normally-implicit 
     behavior. The default is to include these attributes. -->
   <xsl:param name="include-provenance-attributes" as="xs:boolean" select="true()"/>
+  
+  <!-- Parameter option to keep/remove hard hyphens when they occur immediately 
+    before a non-breaking <lb> or <pb>. This is useful for documents which don't use 
+    U+00AD to indicate a soft hyphen, but DO use the `@break="no"` method of 
+    encoding word breakage. The default is to keep hard hyphens, removing 
+    intermediate whitespace only. -->
+  <xsl:param name="keep-eol-hard-hyphens"         as="xs:boolean" select="true()"/>
   
   <!-- Parameter option to keep/remove <lb>s and <cb>s from output. The default is 
     to keep them. -->
@@ -763,7 +771,10 @@
     <xsl:variable name="replaceEndingRegex" as="xs:string?">
       <xsl:if test="matches(., $shyEndingPattern) 
                     or exists(following::node()[1][wf:has-break-attribute-no(.)])">
-        <xsl:text>(­\s*|\s+)$</xsl:text>
+        <!-- If $keep-breakage-indicators is toggled off, EOL hard hyphens should be 
+          removed as well. -->
+        <xsl:value-of select="concat('(­\s*|', if ( $keep-eol-hard-hyphens ) then '' 
+                                               else '-', '\s+)$')"/>
       </xsl:if>
     </xsl:variable>
     <xsl:variable name="nodeMungingRegex" as="xs:string"
@@ -771,7 +782,7 @@
     <!-- Mark any deletions to the start of this text node. -->
     <xsl:if test="exists($replaceLeadingRegex) and matches(., $replaceLeadingRegex)">
       <xsl:call-template name="remove-breaking-whitespace">
-        <xsl:with-param name="replaceLeadingWhitespace" select="true()"/>
+        <xsl:with-param name="regex" select="$replaceLeadingRegex"/>
       </xsl:call-template>
     </xsl:if>
     <!-- Replace any relevant whitespace. -->
@@ -780,21 +791,16 @@
     <!-- Mark any deletions to the end of this text node. -->
     <xsl:if test="exists($replaceEndingRegex) and matches(., $replaceEndingRegex)">
       <xsl:call-template name="remove-breaking-whitespace">
-        <xsl:with-param name="replaceLeadingWhitespace" select="false()"/>
+        <xsl:with-param name="regex" select="$replaceEndingRegex"/>
       </xsl:call-template>
     </xsl:if>
   </xsl:template>
   
   <!-- Create a <seg> to mark the removal of content from a text node. -->
   <xsl:template name="remove-breaking-whitespace">
-    <xsl:param name="replaceLeadingWhitespace" as="xs:boolean"/>
-    <xsl:variable name="regex" 
-       select="if ( $replaceLeadingWhitespace ) then '^(\s+)' else '(\s+)$'"/>
+    <xsl:param name="regex" as="xs:string"/>
     <seg>
       <xsl:attribute name="read">
-        <xsl:if test="not($replaceLeadingWhitespace) and matches(., $shyEndingPattern)">
-          <xsl:text>­</xsl:text>
-        </xsl:if>
         <!-- Only mark the deleted whitespace of this text node. -->
         <xsl:analyze-string select="." regex="{ $regex }">
           <xsl:matching-substring>
