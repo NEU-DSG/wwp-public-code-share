@@ -17,6 +17,12 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-12-04, v2.9: Expanded handling of `@break="no"` to include intermediate 
+        space and `//ab[@type eq 'pbGroup']/pb[@break eq 'no']`.
+        Normalized the content of @read by reducing adjacent whitespace to a single 
+        space. This improves parsability for humans and programs. To map a 
+        fulltexted node back to the original version, test for equality after using
+        normalize-space() on both nodes.
       2019-12-03, v2.8: When $choose-original-content is toggled on, the usual 
         <choice> resolution is reversed: abbreviations, errors, and original text 
         content are preferred over expansions, corrections, and regularizations. 
@@ -206,6 +212,13 @@
        select="$node/(preceding::node()[1] | following::node()[1])
                 [wf:has-break-attribute-no(.)]"/>
     <xsl:value-of select="exists($precedingShy) or exists($nearbyBreakAttrNo)"/>
+  </xsl:function>
+  
+  <!-- Given some textual content from the XML document, reduce whitespace down to a 
+    single space for inclusion in a @read attribute. -->
+  <xsl:function name="wf:normalize-for-read" as="xs:string">
+    <xsl:param name="content" as="item()"/>
+    <xsl:value-of select="replace(xs:string($content), '\s+', ' ')"/>
   </xsl:function>
   
   <!-- Given a string, remove any soft hyphens and return the result. -->
@@ -546,7 +559,7 @@
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:if test="not(*) and $up ne data(.)">
-        <xsl:attribute name="read" select="data(.)"/>
+        <xsl:attribute name="read" select="wf:normalize-for-read(.)"/>
         <xsl:call-template name="set-provenance-attributes"/>
       </xsl:if>
       <xsl:copy-of select="$up"/>
@@ -557,7 +570,7 @@
   <xsl:template match="vuji">
     <xsl:variable name="text" select="normalize-space(.)"/>
     <xsl:copy>
-      <xsl:attribute name="read" select="text()"/>
+      <xsl:attribute name="read" select="wf:normalize-for-read(.)"/>
       <xsl:call-template name="set-provenance-attributes">
         <xsl:with-param name="subtype" select="'mod-content'"/>
       </xsl:call-template>
@@ -684,7 +697,7 @@
   <xsl:template name="read-text-node" match="text()" mode="text2attr">
     <xsl:param name="intervention-type" select="''" as="xs:string" tunnel="yes"/>
     <xsl:param name="adding-element" select="false()" as="xs:boolean"/>
-    <xsl:attribute name="read" select="."/>
+    <xsl:attribute name="read" select="wf:normalize-for-read(.)"/>
     <xsl:call-template name="set-provenance-attributes">
       <xsl:with-param name="type" select="$intervention-type"/>
       <xsl:with-param name="subtype">
@@ -736,7 +749,8 @@
   <xsl:template match="text()[normalize-space(.) eq '']" mode="unifier" priority="10">
     <xsl:choose>
       <xsl:when test="wf:is-splitting-a-word(.)">
-        <seg read="{xs:string(.)}">
+        <seg>
+          <xsl:attribute name="read" select="wf:normalize-for-read(.)"/>
           <xsl:call-template name="set-provenance-attributes">
             <xsl:with-param name="type" select="'explicit-whitespace'"/>
             <xsl:with-param name="subtype" select="'add-element mod-content'"/>
@@ -798,7 +812,7 @@
         <!-- Only mark the deleted whitespace of this text node. -->
         <xsl:analyze-string select="." regex="{ $regex }">
           <xsl:matching-substring>
-            <xsl:value-of select="regex-group(1)"/>
+            <xsl:value-of select="wf:normalize-for-read(regex-group(1))"/>
           </xsl:matching-substring>
           <xsl:non-matching-substring/>
         </xsl:analyze-string>
