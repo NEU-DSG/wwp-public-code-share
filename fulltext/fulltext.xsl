@@ -163,7 +163,7 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.8'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.9'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
@@ -397,7 +397,7 @@
     <!-- Use all preprocessed notes currently available and apply the default 
       template for <text> (above). -->
     <xsl:variable name="notes-full" as="node()*" 
-      select="( $notes-preprocessed, $notes-processed )"/>
+       select="( $notes-preprocessed, $notes-processed )"/>
     <xsl:variable name="default-transform" as="node()">
       <xsl:next-match>
         <xsl:with-param name="notes-preprocessed" select="$notes-full" tunnel="yes"/>
@@ -442,10 +442,14 @@
     </xsl:copy>
   </xsl:template>
   
-  <!-- OPTIONAL: completely remove the content of WWP notes and <figDesc>s. -->
+  <!-- If $keep-wwp-text is toggled off, completely remove the content of WWP notes 
+    and <figDesc>s. -->
   <xsl:template match="note[@type eq 'WWP'] [not($keep-wwp-text)]
                      | note[@type eq 'temp'][not($keep-wwp-text)]
-                     | figDesc              [not($keep-wwp-text)]" priority="30">
+                     | figDesc              [not($keep-wwp-text)]
+                     (: In the MME manuscript, notes are written by the editors. :)
+                     | text[starts-with(@xml:id, 'TR00727')]//div[@type eq 'notes']
+                                            [not($keep-wwp-text)]" priority="30">
     <xsl:call-template name="not-as-shallow-copy"/>
   </xsl:template>
   
