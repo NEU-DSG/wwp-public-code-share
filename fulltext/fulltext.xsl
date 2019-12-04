@@ -140,11 +140,11 @@
   <xsl:param name="include-provenance-attributes" as="xs:boolean" select="true()"/>
   
   <!-- Parameter option to keep/remove hard hyphens when they occur immediately 
-    before a non-breaking <lb> or <pb>. This is useful for documents which don't use 
-    U+00AD to indicate a soft hyphen, but DO use the `@break="no"` method of 
-    encoding word breakage. The default is to keep hard hyphens, removing 
-    intermediate whitespace only. -->
-  <xsl:param name="keep-eol-hard-hyphens"         as="xs:boolean" select="true()"/>
+    before a non-breaking <lb> or <pb>. This is useful for documents (such as the 
+    Mary Moody Emerson manuscript) which don't use U+00AD to indicate a soft hyphen, 
+    but DO use the `@break="no"` method of encoding word breakage. The default is to 
+    keep hard hyphens, removing intermediate whitespace only. -->
+  <xsl:param name="keep-eol-hard-hyphen-breaks"   as="xs:boolean" select="true()"/>
   
   <!-- Parameter option to keep/remove <lb>s and <cb>s from output. The default is 
     to keep them. -->
@@ -773,7 +773,7 @@
                     or exists(following::node()[1][wf:has-break-attribute-no(.)])">
         <!-- If $keep-breakage-indicators is toggled off, EOL hard hyphens should be 
           removed as well. -->
-        <xsl:value-of select="concat('(­\s*|', if ( $keep-eol-hard-hyphens ) then '' 
+        <xsl:value-of select="concat('(­\s*|', if ( $keep-eol-hard-hyphen-breaks ) then '' 
                                                else '-', '\s+)$')"/>
       </xsl:if>
     </xsl:variable>
