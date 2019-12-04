@@ -23,6 +23,10 @@
         space. This improves parsability for humans and programs. To map a 
         fulltexted node back to the original version, test for equality after using
         normalize-space() on both nodes.
+        When modern text content is not desired, editorial notes in the Mary Moody
+        Emerson documents are removed.
+        When there are more than two options within <choice> and <subst>, use only 
+        the first relevant child. <unclear> is allowed as a child of <choice>.
       2019-12-03, v2.8: When $choose-original-content is toggled on, the usual 
         <choice> resolution is reversed: abbreviations, errors, and original text 
         content are preferred over expansions, corrections, and regularizations. 
@@ -435,7 +439,7 @@
   
   <!-- By default when matching an element, copy it and apply templates to its 
     children. -->
-  <xsl:template match="*" mode="#default text2attr unifier noted" priority="-40">
+  <xsl:template match="*" mode="#default noted text2attr unifier" priority="-40">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates select="*|text()" mode="#current"/>
@@ -478,81 +482,6 @@
     <xsl:if test="$keep-line-and-column-breaks">
       <xsl:call-template name="not-as-shallow-copy"/>
     </xsl:if>
-  </xsl:template>
-  
-  <!-- By default, delete all text inside <choice> and <subst>. -->
-  <xsl:template match="text()" mode="choice subst">
-    <seg>
-      <xsl:call-template name="read-text-node">
-        <xsl:with-param name="adding-element" select="true()"/>
-      </xsl:call-template>
-    </seg>
-  </xsl:template>
-  
-  <!-- Favor <expan>, <reg>, and <corr> within <choice>. If $choose-original-content 
-    is toggled on, <abbr>, <sic>, and <orig> will be used instead. -->
-  <xsl:template match="choice">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="choice"/>
-    </xsl:copy>
-  </xsl:template>
-  <xsl:template match="abbr | sic | orig" mode="choice">
-    <xsl:choose>
-      <xsl:when test="$choose-original-content">
-        <xsl:apply-templates select="." mode="#default"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:call-template name="read-as-copy">
-          <xsl:with-param name="intervention-type" select="'choice'" tunnel="yes"/>
-        </xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-  <xsl:template match="expan | corr | reg" mode="choice">
-    <xsl:choose>
-      <xsl:when test="$choose-original-content">
-        <xsl:call-template name="read-as-copy">
-          <xsl:with-param name="intervention-type" select="'choice'" tunnel="yes"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates select="." mode="#default"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-  
-  <!-- Favor <add> within <subst>. If $substitute-deletions is toggled on, <del> 
-    will be used instead. -->
-  <xsl:template match="subst">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates mode="subst"/>
-    </xsl:copy>
-  </xsl:template>
-  <xsl:template match="del" mode="subst">
-    <xsl:choose>
-      <xsl:when test="$substitute-deletions">
-        <xsl:apply-templates select="." mode="#default"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:call-template name="read-as-copy">
-          <xsl:with-param name="intervention-type" select="'subst'" tunnel="yes"/>
-        </xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-  <xsl:template match="add" mode="subst">
-    <xsl:choose>
-      <xsl:when test="$substitute-deletions">
-        <xsl:call-template name="read-as-copy">
-          <xsl:with-param name="intervention-type" select="'subst'" tunnel="yes"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates select="." mode="#default"/>
-      </xsl:otherwise>
-    </xsl:choose>
   </xsl:template>
   
   <!-- Make sure Distinct Initial Capitals are uppercased. -->
@@ -691,6 +620,59 @@
                           [preceding-sibling::*[1][wf:is-pbGroup-candidate(.)]]
                       | text()[normalize-space(.) eq '']
                           [preceding-sibling::*[1][wf:is-pbGroup-candidate(.)]]"/>
+  
+  
+<!--  MODE: choice, subst  -->
+  
+  <!-- By default, elements within <choice> and <subst> are moved into attributes. -->
+  <xsl:template match="*" mode="choice subst" priority="-2">
+    <xsl:call-template name="read-as-copy"/>
+  </xsl:template>
+  
+  <!-- By default, move text content inside <choice> and <subst> into @read 
+    attributes. -->
+  <xsl:template match="text()" mode="choice subst">
+    <seg>
+      <xsl:call-template name="read-text-node">
+        <xsl:with-param name="adding-element" select="true()"/>
+      </xsl:call-template>
+    </seg>
+  </xsl:template>
+  
+  <!-- Favor <expan>, <reg>, and <corr> within <choice>. If $choose-original-content 
+    is toggled on, <abbr>, <sic>, and <orig> will be used instead. -->
+  <xsl:template match="choice" mode="#default">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="choice">
+          <xsl:with-param name="intervention-type" select="'choice'" tunnel="yes"/>
+      </xsl:apply-templates>
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template match="expan[1]  [not($choose-original-content)]
+                     | corr[1]   [not($choose-original-content)]
+                     | reg[1]    [not($choose-original-content)]
+                     | abbr[1]   [$choose-original-content] 
+                     | sic[1]    [$choose-original-content] 
+                     | orig[1]   [$choose-original-content]
+                     | unclear[1]"  mode="choice">
+    <xsl:apply-templates select="." mode="#default"/>
+  </xsl:template>
+  
+  <!-- Favor <add> within <subst>. If $substitute-deletions is toggled on, <del> 
+    will be used instead. -->
+  <xsl:template match="subst" mode="#default">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates mode="subst">
+        <xsl:with-param name="intervention-type" select="'subst'" tunnel="yes"/>
+      </xsl:apply-templates>
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template match="add[1][not($substitute-deletions)] 
+                     | del[1][$substitute-deletions]" mode="subst">
+    <xsl:apply-templates select="." mode="#default"/>
+  </xsl:template>
   
   
 <!-- MODE: text2attr -->
