@@ -170,7 +170,9 @@
     break over lines and pages. -->
   <xsl:function name="wf:has-break-attribute-no" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
-    <xsl:value-of select="exists($node[self::*][@break eq 'no'])"/>
+    <xsl:value-of 
+      select="exists($node[self::*][@break eq 'no']) 
+              or exists($node[self::ab][@type eq 'pbGroup']/*[wf:has-break-attribute-no(.)])"/>
   </xsl:function>
   
   <!-- Determine if a given element has both element and text node children. -->
@@ -197,8 +199,13 @@
   <!-- Determine if a node appears in between parts of a single word. -->
   <xsl:function name="wf:is-splitting-a-word" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
-    <xsl:value-of select="exists($node/preceding::text()[not(normalize-space(.) eq '')][1]
-                                                        [matches(., $shyEndingPattern)])"/>
+    <xsl:variable name="precedingShy"
+       select="$node/preceding::text()[not(normalize-space(.) eq '')][1]
+                                      [matches(., $shyEndingPattern)]"/>
+    <xsl:variable name="nearbyBreakAttrNo"
+       select="$node/(preceding::node()[1] | following::node()[1])
+                [wf:has-break-attribute-no(.)]"/>
+    <xsl:value-of select="exists($precedingShy) or exists($nearbyBreakAttrNo)"/>
   </xsl:function>
   
   <!-- Given a string, remove any soft hyphens and return the result. -->
@@ -595,7 +602,7 @@
         * Other @types of <mw> can appear either before or after <pb>, depending on the text.
   -->
   <xsl:template match="mw[@type = ('catch', 'pageNum', 'sig', 'vol')] | pb | milestone">
-    <!-- If this is the first in an pbGroup, start pbGrouper mode to collect this 
+    <!-- If this is the first in an pbGroup, start pb-grouper mode to collect this 
       element's related siblings. If there are other pbGroup candidates before this 
       one, nothing happens. -->
     <xsl:if test="not(preceding-sibling::*[1][wf:is-pbGroup-candidate(.)])">
@@ -656,8 +663,8 @@
           </xsl:call-template>
         </xsl:if>
       </xsl:variable>
-      <!-- Run all pbGroup-mates through pbGrouper mode. -->
-      <xsl:apply-templates select="$groupmates" mode="pbGrouper"/>
+      <!-- Run all pbGroup-mates through pb-grouper mode. -->
+      <xsl:apply-templates select="$groupmates" mode="pb-grouper"/>
     </xsl:if>
   </xsl:template>
   
@@ -700,10 +707,10 @@
   </xsl:template>
   
   
-<!-- MODE: pbGrouper -->
+<!-- MODE: pb-grouper -->
   
   <!-- Any non-whitespace content of a pbGroup is ignored. -->
-  <xsl:template match="text()" mode="pbGrouper">
+  <xsl:template match="text()" mode="pb-grouper">
     <xsl:if test="normalize-space(.) eq ''">
       <xsl:copy/>
     </xsl:if>
@@ -711,7 +718,7 @@
   
   <!-- The members of a pbGroup are copied through, retaining their attributes but 
     none of their children. -->
-  <xsl:template match="mw | pb | milestone" mode="#default pbGrouper" priority="-10">
+  <xsl:template match="mw | pb | milestone" mode="#default pb-grouper" priority="-10">
     <xsl:call-template name="make-whitespace-explicit"/>
     <xsl:call-template name="read-as-copy"/>
   </xsl:template>
@@ -728,8 +735,8 @@
     hyphen and a subsequent wordpart. -->
   <xsl:template match="text()[normalize-space(.) eq '']" mode="unifier" priority="10">
     <xsl:choose>
-      <xsl:when test="wf:is-splitting-a-word(.)" >
-        <seg read="\s+">
+      <xsl:when test="wf:is-splitting-a-word(.)">
+        <seg read="{xs:string(.)}">
           <xsl:call-template name="set-provenance-attributes">
             <xsl:with-param name="type" select="'explicit-whitespace'"/>
             <xsl:with-param name="subtype" select="'add-element mod-content'"/>
@@ -741,22 +748,6 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
-  <!-- If $include-provenance-attributes is toggled off, remove the auto-generated 
-    @type of 'implicit-whitespace'. -->
-  <xsl:template match="seg[@type eq 'implicit-whitespace'][not($include-provenance-attributes)]" mode="unifier">
-    <xsl:copy>
-      <xsl:copy-of select="@* except @type"/>
-      <xsl:apply-templates mode="#current"/>
-    </xsl:copy>
-  </xsl:template>
-  
-  <!-- Delete the results of the 'make-whitespace-explicit' template, if (1) they 
-    occur between a soft hyphen and following wordparts, OR, (2) they are the first 
-    child of a pbGroup that has preceding whitespace. -->
-  <xsl:template match="seg[@type eq 'implicit-whitespace'][wf:is-splitting-a-word(.)]
-    | ab[@type eq 'pbGroup'][preceding::node()[self::text() and matches(., '\s+$')]]
-      /*[1][self::seg[@type eq 'implicit-whitespace']]"  priority="15" mode="unifier"/>
   
   <!-- Remove soft hyphen delimiters from text nodes.
     If the document uses `@break="no"` to indicate that a word breaks over a line, 
@@ -804,6 +795,7 @@
         <xsl:if test="not($replaceLeadingWhitespace) and matches(., $shyEndingPattern)">
           <xsl:text>­</xsl:text>
         </xsl:if>
+        <!-- Only mark the deleted whitespace of this text node. -->
         <xsl:analyze-string select="." regex="{ $regex }">
           <xsl:matching-substring>
             <xsl:value-of select="regex-group(1)"/>
@@ -817,6 +809,24 @@
       </xsl:call-template>
     </seg>
   </xsl:template>
+  
+  <!-- If $include-provenance-attributes is toggled off, remove the auto-generated 
+    @type of 'implicit-whitespace'. -->
+  <xsl:template match="seg[@type eq 'implicit-whitespace']
+                          [not($include-provenance-attributes)]" mode="unifier">
+    <xsl:copy>
+      <xsl:copy-of select="@* except @type"/>
+      <xsl:apply-templates mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <!-- Delete the results of the 'make-whitespace-explicit' template, if (1) they 
+    occur between the parts of a broken word, OR, (2) they are the first child of a 
+    pbGroup that has preceding whitespace. -->
+  <xsl:template 
+    match="seg[@type eq 'implicit-whitespace'][wf:is-splitting-a-word(.)]
+         | ab[@type eq 'pbGroup'][preceding::node()[self::text() and matches(., '\s+$')]]
+            /*[1][self::seg[@type eq 'implicit-whitespace']]" priority="15" mode="unifier"/>
   
   <!-- If metawork will not be reconstituted ($keep-metawork-text is toggled off), 
     keep <ab> wrappers around pbGroups. -->
@@ -850,7 +860,7 @@
     </xsl:copy>
     <!-- Do not copy the matching note if the current element appears in the middle 
       of a word. -->
-    <xsl:if test="not(wf:is-splitting-a-word(.))">
+    <xsl:if test="not(wf:is-splitting-a-word(.)) and not(@break eq 'no')">
       <xsl:call-template name="insert-preprocessed-note"/>
     </xsl:if>
   </xsl:template>
