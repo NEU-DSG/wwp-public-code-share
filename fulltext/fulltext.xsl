@@ -765,7 +765,7 @@
       <xsl:if test="exists(preceding::text()[not(normalize-space(.) eq '')][1]
                                             [matches(., $shyEndingPattern)]) 
                     or exists(preceding::node()[1][wf:has-break-attribute-no(.)])">
-        <xsl:text>^\s+</xsl:text>
+        <xsl:text>(^\s+)</xsl:text>
       </xsl:if>
     </xsl:variable>
     <xsl:variable name="replaceEndingRegex" as="xs:string?">
@@ -773,8 +773,8 @@
                     or exists(following::node()[1][wf:has-break-attribute-no(.)])">
         <!-- If $keep-breakage-indicators is toggled off, EOL hard hyphens should be 
           removed as well. -->
-        <xsl:value-of select="concat('(­\s*|', if ( $keep-eol-hard-hyphen-breaks ) then '' 
-                                               else '-', '\s+)$')"/>
+        <xsl:value-of select="concat('((­\s*|', if ( $keep-eol-hard-hyphen-breaks ) then '' 
+                                                else '-?', '\s+)$)')"/>
       </xsl:if>
     </xsl:variable>
     <xsl:variable name="nodeMungingRegex" as="xs:string"
