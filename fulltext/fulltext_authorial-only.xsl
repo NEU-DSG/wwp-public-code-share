@@ -82,7 +82,7 @@
   <xsl:template match="/">
     <!-- Begin processing the document by giving each leading processing instruction 
       its own line, for readability. (Based on code by Syd Bauman.) -->
-    <xsl:for-each select="processing-instruction()">
+    <xsl:for-each select="processing-instruction() | comment()">
       <xsl:text>&#x0A;</xsl:text>
       <xsl:copy-of select="."/>
     </xsl:for-each>
