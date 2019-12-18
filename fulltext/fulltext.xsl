@@ -17,6 +17,9 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-12-18, v2.10: Keep any comments before the outermost element of the WWO
+        document. This preserves information from Subversion about the file's last 
+        recorded edit.
       2019-12-04, v2.9: Expanded handling of `@break="no"` to include intermediate 
         space and `//ab[@type eq 'pbGroup']/pb[@break eq 'no']`.
         Added the option to remove hard hyphens occurring before `@break="no"`.
@@ -356,9 +359,9 @@
 <!-- MODE: #default -->
   
   <!-- Begin processing the document by giving each leading processing instruction 
-    its own line, for readability. (Based on code by Syd Bauman.) -->
+    and comment its own line, for readability. (Based on code by Syd Bauman.) -->
   <xsl:template match="/">
-    <xsl:for-each select="processing-instruction()">
+    <xsl:for-each select="processing-instruction() | comment()">
       <xsl:text>&#x0A;</xsl:text>
       <xsl:copy-of select="."/>
     </xsl:for-each>
