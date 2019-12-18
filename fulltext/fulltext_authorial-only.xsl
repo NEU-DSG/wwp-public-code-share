@@ -16,6 +16,8 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-12-18: Removed template with <subst> handling, since the fulltextBot does the right 
+        thing as of version 2.8.
       2019-11-01: Instead of deleting non-authorial content, the element that signals such has its 
         content (child nodes) deleted and moved into a new @read attribute.
       2019-10-29: Created this stylesheet from XPaths gathered by Sarah Connell during her 
@@ -117,14 +119,6 @@
         <xsl:call-template name="dehydrate-nonauthorial-content"/>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
-  
-  <!-- Follow the WWO author's decision when choosing to hide a child of <subst>. -->
-  <xsl:template match="subst" priority="20">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
   </xsl:template>
   
   <!-- These elements introduce noise into a plain-text copy; remove them. -->
