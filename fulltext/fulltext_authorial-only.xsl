@@ -16,6 +16,7 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-12-19: Fixed lazy method of checking an element's identifer.
       2019-12-18: Removed template with <subst> handling, since the fulltextBot does the right 
         thing as of version 2.8. Ensured that non-authorial notes are dehydrated when 
         $move-notes-to-anchors is turned off, and also when the note is anchored to the 
@@ -257,12 +258,12 @@
           <xsl:if test="$move-notes-to-anchors">
             <xsl:variable name="myId" select="@xml:id"/>
             <xsl:variable name="movedNoteForRead" 
-              select="ancestor::text//note[contains(@sameAs, $myId)][normalize-space(.) eq '']"/>
-            <xsl:if test="exists($movedNoteForRead)">
+              select="ancestor::text//note[concat('#',@sameAs) eq $myId][normalize-space(.) eq '']"/>
+            <xsl:for-each select="$movedNoteForRead">
               <xsl:call-template name="subsume-nonauthorial-content-into-read">
-                <xsl:with-param name="context" select="$movedNoteForRead"/>
+                <xsl:with-param name="context" select="."/>
               </xsl:call-template>
-            </xsl:if>
+            </xsl:for-each>
           </xsl:if>
         </xsl:copy>
       </xsl:when>
