@@ -17,6 +17,9 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
     
     Changelog:
+      2019-12-19, v2.11: When $move-notes-to-anchors is turned on, <note>s with
+        @targetEnd should now only appear once, after the anchor referenced in that
+        attribute.
       2019-12-18, v2.10: Keep any comments before the outermost element of the WWO
         document. This preserves information from Subversion about the file's last 
         recorded edit.
@@ -178,7 +181,7 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.10'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.11'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
@@ -258,41 +261,45 @@
         <xsl:text> </xsl:text>
       </seg>
     </xsl:variable>
-    <xsl:variable name="idref" select="@corresp/data(.)"/>
+    <xsl:variable name="anchorId" select="@xml:id/data(.)"/>
+    <xsl:variable name="noteIdref" select="@corresp/data(.)"/>
     <xsl:variable name="matchedNote" 
-      select="$processed-notes[@sameAs eq $idref][1]" as="node()?"/>
-    <xsl:variable name="inserts" as="node()*">
-      <xsl:copy-of select="$matchedNote"/>
-      <xsl:if test="$matchedNote[@corresp[. = $processed-notes/@sameAs]]">
-        <xsl:variable name="matchedNoteForNote" 
-          select="$processed-notes[@sameAs eq $matchedNote/@corresp/data(.)]"/>
-        <xsl:if test="not($matchedNote[matches(data(.), '\s$')] 
-                      or $matchedNoteForNote[matches(data(.), '^\s')])">
-          <xsl:copy-of select="$whitespaceSeg"/>
+      select="$processed-notes[@sameAs eq $noteIdref][1]" as="node()?"/>
+    <xsl:if test="not($matchedNote[@targetEnd])
+                  or $matchedNote[matches(@targetEnd, concat('#',$anchorId,'(\s+|$)'))]">
+      <xsl:variable name="inserts" as="node()*">
+        <xsl:copy-of select="$matchedNote"/>
+        <xsl:if test="$matchedNote[@corresp[. = $processed-notes/@sameAs]]">
+          <xsl:variable name="matchedNoteForNote" 
+            select="$processed-notes[@sameAs eq $matchedNote/@corresp/data(.)]"/>
+          <xsl:if test="not($matchedNote[matches(data(.), '\s$')] 
+                        or $matchedNoteForNote[matches(data(.), '^\s')])">
+            <xsl:copy-of select="$whitespaceSeg"/>
+          </xsl:if>
+          <xsl:copy-of select="$matchedNoteForNote"/>
         </xsl:if>
-        <xsl:copy-of select="$matchedNoteForNote"/>
+      </xsl:variable>
+      <!-- Add a space before the note if needed. -->
+      <xsl:variable name="hasPreSpacing" 
+        select=" matches($matchedNote/data(.), '^\s')
+              or (
+                  normalize-space() eq '' 
+              and matches(preceding-sibling::node()[self::text() or self::*[text()]][1], '\s$') 
+              )"/>
+      <xsl:if test="not($hasPreSpacing)">
+        <xsl:copy-of select="$whitespaceSeg"/>
       </xsl:if>
-    </xsl:variable>
-    <!-- Add a space before the note if needed. -->
-    <xsl:variable name="hasPreSpacing" 
-      select=" matches($matchedNote/data(.), '^\s')
-            or (
-                normalize-space() eq '' 
-            and matches(preceding-sibling::node()[self::text() or self::*[text()]][1], '\s$') 
-            )"/>
-    <xsl:if test="not($hasPreSpacing)">
-      <xsl:copy-of select="$whitespaceSeg"/>
-    </xsl:if>
-    <xsl:copy-of select="$inserts"/>
-    <!-- Add a space after the note if needed. -->
-    <xsl:variable name="hasPostSpacing" 
-      select=" matches($inserts[last()]/data(.), '\s$')
-            or (
-                normalize-space() eq '' 
-            and matches(following::node()[self::text() or self::*[text()]][1], '^\s') 
-            )"/>
-    <xsl:if test="not($hasPostSpacing)">
-      <xsl:copy-of select="$whitespaceSeg"/>
+      <xsl:copy-of select="$inserts"/>
+      <!-- Add a space after the note if needed. -->
+      <xsl:variable name="hasPostSpacing" 
+        select=" matches($inserts[last()]/data(.), '\s$')
+              or (
+                  normalize-space() eq '' 
+              and matches(following::node()[self::text() or self::*[text()]][1], '^\s') 
+              )"/>
+      <xsl:if test="not($hasPostSpacing)">
+        <xsl:copy-of select="$whitespaceSeg"/>
+      </xsl:if>
     </xsl:if>
   </xsl:template>
   
