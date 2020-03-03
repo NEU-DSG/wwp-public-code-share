@@ -1,0 +1,10 @@
+<package xmlns="http://expath.org/ns/pkg" 
+    name="http://wwp.northeastern.edu/pkg/counting-robot" abbrev="counting-robot-lib" 
+    version="1.0.0" spec="1.0">
+  <title>Counting Robot Library</title>
+  
+  <xquery>
+    <namespace>http://www.wwp.northeastern.edu/ns/count-sets/functions</namespace>
+    <file>count-sets-library.xql</file>
+  </xquery>
+</package>
