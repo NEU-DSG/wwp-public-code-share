@@ -1,5 +1,5 @@
 <package xmlns="http://expath.org/ns/pkg" 
-    name="http://wwp.northeastern.edu/pkg/counting-robot" abbrev="counting-robot-lib" 
+    name="http://www.wwp.northeastern.edu/pkg/counting-robot" abbrev="counting-robot-lib" 
     version="1.0.0" spec="1.0">
   <title>Counting Robot Library</title>
   
