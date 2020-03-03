@@ -28,11 +28,11 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
- : @version 1.4
+ : @version 1.4.1
  :
- :  2020-03-03: Changed ctab:get-counts() such that the $query parameter can be an empty 
- :    sequence. Moved the module namespace declaration above the header, for convenience
- :    when copying the URI.
+ :  2020-03-03: v1.4.1. Changed ctab:get-counts() such that the $query parameter can be 
+ :    an empty sequence. Moved the module namespace declaration above the header, for 
+ :    convenience when copying the URI.
  :  2019-09-04: v1.4. Added MIT license. Removed unused namespace declaration for output 
  :    serialization. Slight reformatting.
  :  2019-04-25: v1.3. Updated GitHub link.
