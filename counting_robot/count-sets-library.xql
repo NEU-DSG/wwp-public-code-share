@@ -1,5 +1,7 @@
 xquery version "3.0";
 
+module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
+
 (:~
  : A library of XQuery functions for manipulating the tab-delimited text output of 
  : the counting robot (counting-robot.xq), using naive set theory.
@@ -28,6 +30,9 @@ xquery version "3.0";
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
  : @version 1.4
  :
+ :  2020-03-03: Changed ctab:get-counts() such that the $query parameter can be an empty 
+ :    sequence. Moved the module namespace declaration above the header, for convenience
+ :    when copying the URI.
  :  2019-09-04: v1.4. Added MIT license. Removed unused namespace declaration for output 
  :    serialization. Slight reformatting.
  :  2019-04-25: v1.3. Updated GitHub link.
@@ -64,8 +69,6 @@ xquery version "3.0";
  : SOFTWARE.
  :)
 
-module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
-
 (:  VARIABLES  :)
   declare variable $ctab:tabChar      := '&#9;';
   declare variable $ctab:newlineChar  := '&#13;';
@@ -80,7 +83,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     are sorted by count, then alphabetically by value (with any nonsorting articles 
     removed). 
    :)
-  declare function ctab:get-counts($query as item()+) {
+  declare function ctab:get-counts($query as item()*) {
     ctab:get-counts($query, true())
   };
   
@@ -89,7 +92,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     occurs. The result is a tab-delimited report, sorted either by count, or 
     alphabetically by value. By default, any leading articles are removed from values. 
    :)
-  declare function ctab:get-counts($query as item()+, $sort-by-count as xs:boolean) {
+  declare function ctab:get-counts($query as item()*, $sort-by-count as xs:boolean) {
     ctab:get-counts($query, $sort-by-count, true())
   };
   
@@ -100,7 +103,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     which presumes that the value is a string of text. The $remove-unsortable-articles 
     parameter allows sorting with leading articles included. 
    :)
-  declare function ctab:get-counts($query as item()+, $sort-by-count as xs:boolean, 
+  declare function ctab:get-counts($query as item()*, $sort-by-count as xs:boolean, 
      $remove-unsortable-articles as xs:boolean) {
     let $distinctValues := distinct-values($query)
     let $listOfCounts :=  for $value in $distinctValues
