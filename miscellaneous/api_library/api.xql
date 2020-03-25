@@ -3,7 +3,8 @@ xquery version "3.0"; (: This should be '3.1' for using maps, but eXist 2.2 requ
 module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
 (:  NAMESPACES  :)
   declare namespace http="http://expath.org/ns/http-client";
-  (: eXist has the "map" prefix bound to "http://www.w3.org/2005/xpath-functions", so I'm leaving it undeclared for now. :)
+  (: eXist has the "map" prefix bound to "http://www.w3.org/2005/xpath-functions", 
+    so I'm leaving it undeclared for now. :)
   (:declare namespace map="http://www.w3.org/2005/xpath-functions/map";:)
   declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
   declare namespace rest="http://exquery.org/ns/restxq";
@@ -13,21 +14,46 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   A library of functions to simplify the development of an XQuery API.
   
   @author Ashley M. Clark, Northeastern University Women Writers Project
-  @version 1.4
-  @see https://wwp.northeastern.edu/utils/lib/content/api.xql
+  @version 1.4.1
+  @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/miscellaneous/api_library
   
-  2019-12-17, v1.4: Added wpi:filter-set().
-  2019-10-04, v1.3: Added a few non-sorting articles to wpi:get-sortable-string().
-    Added xqDoc descriptions of functions.
-  2018-12-03, v1.2: Declared previously-undeclared namespaces (e.g. "http"). The 
-    declaration for "map" is commented out, since eXist has the prefix bound to a 
-    different namespace. Changed the eXist-specific map:new() to XQuery 3.1's 
-    map:merge().
-  2018-05-29: Added the access control header as a global variable. Restricted
-    types on function parameters. Updated wpi:get-sortable-string() with 
-    additional words not to sort on.
-  2016-08-16: Created this file using functions and logic from the Cultures of 
-    Reception XQuery library.
+  Changelog:
+    2020-03-25, v1.4.1: Moved this XQuery from Subversion to the WWP Public Code 
+      Share, and changed the link above accordingly. Added MIT license.
+    2019-12-17, v1.4: Added wpi:filter-set().
+    2019-10-04, v1.3: Added a few non-sorting articles to wpi:get-sortable-string().
+      Added xqDoc descriptions of functions.
+    2018-12-03, v1.2: Declared previously-undeclared namespaces (e.g. "http"). The 
+      declaration for "map" is commented out, since eXist has the prefix bound to a 
+      different namespace. Changed the eXist-specific map:new() to XQuery 3.1's 
+      map:merge().
+    2018-05-29: Added the access control header as a global variable. Restricted
+      types on function parameters. Updated wpi:get-sortable-string() with 
+      additional words not to sort on.
+    2016-08-16: Created this file using functions and logic from the Cultures of 
+      Reception XQuery library.
+  
+  MIT License
+  
+  Copyright (c) 2020 Northeastern University Women Writers Project
+ 
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions
+ 
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+ 
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
  :)
 
 (:
@@ -171,11 +197,11 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   declare function wpi:make-link-header($limit as xs:integer, $currentPage as xs:integer, 
      $totalPages as xs:integer, $linkBase as xs:string, 
      $queryParams as map(xs:string, item()*)) as node()? {
-    let $limitParam := map:entry('limit',$limit)
+    let $limitParam := map:entry('limit', $limit)
     let $paramSeq := if ( empty($queryParams) ) then ($limitParam)
                      else ($queryParams, $limitParam)
     let $first := if ( $currentPage gt 1 ) then
-                   let $page := map:entry('page','1')
+                   let $page := map:entry('page', '1')
                    let $paramSeqPlusPage := ($paramSeq, $page)
                    let $url := wpi:get-query-url($linkBase, map:merge($paramSeqPlusPage))
                    return concat('<',$url,'>; rel="first"')
@@ -187,7 +213,7 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
                    return concat('<',$url,'>; rel="next"')
                  else ()
     let $last := if ( $currentPage ne $totalPages ) then
-                   let $page := map:entry('page',$totalPages)
+                   let $page := map:entry('page', $totalPages)
                    let $paramSeqPlusPage := ($paramSeq, $page)
                    let $url := wpi:get-query-url($linkBase, map:merge($paramSeqPlusPage))
                    return concat('<',$url,'>; rel="last"')
