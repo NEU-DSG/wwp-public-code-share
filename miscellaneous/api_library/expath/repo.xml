@@ -1,0 +1,9 @@
+<meta xmlns="http://exist-db.org/xquery/repo">
+  <description>A library of functions which make it easier to design APIs in XQuery.</description>
+  <author>Ashley M. Clark, Northeastern University Women Writers Project</author>
+  <website>https://github.com/NEU-DSG/wwp-public-code-share/tree/master/miscellaneous/api_library</website>
+  <status>stable</status>
+  <license>MIT</license>
+  <copyright>true</copyright>
+  <type>library</type>
+</meta>
