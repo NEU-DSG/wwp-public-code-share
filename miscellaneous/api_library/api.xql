@@ -112,7 +112,8 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   (:~
     Construct a URL using a base URI and any given query parameters.
     
-    @param linkBase a string representing the URI to be used before any additional query parameters.
+    @param linkBase a string representing the URI to be used before any additional 
+      query parameters.
     @param queryParams key-value pairs to use when constructing the URL
     @return a URL in string form
    :)
@@ -148,8 +149,14 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     for that type.
     
     @param superset a sequence of zero or more results
-    @param parameter-map a map containing request parameter keys and values (ideally, the application should have already cleaned and vetted the request values)
-    @param filtering-configuration a map where the key is a valid parameter name, and the value is a function which takes a single item and a sequence of parameter values. The function should return a boolean value: true if the item matches the parameter value; and false if the item should be filtered out of $superset. For example: map { "author": function($string, $name) { contains($string, $name) } }
+    @param parameter-map a map containing request parameter keys and values (ideally, 
+      the application should have already cleaned and vetted the request values)
+    @param filtering-configuration a map where the key is a valid parameter name, 
+      and the value is a function which takes a single item and a sequence of 
+      parameter values. The function should return a boolean value: true if the item 
+      matches the parameter value; and false if the item should be filtered out of 
+      $superset. For example:
+      `map { "author": function($string, $name) { contains($string, $name) } }`
     @return the requested subset of the items in $superset
    :)
   declare function wpi:filter-set($superset as item()*, $parameter-map as 
@@ -190,7 +197,8 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     @param limit the maximum number of results per page
     @param currentPage a number representing the requested "page" of results
     @param totalPages how many pages there are for this query in total, using $limit
-    @param linkBase a string representing the URI to be used before any additional query parameters.
+    @param linkBase a string representing the URI to be used before any additional 
+      query parameters.
     @param queryParams key-value pairs to use when constructing the URL
     @return an XML serialization of an HTTP Link header
    :)
@@ -226,8 +234,8 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   };
   
   (:~
-    Given a sequence, return a subset determined by the number of results and 
-    the page requested.
+    Given a sequence, return a subset determined by the number of results and the page 
+    requested.
     
     @param set a sequence of zero or more results
     @param page a number representing the requested "page" of results
