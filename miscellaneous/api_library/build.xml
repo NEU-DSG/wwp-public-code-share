@@ -10,7 +10,7 @@
     <zip destfile="${build.dir}/${project.app}-${project.version}.xar">
       <fileset dir="." excludes="${build.dir}/* build.xml"/>
       <!-- Use the library stored in the directory above this one. -->
-      <zipfileset dir=".." includes="api.xql" fullpath="content/api.xql"/>
+      <zipfileset dir="." includes="api.xql" fullpath="content/api.xql"/>
     </zip>
   </target>
   
