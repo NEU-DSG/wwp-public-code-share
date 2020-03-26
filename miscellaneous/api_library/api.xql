@@ -8,7 +8,6 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   (:declare namespace map="http://www.w3.org/2005/xpath-functions/map";:)
   declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
   declare namespace rest="http://exquery.org/ns/restxq";
-  declare namespace tei="http://www.tei-c.org/ns/1.0";
 
 (:~
   A library of functions to simplify the development of an XQuery API.
@@ -19,7 +18,8 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   
   Changelog:
     2020-03-25, v1.4.1: Moved this XQuery from Subversion to the WWP Public Code 
-      Share, and changed the link above accordingly. Added MIT license.
+      Share, and changed the link above accordingly. Added MIT license and 
+      wpi:get-sortable-string#2.
     2019-12-17, v1.4: Added wpi:filter-set().
     2019-10-04, v1.3: Added a few non-sorting articles to wpi:get-sortable-string().
       Added xqDoc descriptions of functions.
@@ -62,6 +62,8 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   
   declare variable $wpi:accessHeader := 
     <http:header name="Access-Control-Allow-Origin" value="*"/>;
+  declare variable $wpi:nonsortingRegex :=
+    "^((the|an|a|la|le|el|lo|las|les|los|de|del|de la) |l')";
 
 
 (:
@@ -72,19 +74,10 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     Using the EXPath HTTP Client, construct a response to an HTTP request.
     
     @param statusCode a string representing a three-digit HTTP status code
-    @param headerParts zero or more HTTP headers, in the EXPath HTTP XML format
-    @param output any outputs to be returned in the response
-    @return a sequence of items for the HTTP response
+    @return an XML description of the HTTP response
    :)
-  declare function wpi:build-response($statusCode as xs:string, $headerParts as node()*, 
-     $output as item()*) as item()* {
-    let $header :=
-      <rest:response>
-        <http:response status="{$statusCode}">
-          { $headerParts }
-        </http:response>
-      </rest:response>
-    return ( $header, $output )
+  declare function wpi:build-response($statusCode as xs:string) as item() {
+    wpi:build-response($statusCode, (), ())
   };
   
   (:~
@@ -103,10 +96,19 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     Using the EXPath HTTP Client, construct a response to an HTTP request.
     
     @param statusCode a string representing a three-digit HTTP status code
-    @return an XML description of the HTTP response
+    @param headerParts zero or more HTTP headers, in the EXPath HTTP XML format
+    @param output any outputs to be returned in the response
+    @return a sequence of items for the HTTP response
    :)
-  declare function wpi:build-response($statusCode as xs:string) as item() {
-    wpi:build-response($statusCode, (), ())
+  declare function wpi:build-response($statusCode as xs:string, $headerParts as node()*, 
+     $output as item()*) as item()* {
+    let $header :=
+      <rest:response>
+        <http:response status="{$statusCode}">
+          { $headerParts }
+        </http:response>
+      </rest:response>
+    return ( $header, $output )
   };
   
   (:~
@@ -133,13 +135,34 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   
   (:~
     Given a string, create a version for alphabetical sorting by lower-casing the 
-    characters and removing articles at the beginning of the string.
+    characters and removing articles at the beginning of the string. This version
+    uses $wpi:nonsortingRegex to identify parts of the string which should be 
+    removed.
     
     @param str the string
     @return a version of the string suitable for alphabetical sorting
    :)
   declare function wpi:get-sortable-string($str as xs:string) as xs:string {
-    replace(lower-case($str), "^((the|an|a|la|le|el|lo|las|les|los|de|del|de la) |l')", '')
+    wpi:get-sortable-string($str, $wpi:nonsortingRegex)
+  };
+  
+  (:~
+    Given a string, create a version for alphabetical sorting by lower-casing the 
+    characters and removing parts of the string that match the non-sorting regular
+    expression.
+    
+    @param str the string
+    @param nonsorting-regex an optional, case-insensitive regular expression. Any 
+      matches within $str will be removed.
+    @return a version of the string suitable for alphabetical sorting
+   :)
+  declare function wpi:get-sortable-string($str as xs:string, $nonsorting-regex as 
+     xs:string?) as xs:string {
+    let $lowercased := lower-case($str)
+    return
+      if ( exists($nonsorting-regex) and normalize-space($nonsorting-regex) ne '' ) then
+        replace($lowercased, $nonsorting-regex, '')
+      else $lowercased
   };
   
   (:~
@@ -247,8 +270,7 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     let $intPage := if ( $limit eq 0 ) then 0 else $page
     let $totalRecords := count($set)
     let $subSet := 
-      if ( $limit eq 0 ) then
-        ()
+      if ( $limit eq 0 ) then ()
       else if ( $limit gt 0 ) then
         let $range := if ( $intPage gt 0 ) then 
                         (($intPage - 1) * $limit) + 1
