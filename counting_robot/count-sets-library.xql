@@ -1,6 +1,8 @@
 xquery version "3.0";
 
 module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
+(:  NAMESPACES  :)
+  declare namespace map="http://www.w3.org/2005/xpath-functions/map";
 
 (:~
  : A library of XQuery functions for manipulating the tab-delimited text output of 
@@ -28,8 +30,9 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
- : @version 1.4.1
+ : @version 1.5.0
  :
+ :  2020-04-01: v1.5.0. Added ctab:report-to-map().
  :  2020-03-03: v1.4.1. Changed ctab:get-counts() such that the $query parameter can be 
  :    an empty sequence. Moved the module namespace declaration above the header, for 
  :    convenience when copying the URI.
@@ -273,4 +276,15 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     if ( count($rows) gt 0 ) then
       string-join($rows, $ctab:newlineChar)
     else ''
+  };
+  
+  (:~
+    Convert a counting robot report into a map data structure.
+   :)
+  declare function ctab:report-to-map($report as xs:string) as map(xs:string, xs:integer) {
+    let $counts :=
+      for $line in tokenize($report, $ctab:newlineChar)
+      let $count := ctab:get-cell($line, 1) cast as xs:integer
+      return map:entry(ctab:get-cell($line, 2), $count)
+    return map:merge($counts)
   };
