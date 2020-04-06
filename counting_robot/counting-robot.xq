@@ -7,8 +7,10 @@ xquery version "3.0";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
- : @version 1.4
+ : @version 1.4.1
  :
+ :  2020-04-06: v1.4.1. Removed "external" from $query variable declaration because
+ :    the results don't serialize to a sequence of strings, but to a single string.
  :  2020-04-03: v1.4. Made $sortByCount, $sortWithArticles, and $query into external
  :    variables.
  :  2019-09-04: v1.3. Added MIT license and an example of a custom function.
@@ -73,7 +75,7 @@ xquery version "3.0";
   
   (: Change this to your XPath query. (Or your XQuery!) :)
     (:  For example: $VARIABLE/XPATH                    :)
-  declare variable $query external := $DESCRIPTIVE_NAME//text//title;
+  declare variable $query := $DESCRIPTIVE_NAME//text//title;
 
 
 (:  FUNCTIONS  :)
