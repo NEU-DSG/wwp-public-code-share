@@ -34,8 +34,8 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
  :
  :  2020-04-21: v1.5.1. Added ctab:escape-for-matching(), which makes functions such as
  :    ctab:create-row-match-pattern() more robust. Ensured ctab:get-union-of-rows() can
- :    handle reports with more than two columns. (The reports must still have a number in
- :    column 1 and a distinct value in column 2.)
+ :    handle reports with more than two columns, by using part of the first matching row.
+ :    (The reports must still have a number in column 1 and a distinct value in column 2.)
  :  2020-04-01: v1.5.0. Added ctab:report-to-map().
  :  2020-03-03: v1.4.1. Changed ctab:get-counts() such that the $query parameter can be 
  :    an empty sequence. Moved the module namespace declaration above the header, for 
@@ -259,7 +259,11 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
   };
   
   (:~
-    Given a sequence of tab-delimited strings, combine the counts for all values. 
+    Given a sequence of tab-delimited strings, combine the counts for all values. Rows 
+    must contain an integer in column 1 and a distinct string in column 2.
+    
+    If there are more than two columns, this function will obtain the remainder from the 
+    first row which matches the distinct value in question.
    :)
   declare function ctab:get-union-of-rows($tabbed-rows as xs:string+) as xs:string* {
     let $rowsWithTabs := $tabbed-rows[matches(., '\t')]
