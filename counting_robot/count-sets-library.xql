@@ -129,10 +129,14 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
   
   (:~
     Given a number of string values, create a regular expression pattern to match 
-    rows which contain those cell values. 
+    rows which contain those cell values. Special characters in the strings will be
+    escaped.
    :)
   declare function ctab:create-row-match-pattern($values as xs:string+) as xs:string {
-    let $match := string-join($values,'|')
+    let $regexValues :=
+      for $str in $values
+      return replace($str, '([\$\^()\[\]\.\\|*?+])', '\\$1')
+    let $match := string-join($regexValues,'|')
     return concat('\t(',$match,')(\t.*)?$')
   };
   
