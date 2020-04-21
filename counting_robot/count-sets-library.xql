@@ -135,7 +135,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
   declare function ctab:create-row-match-pattern($values as xs:string+) as xs:string {
     let $regexValues :=
       for $str in $values
-      return replace($str, '([\$\^()\[\]\.\\|*?+])', '\\$1')
+      return replace($str, '([\$\^()\[\]\.\\|*?+{}])', '\\$1')
     let $match := string-join($regexValues,'|')
     return concat('\t(',$match,')(\t.*)?$')
   };
