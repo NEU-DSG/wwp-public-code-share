@@ -30,8 +30,10 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
- : @version 1.5.0
+ : @version 1.5.1
  :
+ :  2020-04-21: v1.5.1. Added ctab:escape-for-matching(), which makes functions such as
+ :    ctab:create-row-match-pattern() more robust.
  :  2020-04-01: v1.5.0. Added ctab:report-to-map().
  :  2020-03-03: v1.4.1. Changed ctab:get-counts() such that the $query parameter can be 
  :    an empty sequence. Moved the module namespace declaration above the header, for 
@@ -111,9 +113,10 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     let $distinctValues := distinct-values($query)
     let $listOfCounts :=  for $value in $distinctValues
                           let $count := count($query[. eq $value])
-                          let $sortVal := if ( $remove-unsortable-articles and $value castable as xs:string ) then 
-                                            ctab:get-sortable-string(xs:string($value))
-                                          else $value
+                          let $sortVal := 
+                            if ( $remove-unsortable-articles and $value castable as xs:string ) then 
+                              ctab:get-sortable-string(xs:string($value))
+                            else $value
                           order by
                             if ( $sort-by-count ) then () else $sortVal,
                             $count descending, 
@@ -129,15 +132,23 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
   
   (:~
     Given a number of string values, create a regular expression pattern to match 
-    rows which contain those cell values. Special characters in the strings will be
+    rows which contain those cell values. Reserved characters in the strings will be
     escaped.
    :)
   declare function ctab:create-row-match-pattern($values as xs:string+) as xs:string {
-    let $regexValues :=
-      for $str in $values
-      return replace($str, '([\$\^()\[\]\.\\|*?+{}])', '\\$1')
-    let $match := string-join($regexValues,'|')
-    return concat('\t(',$match,')(\t.*)?$')
+    let $regexValues := ctab:escape-for-matching($values)
+    let $group := string-join($regexValues, '|')
+    return concat('\t(',$group,')(\t.*)?$')
+  };
+  
+  (:~
+    Given any number of string values, format each so that it can be used as the 
+    pattern in a regular expression. Reserved characters are escaped.
+   :)
+  declare function ctab:escape-for-matching($values as xs:string*) 
+     as xs:string* {
+    for $str in $values
+    return replace($str, '([\$\^()\[\]\.\\|*?+{}])', '\\$1')
   };
   
   (:~
@@ -158,7 +169,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
       for $line in unparsed-text-lines($filepath)
       return
         (: Only output lines that include a tab. :)
-        if ( matches($line,'\t') ) then
+        if ( matches($line, '\t') ) then
           $line
         else ()
     else () (: error :)
@@ -175,7 +186,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
       return ctab:get-report-by-rows($filename)
     let $allValues :=
       for $row in $allRows
-      return ctab:get-cell($row,2)
+      return ctab:get-cell($row, 2)
     let $distinctValues := distinct-values($allValues)
     let $intersectValues :=
       for $value in $distinctValues
@@ -220,7 +231,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
       let $rowsExcluded := ctab:get-union-of-rows($rows-with-excluded-data)
       return
         for $row in $rowsExcluded
-        return ctab:get-cell($row,2)
+        return ctab:get-cell($row, 2)
     let $regex := ctab:create-row-match-pattern($valuesExcluded)
     return
       $rowsWithTabs[not(matches(.,$regex))]
@@ -249,16 +260,16 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     Given a sequence of tab-delimited strings, combine the counts for all values. 
    :)
   declare function ctab:get-union-of-rows($tabbed-rows as xs:string+) as xs:string* {
-    let $rowsWithTabs := $tabbed-rows[matches(.,'\t')]
+    let $rowsWithTabs := $tabbed-rows[matches(., '\t')]
     let $allValues := 
       for $row in $rowsWithTabs
       return ctab:get-cell($row,2)
     let $allDistinct := distinct-values($allValues)
     return
       for $value in $allDistinct
-      let $regex := concat($ctab:tabChar, $value, '$')
+      let $regex := concat($ctab:tabChar, ctab:escape-for-matching($value), '$')
       let $counts := 
-        let $matches := $rowsWithTabs[matches(.,$regex)]
+        let $matches := $rowsWithTabs[matches(., $regex)]
         return 
           for $match in $matches
           let $count := ctab:get-cell($match,1)
