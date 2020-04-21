@@ -33,7 +33,9 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
  : @version 1.5.1
  :
  :  2020-04-21: v1.5.1. Added ctab:escape-for-matching(), which makes functions such as
- :    ctab:create-row-match-pattern() more robust.
+ :    ctab:create-row-match-pattern() more robust. Ensured ctab:get-union-of-rows() can
+ :    handle reports with more than two columns. (The reports must still have a number in
+ :    column 1 and a distinct value in column 2.)
  :  2020-04-01: v1.5.0. Added ctab:report-to-map().
  :  2020-03-03: v1.4.1. Changed ctab:get-counts() such that the $query parameter can be 
  :    an empty sequence. Moved the module namespace declaration above the header, for 
@@ -216,7 +218,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
         ctab:get-union-of-reports($filenames-for-excluded-data)
       else ctab:get-report-by-rows($filenames-for-excluded-data)
     return
-      ctab:get-set-difference-of-rows($rows,$rowsExcluded)
+      ctab:get-set-difference-of-rows($rows, $rowsExcluded)
   };
   
   (:~
@@ -268,20 +270,19 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     return
       for $value in $allDistinct
       let $regex := concat($ctab:tabChar,ctab:escape-for-matching($value),'(\t.*)?$')
+      let $matches := $rowsWithTabs[matches(., $regex)]
       let $counts := 
-        let $matches := $rowsWithTabs[matches(., $regex)]
+        for $match in $matches
+        let $count := ctab:get-cell($match, 1)
         return 
-          for $match in $matches
-          let $count := ctab:get-cell($match, 1)
-          return 
-            if ( $count castable as xs:integer ) then 
-              xs:integer( $count )
-            else () (: error :)
+          if ( $count castable as xs:integer ) then 
+            xs:integer( $count )
+          else () (: error :)
       let $sum := if ( count( $counts ) ge 2 ) then 
                     sum( $counts )
                   else $counts
       order by $sum descending, $value
-      return concat($sum, $ctab:tabChar, $value)
+      return concat($sum, $ctab:tabChar, substring-after($matches[1], $ctab:tabChar))
   };
   
   (:~
