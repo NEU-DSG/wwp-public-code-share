@@ -263,16 +263,16 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     let $rowsWithTabs := $tabbed-rows[matches(., '\t')]
     let $allValues := 
       for $row in $rowsWithTabs
-      return ctab:get-cell($row,2)
+      return ctab:get-cell($row, 2)
     let $allDistinct := distinct-values($allValues)
     return
       for $value in $allDistinct
-      let $regex := concat($ctab:tabChar, ctab:escape-for-matching($value), '$')
+      let $regex := concat($ctab:tabChar,ctab:escape-for-matching($value),'(\t.*)?$')
       let $counts := 
         let $matches := $rowsWithTabs[matches(., $regex)]
         return 
           for $match in $matches
-          let $count := ctab:get-cell($match,1)
+          let $count := ctab:get-cell($match, 1)
           return 
             if ( $count castable as xs:integer ) then 
               xs:integer( $count )
