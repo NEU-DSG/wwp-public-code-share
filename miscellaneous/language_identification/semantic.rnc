@@ -1,0 +1,81 @@
+# Handwritten schema for output #3, “semantic”
+# Note: very little restriction on the number of or order
+# of occurences of the various fields inside a record. Maybe later.
+
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+
+start = language-subtag-registry
+
+language-subtag-registry = element language-subtag-registry {
+   attribute generated { xsd:dateTime },
+   ( language
+    | region
+    | extlang
+    | script
+    | variant
+    | redundant
+    | grandfathered )+
+}
+
+language = element language {
+   common_attrs,
+   attribute subtag {
+      xsd:language
+    | xsd:token { pattern = "[A-Za-z]{2,4}\.\.[A-Za-z]{2,4}" } },
+   attribute macrolanguage { xsd:language }?,
+   attribute scope { "collection" | "macrolanguage" | "special" | "private-use" }?,
+   attribute suppress-script { text }?,
+   prose
+}
+
+region = element region {
+   common_attrs,
+   attribute subtag { xsd:token { pattern = "[\d]+|[A-Z][A-Z](\.\.[A-Z][A-Z])?" } },
+   prose
+}
+
+extlang = element extlang {
+   common_attrs,
+   attribute subtag { xsd:language },
+   attribute macrolanguage { xsd:language }?,
+   attribute prefix { xsd:language }?,
+   prose
+}
+
+script = element script {
+   common_attrs,
+   attribute subtag {
+      xsd:language
+    | xsd:token { pattern = "[A-Za-z]{2,4}\.\.[A-Za-z]{2,4}" } },
+   prose
+}
+
+variant = element variant {
+   common_attrs,
+   attribute subtag { text },
+   attribute prefix { xsd:language }?,
+   prose
+}
+
+redundant = element redundant {
+   common_attrs,
+   attribute tag { xsd:language },
+   prose
+}
+
+grandfathered = element grandfathered {
+   common_attrs,
+   attribute tag { xsd:language },
+   prose
+}
+
+common_attrs =
+   # <script> never has @deprecated or @preferred-value
+   attribute added { xsd:date }?,
+   attribute deprecated { xsd:date }?,
+   attribute n { xsd:integer },
+   attribute preferred-value { xsd:language | "alalc97" }?
+
+prose = ( description | comments )+
+description = element description { text }
+comments = element comments { text }
