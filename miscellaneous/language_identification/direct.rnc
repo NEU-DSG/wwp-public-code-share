@@ -1,0 +1,35 @@
+# Handwritten schema for output #1, the direct result of json-to-xml().
+# Note: herein we make no attempt to restrict the number of or order of
+# occurences of the various fields inside a record. Maybe later.
+
+default namespace = "http://www.w3.org/2005/xpath-functions"
+
+start = outer_array
+
+outer_array = element array { map+ }
+
+map = element map { ( keyed_string | inner_array )+ }
+
+keyed_string =
+  element string {
+    attribute key {
+      "Added"
+      | "Type"
+      | "Subtag"
+      | "Macrolanguage"
+      | "Preferred-Value"
+      | "Deprecated"
+      | "Scope"
+      | "Suppress-Script"
+      | "Tag"
+    }?,
+    text
+  }
+
+inner_array =
+  element array {
+    attribute key { "Description" | "Prefix" | "Comments" },
+    unkeyed_string+
+  }
+
+unkeyed_string = element string { text }
