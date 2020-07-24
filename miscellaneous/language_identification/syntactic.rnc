@@ -1,0 +1,41 @@
+# Handwritten schema for output #2, “syntactic”
+# Note: very little restriction on the number of or order
+# of occurences of the various fields inside a record. Maybe later.
+
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+
+start = language-subtag-registry
+
+language-subtag-registry = element language-subtag-registry {
+   attribute generated { xsd:dateTime },
+   Record+
+}
+
+Record = element Record {
+   attribute n { xsd:integer },
+   Type,
+   ( Tag | Subtag ),
+   ( Description
+     | Added
+     | Macrolanguage
+     | Preferred-Value
+     | Prefix
+     | Deprecated
+     | Scope
+     | Suppress-Script
+     | Comments )+
+}
+
+Type = element Type { text }
+Tag = element Tag { text }
+Subtag = element Subtag { text }
+Description = element Description { text }
+Added = element Added { text }
+Macrolanguage = element Macrolanguage { text }
+Preferred-Value = element Preferred-Value { text }
+Prefix = element Prefix { text }
+Deprecated = element Deprecated { text }
+Scope = element Scope { text }
+Suppress-Script = element Suppress-Script { text }
+Comments = element Comments { text }
+
