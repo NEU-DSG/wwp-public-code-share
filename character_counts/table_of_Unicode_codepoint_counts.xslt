@@ -22,7 +22,6 @@
   <xsl:output method="xhtml" indent="yes" encoding="UTF-8" html-version="5"/>
 
   <xsl:param name="UCD" select="'https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml'"/>
-  <xsl:variable name="no_UCD"><tmp:UCDNOT/></xsl:variable>
   <xsl:param name="debug" select="false()" as="xs:boolean" static="yes"/>
   <xsl:param name="attrs" select="1" as="xs:integer"/>
   <xsl:param name="fold" select="0" as="xs:integer"/>
@@ -31,7 +30,7 @@
   <xsl:param name="fileName" select="tokenize(document-uri(/), '/')[last()]"/>
   <xd:doc>
     <xd:desc>protect open paren, protect close paren: theses variables should
-      each be set to any single character you *know* will not be in the input
+      each be set to any single character you <xd:b>know</xd:b> will not be in the input
       document. And they have to be different from each other, too.
       Only used for WWP.</xd:desc>
   </xd:doc>
@@ -46,6 +45,12 @@
   <xsl:variable name="rlcps" select="'\\\)'"/>
   <xsl:variable name="rlopr" select="'\\('"/>
   <xsl:variable name="rlcpr" select="'\\)'"/>
+  <xd:doc>
+    <xd:desc>attribute separator for debugging: should be any single character
+    you <xd:b>know</xd:b> will not be in the input document. It is used to
+    temporarily surround the values of attributes for debugging.</xd:desc>
+  </xd:doc>
+  <xsl:param name="as4d" select="'&#x0115C5;'"/>
   <xd:doc>
     <xd:desc>Me, myself, and I: 
     <xd:ul>
@@ -92,11 +97,40 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+  <!--
+    Flip a coin iff attrs=1 to see if we should include or exclude attributes
+    (Note that if the vocabularly is one we recognize, this is ignored and specific
+    attributes are kept.)
+    (Note also that we deliberately avoid a web request unless attrs=1, just to
+    avoid the wait.)
+    Thanks to Vincent Lizzi for the idea for generating a random number from inside
+    XSLT without fn:random-number-generator() (which is not available in Saxon 9
+    HE, although it is available in Saxon 10 HE).
+  -->
+  <xsl:variable name="coin" as="xs:boolean" select="
+      if ($attrs eq 1) then
+        if (doc-available('https://www.random.org/integers/') ) then
+          unparsed-text('https://www.random.org/integers/?num=1&amp;min=0&amp;max=1&amp;col=1&amp;base=10&amp;format=plain&amp;rnd=new')
+          cast as xs:boolean
+        else
+          ((
+            ( current-time() cast as xs:string )
+            => substring-after('.')
+            => substring( 1, 1 )
+          ) cast as xs:integer mod 2 )
+            cast as xs:boolean
+      else
+        true()
+      "/>
 
   <xd:doc>
     <xd:desc>Just copy stuff unless told otherwise …</xd:desc>
   </xd:doc>
-  <xsl:mode on-no-match="shallow-copy"/>
+  <xsl:template match="@*|node()" mode="#all" priority="-1">
+    <xsl:copy>
+      <xsl:apply-templates select="@*|node()" mode="#current"/>
+    </xsl:copy>
+  </xsl:template>
 
   <xsl:template match="/">
     <!-- 
@@ -127,6 +161,7 @@
       href="/tmp/{$andI}_debug_content.xml" indent="no" method="xml">
       <xsl:sequence select="$content"/>
     </xsl:result-document>
+    <xsl:variable name="content" select="replace( $content, $as4d, '')"/>
 
     <!--
       We now have a reduced version of entire document in $content.
@@ -245,7 +280,7 @@
   
   <!-- Handle mode "skip" and "attrs" here in mode "sa" -->
   <xsl:template mode="sa" match="( processing-instruction() | comment() )[$skip eq 0]">
-    <xsl:copy/>
+    <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
   <xsl:template mode="sa" match="( processing-instruction() | comment() )[$skip gt 0]"/>
   <xsl:template mode="sa" match="(tei:teiHeader|wwp:teiHeader|yaps:teiHeader|html:head)[$skip ge 2]" />
@@ -315,6 +350,9 @@
     </xsl:if>
   </xsl:template>
   <xsl:template mode="sa" match="yaps:*/@*[$attrs eq 1]"/>
+  <xsl:template mode="sa" match="*/@*[$attrs eq 1][$coin]">
+    <xsl:value-of select="wf:padme(.)"/>
+  </xsl:template>
   <xsl:template mode="sa" match="@*[$attrs eq 9]">
     <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
@@ -353,7 +391,7 @@
   
   <xsl:function name="wf:padme" as="xs:string">
     <xsl:param name="stringIN"/>
-    <xsl:value-of select="'&#x20;'||$stringIN||'&#x20;'"/>
+    <xsl:value-of select="$as4d||$stringIN||$as4d"/>
   </xsl:function>
 
   <xd:doc>
@@ -475,7 +513,7 @@
           <li class="{$attrs eq 1}"><span class="val">1</span>: 
             <xsl:choose>
               <xsl:when test="$input/tei:*">
-                keep all attributes except:
+                keep only:
                 <ul>
                   <li>@assertedValue iff @locus is "value"</li>
                   <li>@baseForm</li>
@@ -490,6 +528,12 @@
               <xsl:when test="$input/html:*">
                 keep only @title and @alt
               </xsl:when>
+              <xsl:otherwise expand-text="true">
+                flipped a coin, it was
+                {if ($coin) then 'heads' else 'tails'},
+                so
+                {if ($coin) then 'all attributes were kept' else 'all attributes were dropped'}.
+              </xsl:otherwise>
             </xsl:choose> [default]
           </li>
           <li class="{$attrs eq 9}"><span class="val">9</span>: keep <emph>all</emph> attributes</li>
