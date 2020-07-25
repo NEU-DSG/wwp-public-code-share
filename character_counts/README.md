@@ -51,11 +51,11 @@ The quotation marks around the boolean value of $debug are required to protect t
 
 ### one
 
-**[1]** The default $UCD is currently `https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml` which is a bit problematic, as that is version 6.2.0 of Unicode. (The current version is 12.1.0). If you need a newer version, or need some Unihan characters, you can point to a different copy of the Unicode database via this parameter.
+**[1]** The default $UCD is currently `https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml` which is a bit problematic, as that is version 6.2.0 of Unicode. (The current version is 13.0.0). If you need a newer version, or need some Unihan characters, you can point to a different copy of the Unicode database via this parameter.
 
 I have not yet found one readily available lying around the web, i.e. available directly by URL. (If you know of one, feel free to let us know.) The ones [provided by the Unicode Consortium](https://www.unicode.org/Public/UCD/latest/ucdxml/) are ZIPped, and thus cannot be used directly by URL. But if you are using Saxon you can download a copy of the database (e.g., [the complete latest version](https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.all.grouped.zip)), and point to the downloaded ZIP file using the prefix `jar:` and the suffix `/!filename`, where _filename_ is the name of the file in the ZIP archive you would like to read. In the UCD case, there is only 1 file in each archive. Thus, e.g. `UCD='jar:file:/tmp/ucd.nounihan.grouped.zip!/ucd.nounihan.grouped.xml'`. (Note that the single straight quotation marks around the parameter value protect the `!` from being interpreted as a history command by the bash shell &#x2014; your shell may vary.)
 
-All that said, now that [XProc 3.0 can handle ZIP files](https://www.youtube.com/watch?v=6yvO4GOue6k&feature=youtu.be), it seems like that would be a reasonable approach. Someday.
+All that said, now that [XProc 3.0 can handle ZIP files](https://www.youtube.com/watch?v=6yvO4GOue6k&feature=youtu.be), it seems like that would be a reasonable approach. Someday I’ll get around to it.
 
 ---
 
