@@ -219,8 +219,8 @@
     -->
     <xsl:variable name="count_by_decimal_char_num" as="map( xs:integer, xs:integer )">
       <xsl:map>
-        <xsl:for-each select="distinct-values($seq)">
-          <xsl:map-entry key="." select="count($seq[ . eq current() ])"/>
+        <xsl:for-each select="distinct-values( $seq )">
+          <xsl:map-entry key="." select="count( $seq[ . eq current() ] )"/>
         </xsl:for-each>
       </xsl:map>
     </xsl:variable>
@@ -250,7 +250,7 @@
           <tbody>
             <xsl:for-each select="map:keys($count_by_decimal_char_num)">
               <xsl:sort order="descending" select="$count_by_decimal_char_num(.)"/>
-              <xsl:variable name="hexNum" select="wf:decimal2hexDigits(.) ! translate(., '&#x20;', '') => string-join()"/>
+              <xsl:variable name="hexNum" select="wf:decInt2hexDigits(.)"/>
               <xsl:variable name="hexNum4digit" select="substring('0000', string-length($hexNum) + 1)||$hexNum"/>
               <tr>
                 <td class="cnt">
@@ -279,7 +279,7 @@
     </html>
   </xsl:template>
   
-  <!-- Handle mode "skip" and "attrs" here in mode "sa" -->
+  <!-- Handle "skip" and "attrs" parameters here in mode "sa" -->
   <xsl:template mode="sa" match="( processing-instruction() | comment() )[$skip eq 0]">
     <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
@@ -360,31 +360,24 @@
   
   <xd:doc>
     <xd:desc>
-      <xd:p>This function modified from the template at
-        http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
+      <xd:p>This function modified from the function at
+        https://www.oxygenxml.com/archives/xsl-list/200902/msg00214.html
+        (It had two bugs: misplaced close paren, and 'gt' where 'ge' was needed.)
       </xd:p>
     </xd:desc>
-    <xd:param name="number">a string that represents a positive (base 10)
-    integer</xd:param>
+    <xd:param name="dec">a non-negative (base 10) integer</xd:param>
     <xd:return>a string that represents the same integer in base 16 (using
     only uppercase letters)</xd:return>
   </xd:doc>
-  <xsl:function name="wf:decimal2hexDigits" as="xs:string+">
-    <xsl:param name="number" as="xs:integer"/>
-    <xsl:variable name="remainder" select="$number mod 16" as="xs:integer"/>
-    <xsl:variable name="result" select="floor($number div 16) cast as xs:integer" as="xs:integer"/>
-    <xsl:if test="$result gt 0">
-      <xsl:value-of select="wf:decimal2hexDigits($result)"/>
-    </xsl:if>
-    <xsl:choose>
-      <xsl:when test="$remainder lt 10">
-        <xsl:value-of select="$remainder cast as xs:string"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:variable name="temp" select="($remainder - 10) cast as xs:string"/>
-        <xsl:value-of select="translate($temp, '012345', 'ABCDEF')"/>
-      </xsl:otherwise>
-    </xsl:choose>
+  <xsl:function name="wf:decInt2hexDigits" as="xs:string">
+    <xsl:param name="dec" as="xs:integer"/>
+    <xsl:sequence select="
+      if ($dec eq 0) then '0'
+      else concat(
+        if ( $dec ge 16 ) then wf:decInt2hexDigits( $dec idiv 16 )
+        else '',
+        substring('0123456789ABCDEF', ($dec mod 16) + 1, 1 )
+        )"/>
   </xsl:function>
   
   <xsl:function name="wf:padme" as="xs:string">
