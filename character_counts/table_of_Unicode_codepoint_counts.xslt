@@ -271,6 +271,7 @@
             </xsl:for-each>
           </tbody>
         </table>
+        <p>Total characters counted: <xsl:sequence select="format-number( count( $seq ),'#,###,###,##0')"/>.</p>
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
         <hr/>
         <p name="fn1">¹ <xsl:value-of select="document-uri(/)"/></p>
@@ -350,7 +351,7 @@
     </xsl:if>
   </xsl:template>
   <xsl:template mode="sa" match="yaps:*/@*[$attrs eq 1]"/>
-  <xsl:template mode="sa" match="*/@*[$attrs eq 1][$coin]">
+  <xsl:template mode="sa" match="*/@*[$attrs eq 1][$coin]" priority="0.9">
     <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
   <xsl:template mode="sa" match="@*[$attrs eq 9]">
@@ -372,12 +373,9 @@
     <xsl:param name="number" as="xs:integer"/>
     <xsl:variable name="remainder" select="$number mod 16" as="xs:integer"/>
     <xsl:variable name="result" select="floor($number div 16) cast as xs:integer" as="xs:integer"/>
-    <xsl:choose>
-      <xsl:when test="$result gt 0">
-        <xsl:value-of select="wf:decimal2hexDigits($result)"/>
-      </xsl:when>
-      <xsl:otherwise/>
-    </xsl:choose>
+    <xsl:if test="$result gt 0">
+      <xsl:value-of select="wf:decimal2hexDigits($result)"/>
+    </xsl:if>
     <xsl:choose>
       <xsl:when test="$remainder lt 10">
         <xsl:value-of select="$remainder cast as xs:string"/>
