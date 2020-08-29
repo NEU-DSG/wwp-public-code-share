@@ -265,8 +265,8 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     @param limit the maximum number of results per page
     @return a subset of $set
    :)
-  declare function wpi:reduce-to-subset($set as item()*, $page as xs:integer, 
-     $limit as xs:integer) as item()* {
+  declare function wpi:reduce-to-subset($set as item()*, $page as xs:integer, $limit as 
+     xs:integer) as item()* {
     let $intPage := if ( $limit eq 0 ) then 0 else $page
     let $totalRecords := count($set)
     let $subSet := 
@@ -278,4 +278,34 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
         return subsequence($set,$range,$limit)
       else $set
     return $subSet
+  };
+  
+  (:~
+    Given a sequence, apply a function to each item and use the results for sorting. This 
+    is an alternative to fn:sort(), which does not specify sort direction or what should 
+    happen to empty results.
+    
+    
+   :)
+  declare function wpi:sort($set as item()*, $sort-fn as function(*), $ascending as 
+     xs:boolean) as item()* {
+    wpi:sort($set, $sort-fn, $ascending, true())
+  };
+  
+  declare function wpi:sort($set as item()*, $sort-fn as function(*), $ascending as 
+     xs:boolean, $empty-last as xs:boolean) as item()* {
+    let $sortedSet :=
+      for $item in $set
+      let $sortResult := $sort-fn($item)
+      (: If requested, null values should be sorted last. :)
+      let $placeLast := 
+        if ( $empty-last ) then
+          not(exists($sortResult)) 
+          or ($sortResult instance of xs:string and $sortResult eq '')
+        else true()
+      order by $placeLast, $sortResult ascending
+      return $item
+    return
+      if ( $ascending ) then $sortedSet
+      else reverse($sortedSet)
   };
