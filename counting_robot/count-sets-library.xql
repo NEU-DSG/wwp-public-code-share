@@ -30,8 +30,11 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
- : @version 1.5.1
+ : @version 1.5.2
  :
+ :  2020-08-28: v1.5.2. Ensured that ctab:get-union-of-reports() and 
+ :    ctab:get-union-of-rows() can handle empty sequence parameters. Thanks for reporting,
+ :    Laura Johnson!
  :  2020-04-21: v1.5.1. Added ctab:escape-for-matching(), which makes functions such as
  :    ctab:create-row-match-pattern() more robust. Ensured ctab:get-union-of-rows() can
  :    handle reports with more than two columns, by using part of the first matching row.
@@ -251,7 +254,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
   (:~
     Combine the counts for all values in N tab-delimited reports. 
    :)
-  declare function ctab:get-union-of-reports($filenames as xs:string+) as xs:string* {
+  declare function ctab:get-union-of-reports($filenames as xs:string*) as xs:string* {
     let $dataRows :=
       for $filename in $filenames
       return ctab:get-report-by-rows($filename)
@@ -265,7 +268,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     If there are more than two columns, this function will obtain the remainder from the 
     first row which matches the distinct value in question.
    :)
-  declare function ctab:get-union-of-rows($tabbed-rows as xs:string+) as xs:string* {
+  declare function ctab:get-union-of-rows($tabbed-rows as xs:string*) as xs:string* {
     let $rowsWithTabs := $tabbed-rows[matches(., '\t')]
     let $allValues := 
       for $row in $rowsWithTabs
