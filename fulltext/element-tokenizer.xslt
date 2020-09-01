@@ -6,7 +6,16 @@
     xmlns:tei="http://www.tei-c.org/ns/1.0"
     exclude-result-prefixes="xs xsl wwp wf tei"
     xmlns="http://www.wwp.northeastern.edu/ns/textbase"
-    xpath-default-namespace="http://www.wwp.northeastern.edu/ns/textbase" version="2.0">
+    xpath-default-namespace="http://www.wwp.northeastern.edu/ns/textbase" version="3.0">
+    
+<!--
+    ELEMENT TOKENIZER
+    
+    Authors: Laura Johnson with Ashley M. Clark, Northeastern University Women Writers Project
+    See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext/Element-Tokenizer-README.md
+    
+  -->
+    
     
     <!--In the section above, there is a list of different namespaces for this XSLT script. It was created to work with the Women Writers Online Corpus, can work for any TEI-based corpus. To change it, simply change the "xmlns" to the namespace for tei by replacing the URL for the WWP textbase to that of TEI: "http://www.tei-c.org/ns/1.0". Then, carry this change down to the next line for the xpath-default-namespace as well. Replacing the namespace to the TEI from WWP will allow for the XSLT to use XPATH and encoding from the TEI for the tokenizer script below.--> 
     
