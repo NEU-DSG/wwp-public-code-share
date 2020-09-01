@@ -36,11 +36,11 @@ When working with (and customizing) this tokenizer, there are three components t
 3. the variable name(s) for special characters
 
 ## Namespaces
-Namespaces are identifiers that specify what kind of XML is being used in a document. There are different namespaces for different kinds of XML encoding schemes. For example, TEI is a flavor of XML created and managed by the Text Encoding Initiative. The TEI namespace is `http://www.tei-c.org/ns/1.0`, or "tei" for short. At the top of an XSLT document, the namespace might look like the following:
+Namespaces are identifiers that specify what kind of XML is being used in a document. There are different namespaces for different kinds of XML encoding schemes. For example, TEI is a flavor of XML created and managed by [the Text Encoding Initiative](https://tei-c.org/). The TEI namespace is `http://www.tei-c.org/ns/1.0`, or "tei" for short. At the top of an XSLT document, the namespace might look like the following:
 
     xmlns:tei="http://www.tei-c.org/ns/1.0"
 
-Developed for the Women Writers Online, the Element Tokenizer has the WWP namespace. This can be seen below:
+Developed for [Women Writers Online](https://wwp.northeastern.edu/wwo/), the Element Tokenizer has the WWP namespace. This can be seen below:
 
     xmlns:wwp="http://www.wwp.northeastern.edu/ns/textbase"
 
@@ -54,7 +54,11 @@ Changing from the WWP to the TEI namespace would look like this:
     xmlns="http://www.tei-c.org/ns/1.0"
     xpath-default-namespace="http://www.tei-c.org/ns/1.0"
 
-This might seem like a small step, but it can be very important. Essentially, in this step you are setting the namespace for the schema that the XSLT is pulling from. <!-- needs slight revision for accuracy --> Certain corpora (like the WWP) have customized XML encoding and this affects the names of certain elements. It is a good idea to always check namespaces. The element tokenizer utilizes the WWP namespace as the default, but can be easily changed following the above steps.
+This might seem like a small step, but it can be very important. Certain corpora (like the WWP’s) use customized XML encoding and this affects the names of certain elements.
+
+Essentially, in this step you are telling the XSLT, first, that the output XML should be associated with such-and-such namespace (`xmlns="http://example.org/ns"`); and second, that XPath instructions in the XSLT are, by default, associated with such-and-such namespace (`xpath-default-namespace="http://example.org/ns"`).
+
+It is a good idea to always check namespaces. The element tokenizer utilizes the WWP namespace by default, but can be easily changed following the above steps.
 
 ## Element Names
 The next section that is important to pay attention to for the Element Tokenizer is the element name. The default element name for the tokenizer is `<persName>`. To tokenize the contents of different elements, simply change the element name. For example:
