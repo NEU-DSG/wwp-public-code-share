@@ -1,6 +1,6 @@
 # XML Element Tokenization for Word Embedding Models
 
-By Laura Johnson
+**By Laura Johnson**
 
 The “Element Tokenizer” is a simple XSLT that tokenizes the content of elements in XML documents. Developed to tokenize specific data for creating word embedding models using [the wordVectors R wrapper for the Women Writers Vector Toolkit](https://github.com/NEU-DSG/wwp-public-code-share/tree/master/WordVectors), this script replaces special characters (including spaces, asterisks, and hyphens) with underscores in the content of the elements specified. The wordVectors algorithm does not remove underscores when it cleans a corpus, thus allowing for content connected by underscores to be treated as single tokens in the word embedding model training process.
 
