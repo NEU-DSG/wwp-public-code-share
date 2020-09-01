@@ -1,5 +1,6 @@
 # XML Element Tokenization for Word Embedding Models
-### By Laura Johnson
+
+<p style="font-size:1.15em; font-weight: bold;">By Laura Johnson</p>
 
 The “Element Tokenizer” is a simple XSLT that tokenizes the content of elements in XML documents. Developed to tokenize specific data for creating word embedding models using [the wordVectors R wrapper for the Women Writers Vector Toolkit](https://github.com/NEU-DSG/wwp-public-code-share/tree/master/WordVectors), this script replaces special characters (including spaces, asterisks, and hyphens) with underscores in the content of the elements specified. The wordVectors algorithm does not remove underscores when it cleans a corpus, thus allowing for content connected by underscores to be treated as single tokens in the word embedding model training process.
 
@@ -35,25 +36,25 @@ When working with (and customizing) this tokenizer, there are three components t
 3. the variable name(s) for special characters
 
 ## Namespaces
-Namespaces are identifiers that specify what kind of XML is being used in a document. There are different namespaces for different kinds of XML encoding schemes. For example, TEI is a type of XML created and managed by the Text Encoding Initiative. The TEI namespace is `http://www.tei-c.org/ns/1.0`, or tei for short. At the top of an XSLT document, the namespace might look like the following:
+Namespaces are identifiers that specify what kind of XML is being used in a document. There are different namespaces for different kinds of XML encoding schemes. For example, TEI is a flavor of XML created and managed by the Text Encoding Initiative. The TEI namespace is `http://www.tei-c.org/ns/1.0`, or "tei" for short. At the top of an XSLT document, the namespace might look like the following:
 
-`xmlns:tei="http://www.tei-c.org/ns/1.0"`
+    xmlns:tei="http://www.tei-c.org/ns/1.0"
 
 Developed for the Women Writers Online, the Element Tokenizer has the WWP namespace. This can be seen below:
 
-`xmlns:wwp="http://www.wwp.northeastern.edu/ns/textbase"`
+    xmlns:wwp="http://www.wwp.northeastern.edu/ns/textbase"
 
 Depending on what corpus you are using, you can set the default namespace for the XSLT by changing the URL in the quotation marks for the following section:
 
-`xmlns="http://www.wwp.northeastern.edu/ns/textbase"`
-`xpath-default-namespace="http://www.wwp.northeastern.edu/ns/textbase"`
+    xmlns="http://www.wwp.northeastern.edu/ns/textbase"
+    xpath-default-namespace="http://www.wwp.northeastern.edu/ns/textbase"
 
 Changing from the WWP to the TEI namespace would look like this:
 
-`xmlns="http://www.tei-c.org/ns/1.0"`
-`xpath-default-namespace="http://www.tei-c.org/ns/1.0"`
+    xmlns="http://www.tei-c.org/ns/1.0"
+    xpath-default-namespace="http://www.tei-c.org/ns/1.0"
 
-This might seem like a small step, but it can be very important. Essentially, in this step you are setting the namespace for the schema that the XSLT is pulling from. Certain corpora (like the WWP) have customized XML encoding and this affects the names of certain elements. It is a good idea to always check namespaces. The element tokenizer utilizes the WWP namespace as the default, but can be easily changed following the above steps.
+This might seem like a small step, but it can be very important. Essentially, in this step you are setting the namespace for the schema that the XSLT is pulling from. <!-- needs slight revision for accuracy --> Certain corpora (like the WWP) have customized XML encoding and this affects the names of certain elements. It is a good idea to always check namespaces. The element tokenizer utilizes the WWP namespace as the default, but can be easily changed following the above steps.
 
 ## Element Names
 The next section that is important to pay attention to for the Element Tokenizer is the element name. The default element name for the tokenizer is `<persName>`. To tokenize the contents of different elements, simply change the element name. For example:
@@ -76,7 +77,7 @@ For example, the following line creates a new variable named “ampersand” to 
 
 `<xsl:variable name="ampersand" select="replace($one-hyphen, '&+', '_')"/>`
 
-For special characters that separate words or important information in an element, replace the special characters with underscores. If the special characters are extra punctuation or would be considered a mess when the corpus is cleaned in word2vec, it is best to replace it with nothing (“”).
+For special characters that separate words or important information in an element, replace the special characters with underscores. If the special characters are extra punctuation or would be considered a mess when the corpus is cleaned in word2vec, it is best to replace it with nothing (`''`).
 
 Finally, the last step in adding another variable is to change the final variable name in the last two lines of the code. The final variable should always be the following line:
 
@@ -93,9 +94,9 @@ In order to run this transformation, you will need to set up a transformation sc
 5. In the box that reads “XSL URL” click the folder button and navigate the the location on your computer where you saved the Element Tokenizer file.
 6. Click the “Output” button toward the top.
 7. Make sure that the option “Save as” is selected. Click the folder button to navigate to your folder of choice.
-8. Once you have the folder, type in a character to the Save As box. This will bring up the location address in the box. Delete the character you typed.
+8. Once you have the folder, type in a character to the “Save as” box. This will bring up the location address in the box. Delete the character you typed.
 9. Click on the green arrow button. From the dropdown list, choose the option that reads “${cfn} current filename WITHOUT extension.”
-10. Add the end of the line, add text that will distinguish that the files have been transformed. For example “.../${cfn}_tokenized” and then add the “.xml” extension to save it as an XML file.
+10. Add the end of the line, add text that will distinguish that the files have been transformed. For example `.../${cfn}_tokenized` and then add the `.xml` extension to save it as an XML file.
 11. Make sure the “Open in Editor” option is unchecked.
 12. Hit “OK.”
 13. Hit “Save and Close.”
