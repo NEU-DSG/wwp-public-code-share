@@ -8,7 +8,7 @@ Tokenization is an essential and helpful process from natural language processin
 This document contains a brief overview about the Element Tokenizer including background and purpose, information about the special characters it replaces, and a short guide on how to use it. This is a working edition of this script and will be updated as it is used. If you do use it for tokenizing the contents of elements in XML documents for textual analysis and have suggestions on how to improve it, please let us know.
 
 ## Background and Purpose
-The Element Tokenizer was developed for the Women Writers Project to tokenize the content of `<persName>` and `<placeName>` elements in the Women Writers Online Corpus. It is also part of the ongoing research and output for the Women Writers Vector Toolkit and the [Word Vectors for the Thoughtful Humanist Institute](https://wwp.northeastern.edu/outreach/seminars/neh_wem.html), a series of institutes sponsored by the National Endowment of the Humanities as part of their Institutes for Advanced Topics in Digital Humanities program.  This tokenizer was used to develop three tokenized versions of the WWO corpus: 1) tokenized `<persName>` elements, 2) tokenized `<placeName>` elements, 3) both tokenized `<placeName>` and `<persName>` elements. Tokenizing the content of these elements allows for person and place names with multiple words to be treated as one token. For example, the name Margaret Cavendish can be treated as one token “margaret_cavendish” instead of the two tokens “margaret” and “cavendish” as it was previously. The same applies to place names. Instead of being treated as “new” and “england,” this tool allows word embedding models to treat “new_england” as one token.
+The Element Tokenizer was developed for the Women Writers Project to tokenize the content of `<persName>` and `<placeName>` elements in the Women Writers Online Corpus. It is also part of the ongoing research and output for the Women Writers Vector Toolkit and the [Word Vectors for the Thoughtful Humanist Institute](https://wwp.northeastern.edu/outreach/seminars/neh_wem.html), a series of institutes sponsored by the National Endowment for the Humanities as part of their Institutes for Advanced Topics in the Digital Humanities program.  This tokenizer was used to develop three tokenized versions of the WWO corpus: 1) tokenized `<persName>` elements, 2) tokenized `<placeName>` elements, 3) both tokenized `<placeName>` and `<persName>` elements. Tokenizing the content of these elements allows for person and place names with multiple words to be treated as one token. For example, the name Margaret Cavendish can be treated as one token “margaret_cavendish” instead of the two tokens “margaret” and “cavendish” as it was previously. The same applies to place names. Instead of being treated as “new” and “england,” this tool allows word embedding models to treat “new_england” as one token.
 
 ## Element Tokenizer in Practice
 Following conversations with scholars learning about word embedding models and using the wordVectors script, the Element Tokenizer was developed to potentially allow for more specific queries and the creation of more specialized word embedding models. Being able to tokenize the contents of an entire element instead of individual words could allow for more specific queries and exploration of key concepts related to such things as names, subjects, places, phrases, and more.
@@ -24,7 +24,7 @@ Developed using the content of the Women Writers Online corpus, the Element Toke
 + Spaces
 + Underscores
 
-The tokenizer chains these transformations by declaring new variables for additional special characters in sequence. This means that the tokenizer processes all of the special characters before replacing them with underscores. These special characters were chosen specifically for the content of the `<persName>` and `<placeName>` elements of the WWO corpus and do not include other punctuation because that either was not included or is cleaned in the model training process. However, the Element Tokenizer has been annotated and directions for writing additional lines of code for different characters are included in comments.
+The tokenizer chains these transformations by declaring new variables for additional special characters in sequence. This means that the tokenizer processes all of the special characters before replacing them with underscores. These special characters were chosen specifically for the contents of the `<persName>` and `<placeName>` elements of the WWO corpus and do not include other punctuation because that either was not included or is cleaned in the model training process. However, the Element Tokenizer has been annotated and directions for writing additional lines of code for different characters are included in comments.
 
 # Using the Element Tokenizer
 The Element Tokenizer is the XSLT script `tokenizer.xq`, located in this folder. It is meant as a personal workspace and you can customize it to suit your needs and corpus. If you have cloned the wwp-public-code-share GitHub repository, it is advised that you do not change this file directly. Instead, make a copy of the tokenizer to work in. This way you can easily retrieve any future changes that we make with a simple `git pull`.
@@ -56,7 +56,7 @@ Changing from the WWP to the TEI namespace would look like this:
 This might seem like a small step, but it can be very important. Essentially, in this step you are setting the namespace for the schema that the XSLT is pulling from. Certain corpora (like the WWP) have customized XML encoding and this affects the names of certain elements. It is a good idea to always check namespaces. The element tokenizer utilizes the WWP namespace as the default, but can be easily changed following the above steps.
 
 ## Element Names
-The next section that is important to pay attention to for the Element Tokenizer is the element name. The default element name for the tokenizer is `<persName>`. To tokenize the contents of different elements, simply change the element name.For example:
+The next section that is important to pay attention to for the Element Tokenizer is the element name. The default element name for the tokenizer is `<persName>`. To tokenize the contents of different elements, simply change the element name. For example:
 
 `<xsl:template match="(placeName)">`
 
@@ -64,7 +64,7 @@ In addition, you can use the | to indicate more than one element to tokenize. Fo
 
 `<xsl:template match="(persName | placeName | orgName)">`
 
-Changing the element names will apply the tokenization transformation to the contents of the element in question. This tokenizer was developed for `<persName>` and `<placeName>` contents. So, if you are going to use on other elements, it is a good idea to look at the content in those elements to see if there are additional special characters that need to be regularized or replaced (see below). This can be done with the [WWP Counting Robot](https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot) or a simple XPath for the element across the corpus.
+Changing the element names will apply the tokenization transformation to the contents of the element in question. This tokenizer was developed for `<persName>` and `<placeName>` contents. So, if you are going to use it on other elements, it is a good idea to look at the contents of those elements to see if there are additional special characters that need to be regularized or replaced (see below). This can be done with the [WWP Counting Robot](https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot) or a simple XPath for the element across the corpus.
 
 ## Declaring Additional Variables
 
@@ -72,7 +72,7 @@ To declare another variable to replace additional special characters as needed, 
 
 `<xsl:variable name="variable-name" select="replace($last-variable-name, 'insert-regular-expression', '_')"/>`
 
-For example, the following line creates a new variable named “ampersand” to replace any“&” in the element content with an underscore.
+For example, the following line creates a new variable named “ampersand” to replace any“&” in the element contents with an underscore.
 
 `<xsl:variable name="ampersand" select="replace($one-hyphen, '&+', '_')"/>`
 
@@ -82,10 +82,10 @@ Finally, the last step in adding another variable is to change the final variabl
 
 `<xsl:value-of select="replace($underscore, '_+', '_')"/>`
 
-This code effectively replaces multiple underscores with just one, cleaning up any instances in the above transformations that might have resulted in replacing multiple special character with multiple underscores.
+This code effectively replaces multiple underscores with just one, cleaning up any instances in the above transformations that might have resulted in replacing multiple special characters with multiple underscores.
 
 ## Setting up the Transformation
-In order to run this transformation, you will need to set up a transformation scenario. In addition, it is important to note that this XSLT takes input XML data and produces XML data as the output. The difference is that the content of specific elements have been cleaned and tokenized. The directions below are used to create an “XML transformation with XSLT” in oXygen. These directions have been adapted from [the directions to set up XQuery transformations](https://github.com/NEU-DSG/wwp-public-code-share/blob/master/docs/setup-xquery.md) on the WWP Github.
+In order to run this transformation, you will need to set up a transformation scenario in [Oxygen](https://www.oxygenxml.com/). In addition, it is important to note that this XSLT takes XML input data and produces XML data as the output. The difference is that the contents of specific elements have been cleaned and tokenized. The directions below are used to create an “XML transformation with XSLT” in oXygen. These directions have been adapted from [the directions to set up XQuery transformations](https://github.com/NEU-DSG/wwp-public-code-share/blob/master/docs/setup-xquery.md) on the WWP Github.
 1. Click on the button that has a wrench with a small play button symbol. Or, you can use the shortcut `Command + Shift + C` (Mac) or `Ctrl + Shift + C` (Windows).
 2. Create a new transformation scenario by selecting “New”. Make sure to choose the “XML transformation with XSLT” option.
 3. In the window that opens, name the transformation something to describe the process like “element-tokenizer” or “tokenizer.”
@@ -100,7 +100,7 @@ In order to run this transformation, you will need to set up a transformation sc
 12. Hit “OK.”
 13. Hit “Save and Close.”
 
-The transformation scenario has now been saved in oXygen and can be used to transform whatever files that you want with the Element Tokenizer. To do so, simply right click on the folder in the Project Menu in oXygen and choose “Transform with” and choose the scenario you just created.
+The transformation scenario has now been saved in Oxygen and can be used to transform whatever files that you want with the Element Tokenizer. To do so, simply control- or right-click on the folder in the Project Menu in Oxygen and choose “Transform with” and choose the scenario you just created.
 
 # Credit and Thanks
 This XSLT was developed by Laura Johnson and Ash Clark as part of the Word Vectors for the Thoughtful Humanist series at Northeastern. Word Vectors for the Thoughtful Humanist has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.
