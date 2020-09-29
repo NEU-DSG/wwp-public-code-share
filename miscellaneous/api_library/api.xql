@@ -142,7 +142,7 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     @param str the string
     @return a version of the string suitable for alphabetical sorting
    :)
-  declare function wpi:get-sortable-string($str as xs:string) as xs:string {
+  declare function wpi:get-sortable-string($str as xs:string?) as xs:string? {
     wpi:get-sortable-string($str, $wpi:nonsortingRegex)
   };
   
@@ -156,8 +156,8 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
       matches within $str will be removed.
     @return a version of the string suitable for alphabetical sorting
    :)
-  declare function wpi:get-sortable-string($str as xs:string, $nonsorting-regex as 
-     xs:string?) as xs:string {
+  declare function wpi:get-sortable-string($str as xs:string?, $nonsorting-regex as 
+     xs:string?) as xs:string? {
     let $lowercased := lower-case($str)
     return
       if ( exists($nonsorting-regex) and normalize-space($nonsorting-regex) ne '' ) then
@@ -257,6 +257,18 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   };
   
   (:~
+    Test some input to make sure that it is a string, and that it contains 
+    characters that aren't spaces. This is useful for avoiding unnecessary 
+    processing when parameters are allowed to be empty.
+    
+    @param str  zero or one string for testing
+    @return false if the input *is* an empty sequence or an ignorable string 
+   :)
+  declare function wpi:not-ignorable-string($str as xs:string?) as xs:boolean {
+    exists($str) and normalize-space($str) ne ''
+  };
+  
+  (:~
     Given a sequence, return a subset determined by the number of results and the page 
     requested.
     
@@ -281,12 +293,49 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   };
   
   (:~
+   :)
+  declare function wpi:regularize-nonsortable-characters($str as xs:string?) 
+     as xs:string? {
+    let $unwantedChars := "(['“”?!*\[\]()☞☜¶†‡£☾⊙☉§{}¦_\\]|&amp;(c\.?)?)"
+    return
+      wpi:regularize-nonsortable-characters($str, $unwantedChars)
+  };
+  
+  (:~
+   :)
+  declare function wpi:regularize-nonsortable-characters($str as xs:string?, 
+     $removable-character-regex as xs:string) as xs:string? {
+    let $wordsSplitter := "([\s;:\.,␣/…–—―·•]|-{2,})+"
+    return
+      wpi:regularize-nonsortable-characters($str, $removable-character-regex, 
+        $wordsSplitter)
+  };
+  
+  (:~
+    
+   :)
+  declare function wpi:regularize-nonsortable-characters($str as xs:string?, 
+     $removable-character-regex as xs:string?, 
+     $characters-to-replace-with-space-regex as xs:string?) as xs:string? {
+    let $charCleaned :=
+      if ( wpi:not-ignorable-string($removable-character-regex) ) then
+        replace($str, $removable-character-regex, '')
+      else $str
+    let $wordSplit :=
+      if ( wpi:not-ignorable-string($characters-to-replace-with-space-regex) ) then
+        replace($charCleaned, $characters-to-replace-with-space-regex, ' ')
+      else $charCleaned
+    return
+      replace(normalize-space($wordSplit), ' &amp; ', ' and ')
+  };
+  
+  (:(\:~
     Given a sequence, apply a function to each item and use the results for sorting. This 
     is an alternative to fn:sort(), which does not specify sort direction or what should 
     happen to empty results.
     
     
-   :)
+   :\)
   declare function wpi:sort($set as item()*, $sort-fn as function(*), $ascending as 
      xs:boolean) as item()* {
     wpi:sort($set, $sort-fn, $ascending, true())
@@ -297,7 +346,7 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     let $sortedSet :=
       for $item in $set
       let $sortResult := $sort-fn($item)
-      (: If requested, null values should be sorted last. :)
+      (\: If requested, null values should be sorted last. :\)
       let $placeLast := 
         if ( $empty-last ) then
           not(exists($sortResult)) 
@@ -308,4 +357,5 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     return
       if ( $ascending ) then $sortedSet
       else reverse($sortedSet)
-  };
+  };:)
+
