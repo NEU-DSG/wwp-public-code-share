@@ -13,10 +13,15 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   A library of functions to simplify the development of an XQuery API.
   
   @author Ashley M. Clark, Northeastern University Women Writers Project
-  @version 1.4.1
+  @version 1.5.0
   @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/miscellaneous/api_library
   
   Changelog:
+    2020-09-29, v1.5.0: Added $wpi:sortRegexCharacterRemoval, 
+      $wpi:sortRegexWhitespaceReplacement, wpi:not-ignorable-string(), and
+      wpi:regularize-nonsortable-characters(). Renamed $wpi:nonsortingRegex to 
+      $wpi:sortRegexNonsortingArticleRemoval. Changed wpi:get-sortable-string() to 
+      accept zero or one string.
     2020-03-25, v1.4.1: Moved this XQuery from Subversion to the WWP Public Code 
       Share, and changed the link above accordingly. Added MIT license and 
       wpi:get-sortable-string#2.
@@ -60,10 +65,14 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   VARIABLES
  :)
   
-  declare variable $wpi:accessHeader := 
+  declare variable $wpi:accessHeader :=
     <http:header name="Access-Control-Allow-Origin" value="*"/>;
-  declare variable $wpi:nonsortingRegex :=
+  declare variable $wpi:sortRegexCharacterRemoval :=
+    concat("(['",'"',"“”?!*\[\]()☞☜¶†‡£☾⊙☉§{}¦_\\]|&amp;(c\.?)?)");
+  declare variable $wpi:sortRegexNonsortingArticleRemoval :=
     "^((the|an|a|la|le|el|lo|las|les|los|de|del|de la) |l')";
+  declare variable $wpi:sortRegexWhitespaceReplacement :=
+    "([\s;:\.,␣/…–—―·•]|-{2,})+";
 
 
 (:
@@ -136,14 +145,14 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   (:~
     Given a string, create a version for alphabetical sorting by lower-casing the 
     characters and removing articles at the beginning of the string. This version
-    uses $wpi:nonsortingRegex to identify parts of the string which should be 
+    uses $wpi:sortRegexNonsortingArticleRemoval to identify parts of the string which should be 
     removed.
     
     @param str the string
     @return a version of the string suitable for alphabetical sorting
    :)
   declare function wpi:get-sortable-string($str as xs:string?) as xs:string? {
-    wpi:get-sortable-string($str, $wpi:nonsortingRegex)
+    wpi:get-sortable-string($str, $wpi:sortRegexNonsortingArticleRemoval)
   };
   
   (:~
@@ -269,8 +278,8 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   };
   
   (:~
-    Given a sequence, return a subset determined by the number of results and the page 
-    requested.
+    Given a sequence, return a subset determined by the number of results and the 
+    page requested.
     
     @param set a sequence of zero or more results
     @param page a number representing the requested "page" of results
@@ -293,26 +302,73 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   };
   
   (:~
+    Given a string, perform some regularization tasks toward creating a sortable 
+    string. First, a regular expression is used to replace unwanted characters or 
+    patterns with nothing. Then, another regular expression is used to replace other 
+    patterns with whitespace. Whitespace is normalized, and finally, instances of 
+    the string " & " are replaced with " and ". This function is useful to apply 
+    before wpi:get-sortable-string(), which lowercases all letters and removes 
+    leading articles.
+    
+    This version of the function is a convenience function for the three-argument 
+    version:
+      `wpi:regularize-nonsortable-characters($str, $wpi:sortRegexCharacterRemoval, 
+                                             $wpi:sortRegexWhitespaceReplacement)`
+    
+    @param str a string to be regularized
+    @return a regularized string
    :)
   declare function wpi:regularize-nonsortable-characters($str as xs:string?) 
      as xs:string? {
-    let $unwantedChars := "(['“”?!*\[\]()☞☜¶†‡£☾⊙☉§{}¦_\\]|&amp;(c\.?)?)"
-    return
-      wpi:regularize-nonsortable-characters($str, $unwantedChars)
+    wpi:regularize-nonsortable-characters($str, $wpi:sortRegexCharacterRemoval)
   };
   
   (:~
+    Given a string, perform some regularization tasks toward creating a sortable 
+    string. First, a regular expression is used to replace unwanted characters or 
+    patterns with nothing. Then, another regular expression is used to replace other 
+    patterns with whitespace. Whitespace is normalized, and finally, instances of 
+    the string " & " are replaced with " and ". This function is useful to apply 
+    before wpi:get-sortable-string(), which lowercases all letters and removes 
+    leading articles.
+    
+    This version of the function is a convenience function for the three-argument 
+    version:
+      `wpi:regularize-nonsortable-characters($str, $removable-character-regex, 
+                                             $wpi:sortRegexWhitespaceReplacement)`
+    The parameter $removable-character-regex is optional. If an empty sequence or a 
+    zero-length string is provided, no replacement will take place.
+    
+    @param str a string to be regularized
+    @param removable-character-regex an optional regular expression to match 
+      patterns which should be removed from the string
+    @return a regularized string
    :)
   declare function wpi:regularize-nonsortable-characters($str as xs:string?, 
-     $removable-character-regex as xs:string) as xs:string? {
-    let $wordsSplitter := "([\s;:\.,␣/…–—―·•]|-{2,})+"
-    return
-      wpi:regularize-nonsortable-characters($str, $removable-character-regex, 
-        $wordsSplitter)
+     $removable-character-regex as xs:string?) as xs:string? {
+    wpi:regularize-nonsortable-characters($str, $removable-character-regex, 
+      $wpi:sortRegexWhitespaceReplacement)
   };
   
   (:~
+    Given a string, perform some regularization tasks toward creating a sortable 
+    string. First, a regular expression is used to replace unwanted characters or 
+    patterns with nothing. Then, another regular expression is used to replace other 
+    patterns with whitespace. Whitespace is normalized, and finally, instances of 
+    the string " & " are replaced with " and ". This function is useful to apply 
+    before wpi:get-sortable-string(), which lowercases all letters and removes 
+    leading articles.
     
+    In this version of the function, all regular expressions are optional. If an 
+    empty sequence or a zero-length string is provided, no replacement will take 
+    place.
+    
+    @param str a string to be regularized
+    @param removable-character-regex an optional regular expression to match 
+      patterns which should be removed from the string
+    @param characters-to-replace-with-space-regex an optional regular expression to 
+      match patterns that should be replaced with a single space
+    @return a regularized string
    :)
   declare function wpi:regularize-nonsortable-characters($str as xs:string?, 
      $removable-character-regex as xs:string?, 
@@ -328,34 +384,4 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
     return
       replace(normalize-space($wordSplit), ' &amp; ', ' and ')
   };
-  
-  (:(\:~
-    Given a sequence, apply a function to each item and use the results for sorting. This 
-    is an alternative to fn:sort(), which does not specify sort direction or what should 
-    happen to empty results.
-    
-    
-   :\)
-  declare function wpi:sort($set as item()*, $sort-fn as function(*), $ascending as 
-     xs:boolean) as item()* {
-    wpi:sort($set, $sort-fn, $ascending, true())
-  };
-  
-  declare function wpi:sort($set as item()*, $sort-fn as function(*), $ascending as 
-     xs:boolean, $empty-last as xs:boolean) as item()* {
-    let $sortedSet :=
-      for $item in $set
-      let $sortResult := $sort-fn($item)
-      (\: If requested, null values should be sorted last. :\)
-      let $placeLast := 
-        if ( $empty-last ) then
-          not(exists($sortResult)) 
-          or ($sortResult instance of xs:string and $sortResult eq '')
-        else true()
-      order by $placeLast, $sortResult ascending
-      return $item
-    return
-      if ( $ascending ) then $sortedSet
-      else reverse($sortedSet)
-  };:)
 
