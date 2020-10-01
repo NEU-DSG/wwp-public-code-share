@@ -1,0 +1,74 @@
+default namespace = "http://www.w3.org/2005/xpath-functions"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# This is the schema from
+# <ref target="https://www.w3.org/TR/xpath-functions-31/#schema-for-json">
+#   <title level="a">C.2 Schema for the result of fn:json-to-xml</title>
+#   in <title level="m">XPath and XQuery Functions and Operators 3.1</title>
+# </ref> converted to RELAX NG using the web form at
+# http://debeissat.nicolas.free.fr/XSDtoRNG.php, then to the compact syntax,
+# and then hand-tweaked:
+# * indentation and other whitespace changes
+# * this and a few other comments added
+# * changed pattern "string" (written "\string") to "stringElement"
+# * all "attribute * { text }" changed to "attribute * { text }*"
+# * excepted the specific attributes from such declarations on
+#   elements that also have specific attributes
+# * combined the two annotation namespace declarations into one
+# * deleted rng namespace, it is never used
+# * re-arranged declarations
+# * definition of finiteNumberType deleted, as it was never referenced
+# * made all attributes optional
+# * added 'text' to stringType and stringWithinMapType
+
+# * This is a schema for the XML representation of JSON used as the target for the
+# * function fn:json-to-xml()
+# *
+# * The schema is made available under the terms of the W3C software notice and license
+# * at http://www.w3.org/Consortium/Legal/copyright-software-19980720
+# *
+start |= map
+map = element map { mapType }
+# see near bottom for definition of mapType
+
+start |= array
+array = element array { arrayType }
+arrayType =
+  (map | array | stringElement | number | boolean | null)*,
+  attribute * -( key | escaped-key ) { text }*
+
+start |= stringElement
+stringElement = element string { stringType }
+stringType = text,
+  [ a:defaultValue = "false" ] attribute escaped { xsd:boolean }?,
+  attribute * - escaped { text }*
+
+start |= number
+number = element number { numberType }
+numberType = attribute * { text }*
+
+start |= boolean
+boolean = element boolean { booleanType }
+booleanType = attribute * { text }*
+
+start |= null
+null = element null { nullType }
+nullType = attribute * { text }*
+
+mapWithinMapType = mapType, key-group
+arrayWithinMapType = arrayType, key-group
+stringWithinMapType = key-group, text
+numberWithinMapType = key-group
+booleanWithinMapType = key-group
+nullWithinMapType = key-group
+mapType =
+  (element map { mapWithinMapType }
+   | element array { arrayWithinMapType }
+   | element string { stringWithinMapType }
+   | element number { numberWithinMapType }
+   | element boolean { booleanWithinMapType }
+   | element null { nullWithinMapType })*,
+  attribute * -( key | escaped-key ) { text }*
+key-group =
+  attribute key { xsd:string }?,
+  [ a:defaultValue = "false" ] attribute escaped-key { xsd:boolean }?

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:out="http://www.w3.org/1999/XSL/Transform-NOT!"
   xmlns:map="http://www.w3.org/2005/xpath-functions/map"
   xmlns:ucd="http://www.unicode.org/ns/2003/ucd/1.0"
   xmlns:wf="http://www.wwp.northeastern.edu/ns/functions"
@@ -10,7 +9,10 @@
   xmlns:tei="http://www.tei-c.org/ns/1.0"
   xmlns:wwp="http://www.wwp.northeastern.edu/ns/textbase"
   xmlns:yaps="http://www.wwp.northeastern.edu/ns/yaps"
+  xmlns:tmp="http://www.wwp.neu.edu/temp/ns"
   xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  exclude-result-prefixes="#all"
   version="3.0">
   <!--
       Copyleft 2019 Syd Bauman and the Women Writers Project.
@@ -18,8 +20,9 @@
       accompanying README.md.)
   -->
   <xsl:output method="xhtml" indent="yes" encoding="UTF-8" html-version="5"/>
+
   <xsl:param name="UCD" select="'https://raw.githubusercontent.com/behnam/unicode-ucdxml/master/ucd.nounihan.grouped.xml'"/>
-  <xsl:param name="debug" select="false()" as="xs:boolean"/>
+  <xsl:param name="debug" select="false()" as="xs:boolean" static="yes"/>
   <xsl:param name="attrs" select="1" as="xs:integer"/>
   <xsl:param name="fold" select="0" as="xs:integer"/>
   <xsl:param name="skip" select="3" as="xs:integer"/>
@@ -27,7 +30,7 @@
   <xsl:param name="fileName" select="tokenize(document-uri(/), '/')[last()]"/>
   <xd:doc>
     <xd:desc>protect open paren, protect close paren: theses variables should
-      each be set to any single character you *know* will not be in the input
+      each be set to any single character you <xd:b>know</xd:b> will not be in the input
       document. And they have to be different from each other, too.
       Only used for WWP.</xd:desc>
   </xd:doc>
@@ -42,6 +45,12 @@
   <xsl:variable name="rlcps" select="'\\\)'"/>
   <xsl:variable name="rlopr" select="'\\('"/>
   <xsl:variable name="rlcpr" select="'\\)'"/>
+  <xd:doc>
+    <xd:desc>attribute separator for debugging: should be any single character
+    you <xd:b>know</xd:b> will not be in the input document. It is used to
+    temporarily surround the values of attributes for debugging.</xd:desc>
+  </xd:doc>
+  <xsl:param name="as4d" select="'&#x0115C5;'"/>
   <xd:doc>
     <xd:desc>Me, myself, and I: 
     <xd:ul>
@@ -61,14 +70,18 @@
   <xsl:variable name="ucdTemp">
     <xsl:choose>
       <xsl:when test="not( $UCD castable as xs:anyURI )">
-        <xsl:message terminate="no">Warning: Invalid $UCD — not a URI</xsl:message>
+        <!-- when will this clause *ever* be executed? -->
+        <xsl:variable name="noUCDmsg" select="'String supplied for Unicode Character Database URI ('||$UCD||') is not actually a URI'"/>
+        <xsl:message terminate="no" select="'Warning: '||$noUCDmsg"/>
+        <html:span class="emsg"><xsl:value-of select="$noUCDmsg"/></html:span>
       </xsl:when>
       <xsl:when test="doc-available($UCD)">
         <xsl:copy-of select="document($UCD)"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:message>Warning: Unicode Character Database URI (<xsl:value-of select="$UCD"/>) not readable.</xsl:message>
-        <ucd:char>Unicode character name not available</ucd:char>
+        <xsl:variable name="noUCDmsg" select="'Unicode Character Database URI ('||$UCD||') not readable.'"/>
+        <xsl:message terminate="no" select="'Warning: '||$noUCDmsg"/>
+        <html:span class="emsg"><xsl:value-of select="$noUCDmsg"/></html:span>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -78,14 +91,40 @@
         <xsl:copy-of select="$ucdTemp"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:message terminate="no">Warning: $UCD (<xsl:value-of select="$UCD"/>) does not seem to be a valid Unicode Character Database (grouped).</xsl:message>
-        <ucd:char>Unicode character name not available</ucd:char>
+        <xsl:variable name="noUCDmsg" select="'$UCD ('||$UCD||') does not seem to be a valid Unicode Character Database (grouped).'"/>
+        <xsl:message terminate="no" select="'Warning: '||$noUCDmsg"/>
+        <html:span class="emsg"><xsl:value-of select="$noUCDmsg"/></html:span>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
-  
+  <!--
+    Flip a coin iff attrs=1 to see if we should include or exclude attributes
+    (Note that if the vocabularly is one we recognize, this is ignored and specific
+    attributes are kept.)
+    (Note also that we deliberately avoid a web request unless attrs=1, just to
+    avoid the wait.)
+    Thanks to Vincent Lizzi for the idea for generating a random number from inside
+    XSLT without fn:random-number-generator() (which is not available in Saxon 9
+    HE, although it is available in Saxon 10 HE).
+  -->
+  <xsl:variable name="coin" as="xs:boolean" select="
+      if ($attrs eq 1) then
+        if (doc-available('https://www.random.org/integers/') ) then
+          unparsed-text('https://www.random.org/integers/?num=1&amp;min=0&amp;max=1&amp;col=1&amp;base=10&amp;format=plain&amp;rnd=new')
+          cast as xs:boolean
+        else
+          ((
+            ( current-time() cast as xs:string )
+            => substring-after('.')
+            => substring( 1, 1 )
+          ) cast as xs:integer mod 2 )
+            cast as xs:boolean
+      else
+        true()
+      "/>
+
   <xd:doc>
-    <xd:desc>Generic identity template (low priority)</xd:desc>
+    <xd:desc>Just copy stuff unless told otherwise …</xd:desc>
   </xd:doc>
   <xsl:template match="@*|node()" mode="#all" priority="-1">
     <xsl:copy>
@@ -95,8 +134,9 @@
 
   <xsl:template match="/">
     <!-- 
-      Die early if there's an unprocessable param (just because dying
-      at the right time takes a long time, at least in $whitespace case).
+      Die early if there's an unprocessable param (just because waiting
+      until we would test the param anyway takes a long time, at least
+      in $whitespace case).
     -->
     <xsl:choose>
       <xsl:when test="not( $attrs = (0, 1, 9) )">
@@ -112,15 +152,17 @@
         <xsl:message terminate="yes">Invalid $whitespace: should be 0, 1, or 3</xsl:message>
       </xsl:when>
     </xsl:choose>
+
     <!-- pass1: generate a copy of input, handling the $skip and $attrs parameters -->
     <xsl:variable name="content">
       <xsl:apply-templates select="node()" mode="sa"/>
     </xsl:variable>
-    <xsl:if test="$debug">
-      <xsl:result-document href="/tmp/{$andI}_debug_content.xml" indent="no" method="xml">
-        <xsl:sequence select="$content"/>
-      </xsl:result-document>
-    </xsl:if>
+    <xsl:result-document use-when="$debug"
+      href="/tmp/{$andI}_debug_content.xml" indent="no" method="xml">
+      <xsl:sequence select="$content"/>
+    </xsl:result-document>
+    <xsl:variable name="content" select="replace( $content, $as4d, '')"/>
+
     <!--
       We now have a reduced version of entire document in $content.
       Turn it into a big string, collapsing whitespace as requested
@@ -139,11 +181,11 @@
         <!-- Because of unpocessable parameter test, above, we know no other value is possible -->
       </xsl:choose>
     </xsl:variable>
-    <xsl:if test="$debug">
-      <xsl:result-document href="/tmp/{$andI}_debug_bigString1.txt" indent="no" method="text">
-        <xsl:sequence select="$bigString"/>
-      </xsl:result-document>
-    </xsl:if>
+    <xsl:result-document use-when="$debug"
+      href="/tmp/{$andI}_debug_bigString1.txt" indent="no" method="text">
+      <xsl:sequence select="$bigString"/>
+    </xsl:result-document>
+
     <!-- Case-fold alphabetic characters as requested -->
     <xsl:variable name="bigString">
       <xsl:choose>
@@ -162,11 +204,11 @@
         <!-- Because of unpocessable parameter test, above, we know no other value is possible -->
       </xsl:choose>
     </xsl:variable>
-    <xsl:if test="$debug">
-      <xsl:result-document href="/tmp/{$andI}_debug_bigString2.txt" indent="no" method="text">
-        <xsl:sequence select="$bigString"/>
-      </xsl:result-document>
-    </xsl:if>
+    <xsl:result-document use-when="$debug"
+      href="/tmp/{$andI}_debug_bigString2.txt" indent="no" method="text">
+      <xsl:sequence select="$bigString"/>
+    </xsl:result-document>
+
     <!-- Convert the entire big string into a sequence of (decimal) codepoints -->
     <xsl:variable name="seq" select="string-to-codepoints($bigString)"/>
     <!--
@@ -177,116 +219,22 @@
     -->
     <xsl:variable name="count_by_decimal_char_num" as="map( xs:integer, xs:integer )">
       <xsl:map>
-        <xsl:for-each select="distinct-values($seq)">
-          <xsl:map-entry key="." select="count($seq[ . eq current() ])"/>
+        <xsl:for-each select="distinct-values( $seq )">
+          <xsl:map-entry key="." select="count( $seq[ . eq current() ] )"/>
         </xsl:for-each>
       </xsl:map>
     </xsl:variable>
+
     <!-- Generate output -->
+    <xsl:variable name="ucd_available" select="not( $ucd/html:span[@class eq 'emsg'] )"/>
     <html>
-      <head>
-        <xsl:variable name="title" select="'chars in '||$fileName"/>
-        <title><xsl:value-of select="'Character counts in '||$fileName"/></title>
-        <meta name="generated_by" content="table_of_Unicode_codepoint_counts.xslt"/>
-        <meta name="generated_at" content="{current-dateTime()}"/>
-        <script type="application/javascript" src="http://www.wwp.neu.edu/utils/bin/javascript/sorttable.js"/>
-        <style type="text/css">
-          <xsl:text disable-output-escaping="yes">
-            body {
-              margin: 1em 1em 1em 3em;
-              padding: 1em 1em 1em 3em;
-            }
-            thead {
-              background-color: #DEE3E6;
-            }
-            th, td {
-              padding: 0.5ex;
-            }
-            td.Ucp {
-              text-align: center;
-            }
-            td.chr {
-              text-align: center;
-            }
-            td.cnt {
-              font-family: monospace;
-              text-align: right;
-              padding-right: 1.0em;
-            }
-            .val { font-family: monospace; font-size: 120%; }
-            dt { font-weight: bold; font-size: 120%; font-family: monospace; margin: 1ex 0em 0em 0em; }
-            li.true::marker { color: green; }
-            li.false::marker { color: red; }
-            li.true { list-style-type: square; }
-            li.false { color:  grey; font-size: 97%; }
-            li.true { color: black; font-size: 103%; }
-          </xsl:text>
-        </style>
-      </head>
+      <xsl:call-template name="html_head"/>
       <body>
         <h2>Character counts in <xsl:value-of select="$fileName"/></h2>
-        <p>Character counts in <tt><xsl:value-of
-          select="$fileName"/></tt><a href="#fn1">¹</a>, using the
-          following parameters:</p>
-        <dl>
-          <dt><span class="param">attrs</span></dt>
-          <dd>
-            <ul>
-              <li class="{$attrs eq 0}"><span class="val">0</span>: drop <emph>all</emph> attributes</li>
-              <li class="{$attrs eq 1}"><span class="val">1</span>: 
-                <xsl:choose>
-                  <xsl:when test="$input/tei:*">
-                    keep all attributes except:
-                    <ul>
-                      <li>@assertedValue iff @locus is "value"</li>
-                      <li>@baseForm</li>
-                      <li>@expand, other than on &lt;classRef&gt;</li>
-                      <li>@lemma</li>
-                      <li>@orig</li>
-                    </ul>
-                  </xsl:when>
-                  <xsl:when test="$input/wwp:* | $input/yaps:*">
-                    keep only pre() and post() of @rend
-                  </xsl:when>
-                  <xsl:when test="$input/html:*">
-                    keep only @title and @alt
-                  </xsl:when>
-                </xsl:choose> [default]
-              </li>
-              <li class="{$attrs eq 9}"><span class="val">9</span>: keep <emph>all</emph> attributes</li>
-            </ul>
-          </dd>
-          <dt><span class="param">fold</span></dt>
-          <dd>
-            <ul>
-              <li class="{$fold eq 0}"><span class="val">0</span>: no case folding [default]</li>
-              <li class="{$fold eq 1}"><span class="val">1</span>: case folding (upper to lower, but A–Z <em>only</em>)</li>
-              <li class="{$fold eq 2}"><span class="val">2</span>: case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
-                into LATIN SMALL LETTER S</li>
-            </ul>
-          </dd>
-          <dt><span class="param">skip</span></dt>
-          <dd>
-            <ul>
-              <li class="{$skip eq 0}"><span class="val">0</span>: process entire document, including comments and processing instructions</li>
-              <li class="{$skip eq 1}"><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
-              <li class="{$skip eq 2}"><span class="val">2</span>: do 1, and also strip out metadata (<tt>&lt;teiHeader></tt> or <tt>&lt;html:head></tt>)</li>
-              <li class="{$skip eq 3}"><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<tt>&lt;tei:fw></tt>, <tt>&lt;wwp:mw></tt>, <tt>&lt;figDesc></tt>) [default]</li>
-              <li class="{$skip eq 4}"><span class="val">4</span>: do 3, and also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
-                <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
-                <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP; and for WWP this
-                means counting the regularized version of each <tt>&lt;vuji></tt> character)</li>
-            </ul>
-          </dd>
-          <dt><span class="param">whitespace</span></dt>
-          <dd>
-            <ul>
-              <li class="{$whitespace eq 0}"><span class="val">0</span>: strip all whitespace [default]</li>
-              <li class="{$whitespace eq 1}"><span class="val">1</span>: normalize whitespace</li>
-              <li class="{$whitespace eq 3}"><span class="val">3</span>: keep all whitespace</li>
-            </ul>
-          </dd>
-        </dl>
+        <xsl:call-template name="explain_params"/>
+        <xsl:if test="not( $ucd_available )">
+          <p>Note: 4th column, character names, not rendered because <xsl:sequence select="$ucd"/></p>
+        </xsl:if>
         <p>Click on a column header to sort by that column.</p>
         <table class="sortable" border="1">
           <thead>
@@ -294,13 +242,15 @@
               <th>count</th>
               <th>codepoint</th>
               <th>character</th>
-              <th>character name</th>
+              <xsl:if test="$ucd_available">
+                <th>character name</th>
+              </xsl:if>
             </tr>
           </thead>
           <tbody>
             <xsl:for-each select="map:keys($count_by_decimal_char_num)">
               <xsl:sort order="descending" select="$count_by_decimal_char_num(.)"/>
-              <xsl:variable name="hexNum" select="wf:decimal2hexDigits(.) ! translate(., '&#x20;', '') => string-join()"/>
+              <xsl:variable name="hexNum" select="wf:decInt2hexDigits(.)"/>
               <xsl:variable name="hexNum4digit" select="substring('0000', string-length($hexNum) + 1)||$hexNum"/>
               <tr>
                 <td class="cnt">
@@ -312,13 +262,16 @@
                 <td class="chr">
                   <xsl:value-of select="codepoints-to-string(.)"/>
                 </td>
-                <td class="ucn">
-                  <xsl:value-of select="wf:unicodeCharName( $hexNum4digit )"/>
-                </td>
+                <xsl:if test="$ucd_available">
+                  <td class="ucn">
+                    <xsl:value-of select="wf:unicodeCharName( $hexNum4digit )"/>
+                  </td>
+                </xsl:if>
               </tr>
             </xsl:for-each>
           </tbody>
         </table>
+        <p>Total characters counted: <xsl:sequence select="format-number( count( $seq ),'#,###,###,##0')"/>.</p>
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
         <hr/>
         <p name="fn1">¹ <xsl:value-of select="document-uri(/)"/></p>
@@ -326,9 +279,9 @@
     </html>
   </xsl:template>
   
-  <!-- Handle mode "skip" and "attrs" here in mode "sa" -->
+  <!-- Handle "skip" and "attrs" parameters here in mode "sa" -->
   <xsl:template mode="sa" match="( processing-instruction() | comment() )[$skip eq 0]">
-    <xsl:copy/>
+    <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
   <xsl:template mode="sa" match="( processing-instruction() | comment() )[$skip gt 0]"/>
   <xsl:template mode="sa" match="(tei:teiHeader|wwp:teiHeader|yaps:teiHeader|html:head)[$skip ge 2]" />
@@ -398,45 +351,38 @@
     </xsl:if>
   </xsl:template>
   <xsl:template mode="sa" match="yaps:*/@*[$attrs eq 1]"/>
+  <xsl:template mode="sa" match="*/@*[$attrs eq 1][$coin]" priority="0.9">
+    <xsl:value-of select="wf:padme(.)"/>
+  </xsl:template>
   <xsl:template mode="sa" match="@*[$attrs eq 9]">
     <xsl:value-of select="wf:padme(.)"/>
   </xsl:template>
   
   <xd:doc>
     <xd:desc>
-      <xd:p>This function modified from the template at
-        http://www.dpawson.co.uk/xsl/sect2/N5121.html#d6617e511
+      <xd:p>This function modified from the function at
+        https://www.oxygenxml.com/archives/xsl-list/200902/msg00214.html
+        (It had two bugs: misplaced close paren, and 'gt' where 'ge' was needed.)
       </xd:p>
     </xd:desc>
-    <xd:param name="number">a string that represents a positive (base 10)
-    integer</xd:param>
+    <xd:param name="dec">a non-negative (base 10) integer</xd:param>
     <xd:return>a string that represents the same integer in base 16 (using
     only uppercase letters)</xd:return>
   </xd:doc>
-  <xsl:function name="wf:decimal2hexDigits" as="xs:string+">
-    <xsl:param name="number" as="xs:integer"/>
-    <xsl:variable name="remainder" select="$number mod 16" as="xs:integer"/>
-    <xsl:variable name="result" select="floor($number div 16) cast as xs:integer" as="xs:integer"/>
-    <xsl:choose>
-      <xsl:when test="$result gt 0">
-        <xsl:value-of select="wf:decimal2hexDigits($result)"/>
-      </xsl:when>
-      <xsl:otherwise/>
-    </xsl:choose>
-    <xsl:choose>
-      <xsl:when test="$remainder lt 10">
-        <xsl:value-of select="$remainder cast as xs:string"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:variable name="temp" select="($remainder - 10) cast as xs:string"/>
-        <xsl:value-of select="translate($temp, '012345', 'ABCDEF')"/>
-      </xsl:otherwise>
-    </xsl:choose>
+  <xsl:function name="wf:decInt2hexDigits" as="xs:string">
+    <xsl:param name="dec" as="xs:integer"/>
+    <xsl:sequence select="
+      if ($dec eq 0) then '0'
+      else concat(
+        if ( $dec ge 16 ) then wf:decInt2hexDigits( $dec idiv 16 )
+        else '',
+        substring('0123456789ABCDEF', ($dec mod 16) + 1, 1 )
+        )"/>
   </xsl:function>
   
   <xsl:function name="wf:padme" as="xs:string">
     <xsl:param name="stringIN"/>
-    <xsl:value-of select="'&#x20;'||$stringIN||'&#x20;'"/>
+    <xsl:value-of select="$as4d||$stringIN||$as4d"/>
   </xsl:function>
 
   <xd:doc>
@@ -490,5 +436,131 @@
       <xsl:otherwise>Unicode name not available</xsl:otherwise>
     </xsl:choose>
   </xsl:function>
+
+  <xd:doc>
+    <xd:desc>Generate the metadata for the output HTML file</xd:desc>
+  </xd:doc>
+  <xsl:template name="html_head">
+    <head>
+      <xsl:variable name="title" select="'chars in '||$fileName"/>
+      <title><xsl:value-of select="'Character counts in '||$fileName"/></title>
+      <meta name="generated_by" content="table_of_Unicode_codepoint_counts.xslt"/>
+      <meta name="generated_at" content="{current-dateTime()}"/>
+      <script type="application/javascript" src="http://www.wwp.neu.edu/utils/bin/javascript/sorttable.js"/>
+      <style type="text/css">
+        <xsl:text disable-output-escaping="yes">
+            body {
+              margin: 1em 1em 1em 3em;
+              padding: 1em 1em 1em 3em;
+            }
+            thead {
+              background-color: #DEE3E6;
+            }
+            th, td {
+              padding: 0.5ex;
+            }
+            td.Ucp {
+              text-align: center;
+            }
+            td.chr {
+              text-align: center;
+            }
+            td.cnt {
+              font-family: monospace;
+              text-align: right;
+              padding-right: 1.0em;
+            }
+            .val { font-family: monospace; font-size: 120%; }
+            .emsg {
+              display: block;
+              padding: 0.5ex 8em 0em 2em;
+              font-family: monospace;
+              color: #906060;
+            }
+            dt { font-weight: bold; font-size: 120%; font-family: monospace; margin: 1ex 0em 0em 0em; }
+            li.true::marker { color: green; }
+            li.false::marker { color: red; }
+            li.true { list-style-type: square; }
+            li.false { color:  grey; font-size: 97%; }
+            li.true { color: black; font-size: 103%; }
+          </xsl:text>
+      </style>
+    </head>
+  </xsl:template>
+
+  <xd:doc>
+    <xd:desc>Generate the block that explains the parameters that could be
+    used, and indicates which were actually used.</xd:desc>
+  </xd:doc>
+  <xsl:template name="explain_params">
+    <p>Character counts in <tt><xsl:value-of
+      select="$fileName"/></tt><a href="#fn1">¹</a>, using the
+      following parameters:</p>
+    <dl>
+      <dt><span class="param">attrs</span></dt>
+      <dd>
+        <ul>
+          <li class="{$attrs eq 0}"><span class="val">0</span>: drop <emph>all</emph> attributes</li>
+          <li class="{$attrs eq 1}"><span class="val">1</span>: 
+            <xsl:choose>
+              <xsl:when test="$input/tei:*">
+                keep only:
+                <ul>
+                  <li>@assertedValue iff @locus is "value"</li>
+                  <li>@baseForm</li>
+                  <li>@expand, other than on &lt;classRef&gt;</li>
+                  <li>@lemma</li>
+                  <li>@orig</li>
+                </ul>
+              </xsl:when>
+              <xsl:when test="$input/wwp:* | $input/yaps:*">
+                keep only pre() and post() of @rend
+              </xsl:when>
+              <xsl:when test="$input/html:*">
+                keep only @title and @alt
+              </xsl:when>
+              <xsl:otherwise expand-text="true">
+                flipped a coin, it was
+                {if ($coin) then 'heads' else 'tails'},
+                so
+                {if ($coin) then 'all attributes were kept' else 'all attributes were dropped'}.
+              </xsl:otherwise>
+            </xsl:choose> [default]
+          </li>
+          <li class="{$attrs eq 9}"><span class="val">9</span>: keep <emph>all</emph> attributes</li>
+        </ul>
+      </dd>
+      <dt><span class="param">fold</span></dt>
+      <dd>
+        <ul>
+          <li class="{$fold eq 0}"><span class="val">0</span>: no case folding [default]</li>
+          <li class="{$fold eq 1}"><span class="val">1</span>: case folding (upper to lower, but A–Z <em>only</em>)</li>
+          <li class="{$fold eq 2}"><span class="val">2</span>: case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
+            into LATIN SMALL LETTER S</li>
+        </ul>
+      </dd>
+      <dt><span class="param">skip</span></dt>
+      <dd>
+        <ul>
+          <li class="{$skip eq 0}"><span class="val">0</span>: process entire document, including comments and processing instructions</li>
+          <li class="{$skip eq 1}"><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
+          <li class="{$skip eq 2}"><span class="val">2</span>: do 1, and also strip out metadata (<tt>&lt;teiHeader></tt> or <tt>&lt;html:head></tt>)</li>
+          <li class="{$skip eq 3}"><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<tt>&lt;tei:fw></tt>, <tt>&lt;wwp:mw></tt>, <tt>&lt;figDesc></tt>) [default]</li>
+          <li class="{$skip eq 4}"><span class="val">4</span>: do 3, and also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
+            <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
+            <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP; and for WWP this
+            means counting the regularized version of each <tt>&lt;vuji></tt> character)</li>
+        </ul>
+      </dd>
+      <dt><span class="param">whitespace</span></dt>
+      <dd>
+        <ul>
+          <li class="{$whitespace eq 0}"><span class="val">0</span>: strip all whitespace [default]</li>
+          <li class="{$whitespace eq 1}"><span class="val">1</span>: normalize whitespace</li>
+          <li class="{$whitespace eq 3}"><span class="val">3</span>: keep all whitespace</li>
+        </ul>
+      </dd>
+    </dl>
+  </xsl:template>
 
 </xsl:stylesheet>
