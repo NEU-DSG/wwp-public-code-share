@@ -1,6 +1,8 @@
 xquery version "3.0";
 
 module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
+(:  NAMESPACES  :)
+  declare namespace map="http://www.w3.org/2005/xpath-functions/map";
 
 (:~
  : A library of XQuery functions for manipulating the tab-delimited text output of 
@@ -28,8 +30,16 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
  : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
- : @version 1.4.1
+ : @version 1.5.2
  :
+ :  2020-08-28: v1.5.2. Ensured that ctab:get-union-of-reports() and 
+ :    ctab:get-union-of-rows() can handle empty sequence parameters. Thanks for reporting,
+ :    Laura Johnson!
+ :  2020-04-21: v1.5.1. Added ctab:escape-for-matching(), which makes functions such as
+ :    ctab:create-row-match-pattern() more robust. Ensured ctab:get-union-of-rows() can
+ :    handle reports with more than two columns, by using part of the first matching row.
+ :    (The reports must still have a number in column 1 and a distinct value in column 2.)
+ :  2020-04-01: v1.5.0. Added ctab:report-to-map().
  :  2020-03-03: v1.4.1. Changed ctab:get-counts() such that the $query parameter can be 
  :    an empty sequence. Moved the module namespace declaration above the header, for 
  :    convenience when copying the URI.
@@ -108,9 +118,10 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     let $distinctValues := distinct-values($query)
     let $listOfCounts :=  for $value in $distinctValues
                           let $count := count($query[. eq $value])
-                          let $sortVal := if ( $remove-unsortable-articles and $value castable as xs:string ) then 
-                                            ctab:get-sortable-string(xs:string($value))
-                                          else $value
+                          let $sortVal := 
+                            if ( $remove-unsortable-articles and $value castable as xs:string ) then 
+                              ctab:get-sortable-string(xs:string($value))
+                            else $value
                           order by
                             if ( $sort-by-count ) then () else $sortVal,
                             $count descending, 
@@ -126,11 +137,23 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
   
   (:~
     Given a number of string values, create a regular expression pattern to match 
-    rows which contain those cell values. 
+    rows which contain those cell values. Reserved characters in the strings will be
+    escaped.
    :)
   declare function ctab:create-row-match-pattern($values as xs:string+) as xs:string {
-    let $match := string-join($values,'|')
-    return concat('\t(',$match,')(\t.*)?$')
+    let $regexValues := ctab:escape-for-matching($values)
+    let $group := string-join($regexValues, '|')
+    return concat('\t(',$group,')(\t.*)?$')
+  };
+  
+  (:~
+    Given any number of string values, format each so that it can be used as the 
+    pattern in a regular expression. Reserved characters are escaped.
+   :)
+  declare function ctab:escape-for-matching($values as xs:string*) 
+     as xs:string* {
+    for $str in $values
+    return replace($str, '([\$\^()\[\]\.\\|*?+{}])', '\\$1')
   };
   
   (:~
@@ -151,7 +174,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
       for $line in unparsed-text-lines($filepath)
       return
         (: Only output lines that include a tab. :)
-        if ( matches($line,'\t') ) then
+        if ( matches($line, '\t') ) then
           $line
         else ()
     else () (: error :)
@@ -168,7 +191,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
       return ctab:get-report-by-rows($filename)
     let $allValues :=
       for $row in $allRows
-      return ctab:get-cell($row,2)
+      return ctab:get-cell($row, 2)
     let $distinctValues := distinct-values($allValues)
     let $intersectValues :=
       for $value in $distinctValues
@@ -198,7 +221,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
         ctab:get-union-of-reports($filenames-for-excluded-data)
       else ctab:get-report-by-rows($filenames-for-excluded-data)
     return
-      ctab:get-set-difference-of-rows($rows,$rowsExcluded)
+      ctab:get-set-difference-of-rows($rows, $rowsExcluded)
   };
   
   (:~
@@ -213,7 +236,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
       let $rowsExcluded := ctab:get-union-of-rows($rows-with-excluded-data)
       return
         for $row in $rowsExcluded
-        return ctab:get-cell($row,2)
+        return ctab:get-cell($row, 2)
     let $regex := ctab:create-row-match-pattern($valuesExcluded)
     return
       $rowsWithTabs[not(matches(.,$regex))]
@@ -231,7 +254,7 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
   (:~
     Combine the counts for all values in N tab-delimited reports. 
    :)
-  declare function ctab:get-union-of-reports($filenames as xs:string+) as xs:string* {
+  declare function ctab:get-union-of-reports($filenames as xs:string*) as xs:string* {
     let $dataRows :=
       for $filename in $filenames
       return ctab:get-report-by-rows($filename)
@@ -239,31 +262,34 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
   };
   
   (:~
-    Given a sequence of tab-delimited strings, combine the counts for all values. 
+    Given a sequence of tab-delimited strings, combine the counts for all values. Rows 
+    must contain an integer in column 1 and a distinct string in column 2.
+    
+    If there are more than two columns, this function will obtain the remainder from the 
+    first row which matches the distinct value in question.
    :)
-  declare function ctab:get-union-of-rows($tabbed-rows as xs:string+) as xs:string* {
-    let $rowsWithTabs := $tabbed-rows[matches(.,'\t')]
+  declare function ctab:get-union-of-rows($tabbed-rows as xs:string*) as xs:string* {
+    let $rowsWithTabs := $tabbed-rows[matches(., '\t')]
     let $allValues := 
       for $row in $rowsWithTabs
-      return ctab:get-cell($row,2)
+      return ctab:get-cell($row, 2)
     let $allDistinct := distinct-values($allValues)
     return
       for $value in $allDistinct
-      let $regex := concat($ctab:tabChar, $value, '$')
+      let $regex := concat($ctab:tabChar,ctab:escape-for-matching($value),'(\t.*)?$')
+      let $matches := $rowsWithTabs[matches(., $regex)]
       let $counts := 
-        let $matches := $rowsWithTabs[matches(.,$regex)]
+        for $match in $matches
+        let $count := ctab:get-cell($match, 1)
         return 
-          for $match in $matches
-          let $count := ctab:get-cell($match,1)
-          return 
-            if ( $count castable as xs:integer ) then 
-              xs:integer( $count )
-            else () (: error :)
+          if ( $count castable as xs:integer ) then 
+            xs:integer( $count )
+          else () (: error :)
       let $sum := if ( count( $counts ) ge 2 ) then 
                     sum( $counts )
                   else $counts
       order by $sum descending, $value
-      return concat($sum, $ctab:tabChar, $value)
+      return concat($sum, $ctab:tabChar, substring-after($matches[1], $ctab:tabChar))
   };
   
   (:~
@@ -273,4 +299,15 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
     if ( count($rows) gt 0 ) then
       string-join($rows, $ctab:newlineChar)
     else ''
+  };
+  
+  (:~
+    Convert a counting robot report into a map data structure.
+   :)
+  declare function ctab:report-to-map($report as xs:string) as map(xs:string, xs:integer) {
+    let $counts :=
+      for $line in tokenize($report, $ctab:newlineChar)
+      let $count := ctab:get-cell($line, 1) cast as xs:integer
+      return map:entry(ctab:get-cell($line, 2), $count)
+    return map:merge($counts)
   };
