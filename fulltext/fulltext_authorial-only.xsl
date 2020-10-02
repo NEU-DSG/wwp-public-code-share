@@ -13,9 +13,10 @@
     and some other elements.
     
     Authors: Sarah Connell and Ashley M. Clark, Northeastern University Women Writers Project
-    See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
+    See https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
     
     Changelog:
+      2020-10-02: Updated GitHub link to use the new default branch "main".
       2019-12-19: Fixed lazy method of checking an element's identifer.
       2019-12-18: Removed template with <subst> handling, since the fulltextBot does the right 
         thing as of version 2.8. Ensured that non-authorial notes are dehydrated when 
