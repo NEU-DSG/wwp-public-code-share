@@ -29,9 +29,10 @@ module namespace ctab="http://www.wwp.northeastern.edu/ns/count-sets/functions";
  :        value in sequence of rows B
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
- : @version 1.5.2
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/counting_robot
+ : @version 1.5.3
  :
+ :  2020-10-02: v1.5.3. Updated GitHub link to use the new default branch "main".
  :  2020-08-28: v1.5.2. Ensured that ctab:get-union-of-reports() and 
  :    ctab:get-union-of-rows() can handle empty sequence parameters. Thanks for reporting,
  :    Laura Johnson!

@@ -6,9 +6,10 @@ xquery version "3.0";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
- : @version 1.4.1
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/counting_robot
+ : @version 1.4.2
  :
+ :  2020-10-02: v1.4.2. Updated GitHub link to use the new default branch "main".
  :  2020-04-06: v1.4.1. Removed "external" from $query variable declaration because
  :    the results don't serialize to a sequence of strings, but to a single string.
  :  2020-04-03: v1.4. Made $sortByCount, $sortWithArticles, and $query into external
