@@ -11,10 +11,11 @@ xquery version "3.1";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
- : @version 2.4
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
+ : @version 2.5
  :
  : Changelog:
+ :  2020-10-02: v.2.5. Updated GitHub link to use the new default branch "main".
  :  2020-01-28: v.2.4. Made local:move-anchors() accept empty sequences.
  :  2019-07-26: v.2.3. Added MIT license. Removed "werr" namespace declaration.
  :  2019-03-19: v.2.2. In order to remove the dependency on Saxon EE, I removed the 
