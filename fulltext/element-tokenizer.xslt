@@ -19,7 +19,7 @@
     ELEMENT TOKENIZER
     
     Author: Laura Johnson with Ashley M. Clark, Northeastern University Women Writers Project
-    See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext/Element-Tokenizer-README.md
+    See https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext/Element-Tokenizer-README.md
     
     This XSLT can be used to tokenize the contents of different elements in an XML document or XML 
     corpus. This XSLT was created for the Women Writers Online corpus or, specifically, for the 

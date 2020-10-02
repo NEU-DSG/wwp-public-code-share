@@ -14,9 +14,10 @@
     might be useful.
     
     Author: Ashley M. Clark, Northeastern University Women Writers Project
-    See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
+    See https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
     
     Changelog:
+      2020-10-02, v2.12: Updated GitHub link to use the new default branch "main".
       2019-12-19, v2.11: When $move-notes-to-anchors is turned on, <note>s with
         @targetEnd should now only appear once, after the anchor referenced in that
         attribute.
