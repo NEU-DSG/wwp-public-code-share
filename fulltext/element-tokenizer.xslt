@@ -74,7 +74,8 @@
           nothing ('') or an undescore ('_') when appropriate. For instance, the variable "asterisks" 
           replaces the special character of an asterisk "*" with nothing ('') because this special 
           character is not just unecessary, but needs to be removed to tokenize the element contents. -->
-        <xsl:variable name="spaceless" select="normalize-space(.)"/>
+        <xsl:variable name="punctuationless" select="replace(., '[\.,;()\[\]]', ' ')"/>
+        <xsl:variable name="spaceless" select="normalize-space($punctuationless)"/>
         <xsl:variable name="asterisks" select="replace($spaceless, '\*+', '')"/>
         <xsl:variable name="one-hyphen" select="replace($asterisks, '-+', '_')"/>
         <xsl:variable name="one-em" select="replace($one-hyphen, '[—―]+', '_')"/>
@@ -89,7 +90,8 @@
         
         <xsl:copy>
             <xsl:variable name="underscore" select="replace($one-em, '\s+', '_')"/>
-            <xsl:value-of select="replace($underscore, '_+', '_')"/>
+            <xsl:variable name="double-underscores" select="replace($underscore, ' ?_+ ?', '_')"/>
+            <xsl:value-of select="replace($double-underscores, '^_|_$', '')"/>
         </xsl:copy>
     </xsl:template>
 
