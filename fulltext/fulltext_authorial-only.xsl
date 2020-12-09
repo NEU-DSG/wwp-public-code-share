@@ -13,9 +13,15 @@
     and some other elements.
     
     Authors: Sarah Connell and Ashley M. Clark, Northeastern University Women Writers Project
-    See https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
+    See https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
     
     Changelog:
+      2020-10-02: Updated GitHub link to use the new default branch "main".
+      2019-12-19: Fixed lazy method of checking an element's identifer.
+      2019-12-18: Removed template with <subst> handling, since the fulltextBot does the right 
+        thing as of version 2.8. Ensured that non-authorial notes are dehydrated when 
+        $move-notes-to-anchors is turned off, and also when the note is anchored to the 
+        non-authorial paratext.
       2019-11-01: Instead of deleting non-authorial content, the element that signals such has its 
         content (child nodes) deleted and moved into a new @read attribute.
       2019-10-29: Created this stylesheet from XPaths gathered by Sarah Connell during her 
@@ -70,6 +76,28 @@
       </xsl:apply-templates>
     </xsl:copy>
   </xsl:template>
+  
+  <!-- When a note is associated with non-authorial content, the note is moved to its anchor, but 
+    its contents are placed in the @read attribute. -->
+  <xsl:template name="insert-nonauthorial-note">
+    <xsl:param name="note" as="node()*">
+      <xsl:call-template name="insert-preprocessed-note"/>
+    </xsl:param>
+    <xsl:apply-templates select="$note" mode="text2attr"/>
+  </xsl:template>
+  
+  <!-- Take previously-dehydrated text content from the current element's descendants, and create 
+    one composite @read from them. -->
+  <xsl:template name="subsume-nonauthorial-content-into-read">
+    <xsl:param name="context" select="." as="node()"/>
+    <xsl:variable name="readVals" as="xs:string*">
+      <xsl:apply-templates select="$context/node()" mode="subsumed"/>
+    </xsl:variable>
+    <xsl:variable name="readFinal" select="wf:normalize-for-read(string-join($readVals, ''))"/>
+    <xsl:if test="$readFinal ne ''">
+      <xsl:attribute name="read" select="$readFinal"/>
+    </xsl:if>
+  </xsl:template>
 
 
 <!-- MODE: #default -->
@@ -80,7 +108,7 @@
   <xsl:template match="/">
     <!-- Begin processing the document by giving each leading processing instruction 
       its own line, for readability. (Based on code by Syd Bauman.) -->
-    <xsl:for-each select="processing-instruction()">
+    <xsl:for-each select="processing-instruction() | comment()">
       <xsl:text>&#x0A;</xsl:text>
       <xsl:copy-of select="."/>
     </xsl:for-each>
@@ -88,7 +116,14 @@
     <xsl:variable name="fulltextBotOutput" as="node()*">
       <xsl:apply-templates/>
     </xsl:variable>
-    <xsl:apply-templates select="$fulltextBotOutput" mode="subsume"/>
+    <!-- Gather the identifiers of elements within non-authorial content, so that notes can be 
+      subsumed as necessary. -->
+    <xsl:variable name="nonauthorialIds" 
+      select="$fulltextBotOutput//*[contains(@subtype, $intervention-wrapper-name)]
+                                //@xml:id/data(.)"/>
+    <xsl:apply-templates select="$fulltextBotOutput" mode="subsume">
+      <xsl:with-param name="nonauthorial-anchors" select="$nonauthorialIds" tunnel="yes"/>
+    </xsl:apply-templates>
   </xsl:template>
   
   <!-- Delete the text content of these elements. -->
@@ -119,20 +154,12 @@
     </xsl:choose>
   </xsl:template>
   
-  <!-- Follow the WWO author's decision when choosing to hide a child of <subst>. -->
-  <xsl:template match="subst" priority="20">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-  
   <!-- These elements introduce noise into a plain-text copy; remove them. -->
   <xsl:template match="advertisement | castList | elision | figDesc | label | speaker" priority="20">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:call-template name="set-provenance-attributes">
-        <xsl:with-param name="subtype" select="'del-content'"/>
+        <xsl:with-param name="subtype" select="concat($intervention-name, ' del-content')"/>
       </xsl:call-template>
     </xsl:copy>
   </xsl:template>
@@ -140,19 +167,16 @@
   
 <!--  MODE: unifier  -->
   
-  <!-- Strip away the intervention wrapper; it's no longer necessary. -->
-  <!--<xsl:template match="*[contains(@subtype, $intervention-wrapper-name)]" mode="unifier">
-    <xsl:apply-templates mode="unifier">
-    </xsl:apply-templates>
-  </xsl:template>-->
-  
-  <xsl:template match="*[contains(@subtype, $intervention-wrapper-name)]" mode="unifier">
+  <xsl:template match="*[contains(@subtype, $intervention-wrapper-name)]" mode="unifier" priority="51">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:apply-templates mode="#current">
         <xsl:with-param name="note-to-attributes" select="true()" as="xs:boolean" tunnel="yes"/>
       </xsl:apply-templates>
     </xsl:copy>
+    <xsl:if test="exists(@corresp) and $move-notes-to-anchors">
+      <xsl:call-template name="insert-nonauthorial-note"/>
+    </xsl:if>
   </xsl:template>
   
   <!-- If $move-notes-to-anchors is toggled on, copy a note after its anchor. However, if the note 
@@ -168,11 +192,13 @@
     </xsl:copy>
     <xsl:choose>
       <xsl:when test="$note-to-attributes">
-        <xsl:apply-templates select="$note-insertion" mode="text2attr"/>
+        <xsl:call-template name="insert-nonauthorial-note">
+          <xsl:with-param name="note" select="$note-insertion"/>
+        </xsl:call-template>
       </xsl:when>
-      <xsl:otherwise>
+      <xsl:when test="not(wf:is-splitting-a-word(.)) and not(@break eq 'no')">
         <xsl:copy-of select="$note-insertion"/>
-      </xsl:otherwise>
+      </xsl:when>
     </xsl:choose>
   </xsl:template>
   
@@ -197,13 +223,56 @@
           <xsl:with-param name="subtype" select="concat(@subtype, ' del-content')"/>
         </xsl:call-template>
       </xsl:if>
-      <xsl:attribute name="read">
-        <xsl:variable name="readVals" as="xs:string*">
-          <xsl:apply-templates mode="subsumed"/>
-        </xsl:variable>
-        <xsl:value-of select="string-join($readVals, '')"/>
-      </xsl:attribute>
+      <xsl:call-template name="subsume-nonauthorial-content-into-read"/>
     </xsl:copy>
+  </xsl:template>
+  
+  <!-- Make sure that notes on non-authorial content are deleted. -->
+  <xsl:template match="note[@target]" mode="subsume">
+    <xsl:param name="nonauthorial-anchors" as="xs:string*" tunnel="yes"/>
+    <xsl:variable name="targetTokens" as="xs:string*">
+      <xsl:for-each select="tokenize(@target,'\s+')[. ne '']">
+        <xsl:value-of select="substring-after(., '#')"/>
+      </xsl:for-each>
+    </xsl:variable>
+    <xsl:variable name="isNotAuthorial" select="$targetTokens = $nonauthorial-anchors"/>
+    <xsl:choose>
+      <!-- Notes moved to their anchors already have provenance information which will need to be 
+        edited if a note proves to be non-authorial. -->
+      <xsl:when test="$isNotAuthorial and @read eq ''">
+        <xsl:copy>
+          <xsl:copy-of select="@* except @subtype"/>
+          <xsl:attribute name="subtype" 
+            select="concat($intervention-name,' add-element')"/>
+        </xsl:copy>
+      </xsl:when>
+      <!-- Non-authorial notes within the <hyperDiv> should have provenance added. An @read value 
+        is only given if there is a copy of the note with dehydrated values. -->
+      <xsl:when test="$isNotAuthorial and parent::notes">
+        <xsl:copy>
+          <xsl:copy-of select="@*"/>
+          <xsl:call-template name="set-provenance-attributes">
+            <xsl:with-param name="subtype" 
+              select="concat($intervention-name,' del-content')"/>
+          </xsl:call-template>
+          <!-- Look for note content to subsume only if $move-notes-to-anchors is toggled on. -->
+          <xsl:if test="$move-notes-to-anchors">
+            <xsl:variable name="myId" select="@xml:id"/>
+            <xsl:variable name="movedNoteForRead" 
+              select="ancestor::text//note[concat('#',@sameAs) eq $myId][normalize-space(.) eq '']"/>
+            <xsl:for-each select="$movedNoteForRead">
+              <xsl:call-template name="subsume-nonauthorial-content-into-read">
+                <xsl:with-param name="context" select="."/>
+              </xsl:call-template>
+            </xsl:for-each>
+          </xsl:if>
+        </xsl:copy>
+      </xsl:when>
+      <!-- If a note can be considered authorial, copy it forward. -->
+      <xsl:otherwise>
+        <xsl:next-match/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <!-- In "subsumed" mode, only @read attributes are processed. Moved notes, however, are silently 

@@ -11,10 +11,11 @@ xquery version "3.1";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark and Sarah Connell, Northeastern University Women Writers Project
- : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
- : @version 1.2
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
+ : @version 1.3
  :
  : Changelog:
+ :  2020-10-02: v1.3. Updated GitHub link to use the new default branch "main".
  :  2019-07-26: v1.2. Added MIT License. Removed "werr" namespace declaration.
  :  2019-07-17: v1.1. Tweaked language in comments and this header. Fixed bug in 
  :    local:add-spaces(); non-element nodes were being treated as elements.
