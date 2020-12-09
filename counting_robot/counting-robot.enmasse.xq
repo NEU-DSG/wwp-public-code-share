@@ -10,9 +10,14 @@ xquery version "3.0";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot
- : @version 1.3
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/counting_robot
+ : @version 1.4.2
  :
+ :  2020-10-02: v1.4.2. Updated GitHub link to use the new default branch "main".
+ :  2020-04-06: v1.4.1. Removed "external" from $query variable declaration because
+ :    the results don't serialize to a sequence of strings, but to a single string.
+ :  2020-04-03: v1.4. Made $sortByCount, $sortWithArticles, and $query into external
+ :    variables.
  :  2019-09-04: v1.3. Added MIT license and an example of a custom function.
  :  2019-04-25: v1.2. Updated GitHub link.
  :  2018-12-20: Added link to GitHub.
@@ -57,12 +62,12 @@ xquery version "3.0";
 
 (:  VARIABLES - SORTING  :)
   (: Change $sortByCount to false() in order to sort by result value. :)
-  declare variable $sortByCount := true();
+  declare variable $sortByCount external := true();
   
   (: Change $sortWithArticles to true() in order to sort results with any 
     leading articles. This will not affect your results, just the order in 
     which they display. :)
-  declare variable $sortWithArticles := false();
+  declare variable $sortWithArticles external := false();
 
 (:  VARIABLES - QUERYING  :)
   

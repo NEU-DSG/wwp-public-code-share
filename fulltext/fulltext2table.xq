@@ -11,10 +11,12 @@ xquery version "3.1";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
- : @version 2.3
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
+ : @version 2.5
  :
  : Changelog:
+ :  2020-10-02: v.2.5. Updated GitHub link to use the new default branch "main".
+ :  2020-01-28: v.2.4. Made local:move-anchors() accept empty sequences.
  :  2019-07-26: v.2.3. Added MIT license. Removed "werr" namespace declaration.
  :  2019-03-19: v.2.2. In order to remove the dependency on Saxon EE, I removed the 
  :              dynamic function call. Instead, an explicit call to 
@@ -149,9 +151,11 @@ xquery version "3.1";
     To accomplish #2 in oXygen, use Saxon EE as your "transformer". Click on the 
     symbol next to "Saxon EE" to open the processor settings. Turn on the "linked 
     tree" model and XQuery Update. Turn off XQuery Update backups. :)
-  declare function local:anchor-notes($xml as node()) {
-    (:wft:anchor-notes($xml):)
-    $xml
+  declare function local:anchor-notes($xml as node()?) {
+    if ( exists($xml) ) then
+      (:wft:anchor-notes($xml):)
+      $xml
+    else $xml
   };
   
   (: Given a type of text output and an element, create a plain text version of the 

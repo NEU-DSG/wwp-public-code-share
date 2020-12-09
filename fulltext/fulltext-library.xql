@@ -16,10 +16,12 @@ module namespace wft="http://www.wwp.northeastern.edu/ns/fulltext";
  : XQuery Update and "Linked Tree" model options.)
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
- : @version 0.2
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
+ : @version 0.4
  :
  : Changelog:
+ :  2020-10-02: v0.4. Updated GitHub link to use the new default branch "main".
+ :  2020-01-28: v0.3. Made wft:move-anchors() accept empty sequences.
  :  2019-07-26: v0.2. Added MIT license. Removed "werr" namespace declaration.
  :  2019-02-01: Created this library for use by the "fulltext2table" XQueries, 
  :    both at v.2.0.
@@ -52,7 +54,7 @@ module namespace wft="http://www.wwp.northeastern.edu/ns/fulltext";
   
   (: Given some WWP-encoded XML, move notes from the <wwp:hyperDiv> to their anchors. 
     Care is taken not to place a note in the middle of a word. :)
-  declare function wft:anchor-notes($xml as node()) {
+  declare function wft:anchor-notes($xml as node()?) {
     (: Create a new, deep-copy of the given XML. This function won't write over the 
       original tree. :)
     copy $modXml := $xml

@@ -1,0 +1,13 @@
+<package xmlns="http://expath.org/ns/pkg" 
+    name="http://www.wwp.northeastern.edu/pkg/api-lib" abbrev="api-lib" 
+    version="1.5.1" spec="1.0">
+  <title>WWP API Library</title>
+  
+  <dependency processor="basex"/>
+  <dependency processor="http://exist-db.org" semver-min="3.0"/>
+  
+  <xquery>
+    <namespace>http://www.wwp.northeastern.edu/ns/api/functions</namespace>
+    <file>api.xql</file>
+  </xquery>
+</package>
