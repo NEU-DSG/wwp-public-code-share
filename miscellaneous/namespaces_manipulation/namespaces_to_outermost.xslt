@@ -69,7 +69,6 @@
         <xsl:sort/>
         <xsl:variable name="prefix" select="."/>
         <xsl:for-each select="$me">
-          <xsl:message select="'debug: '||$prefix||'='||key('NSnodes',$prefix)[1]"/>
           <xsl:namespace name="{$prefix}" select="key('NSnodes', $prefix )[1]"/>
         </xsl:for-each>
       </xsl:for-each>
