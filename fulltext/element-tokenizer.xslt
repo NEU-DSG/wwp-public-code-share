@@ -66,15 +66,16 @@
           <xsl:template match="(placeName | persName)">
       For multiple elements, make sure to close both the parentheses and quotation marks. -->
     
-    <xsl:template match="(persName)">
+    <xsl:template match="( persName )">
         
         <!-- In this section, the tokenizer uses different named variables to link a series of 
           transformations together, one after another. This series of transformations regularizes 
           special characters within the element contents and replaces unnecessary characters with either 
-          nothing ('') or an undescore ('_') when appropriate. For instance, the variable "asterisks" 
+          nothing ('') or an underscore ('_') when appropriate. For instance, the variable "asterisks" 
           replaces the special character of an asterisk "*" with nothing ('') because this special 
           character is not just unecessary, but needs to be removed to tokenize the element contents. -->
-        <xsl:variable name="punctuationless" select="replace(., '[\.,;()\[\]]', ' ')"/>
+        <xsl:variable name="punctuationless-regex">['‘’"“”\.,:;()\[\]·]</xsl:variable>
+        <xsl:variable name="punctuationless" select="replace(., $punctuationless-regex, ' ')"/>
         <xsl:variable name="spaceless" select="normalize-space($punctuationless)"/>
         <xsl:variable name="asterisks" select="replace($spaceless, '\*+', '')"/>
         <xsl:variable name="one-hyphen" select="replace($asterisks, '-+', '_')"/>
