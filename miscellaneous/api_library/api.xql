@@ -1,11 +1,9 @@
-xquery version "3.0"; (: This should be '3.1' for using maps, but eXist 2.2 requires that I use '3.0' instead. :)
+xquery version "3.1";
 
 module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
 (:  NAMESPACES  :)
   declare namespace http="http://expath.org/ns/http-client";
-  (: eXist has the "map" prefix bound to "http://www.w3.org/2005/xpath-functions", 
-    so I'm leaving it undeclared for now. :)
-  (:declare namespace map="http://www.w3.org/2005/xpath-functions/map";:)
+  declare namespace map="http://www.w3.org/2005/xpath-functions/map";
   declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
   declare namespace rest="http://exquery.org/ns/restxq";
 
@@ -13,10 +11,12 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   A library of functions to simplify the development of an XQuery API.
   
   @author Ashley M. Clark, Northeastern University Women Writers Project
-  @version 1.5.0
-  @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/miscellaneous/api_library
+  @version 1.5.1
+  @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/miscellaneous/api_library
   
   Changelog:
+    2020-10-02, v1.5.1: Updated GitHub link to use the new default branch "main".
+      Uncommented namespace declaration; this library now won't work in eXist v2.2.
     2020-09-29, v1.5.0: Added $wpi:sortRegexCharacterRemoval, 
       $wpi:sortRegexWhitespaceReplacement, wpi:not-ignorable-string(), and
       wpi:regularize-nonsortable-characters(). Renamed $wpi:nonsortingRegex to 

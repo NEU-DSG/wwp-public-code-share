@@ -234,7 +234,7 @@
   </xsl:template>
 
   <!--
-      Each child of an <Record> (except for the prose elements) becomes
+      Each child of a <Record> (except for the prose elements) becomes
       an attribute.
   -->
   <xsl:template match="Record/*" mode="semantic" priority="2">
