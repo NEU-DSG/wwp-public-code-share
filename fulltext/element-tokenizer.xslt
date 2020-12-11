@@ -67,6 +67,11 @@
       For multiple elements, make sure to close both the parentheses and quotation marks. -->
     
     <xsl:template match="( persName )">
+        <!-- The text inside the element below is a regular expression used to turn punctuation marks 
+          into spaces. This ensures that each of your target elements is treated as one complete phrase, 
+          with words joined by underscores. Specifically, a punctuation mark is removed when it usually 
+          signals the beginning or end of a word. (http://www.unicode.org/reports/tr29/#Word_Boundaries) -->
+        <xsl:variable name="punctuationless-regex">[&amp;!?'‘’"“”\.,…:;՚()\[\]·]</xsl:variable>
         
         <!-- In this section, the tokenizer uses different named variables to link a series of 
           transformations together, one after another. This series of transformations regularizes 
@@ -74,11 +79,10 @@
           nothing ('') or an underscore ('_') when appropriate. For instance, the variable "asterisks" 
           replaces the special character of an asterisk "*" with nothing ('') because this special 
           character is not just unecessary, but needs to be removed to tokenize the element contents. -->
-        <xsl:variable name="punctuationless-regex">['‘’"“”\.,:;()\[\]·]</xsl:variable>
         <xsl:variable name="punctuationless" select="replace(., $punctuationless-regex, ' ')"/>
         <xsl:variable name="spaceless" select="normalize-space($punctuationless)"/>
         <xsl:variable name="asterisks" select="replace($spaceless, '\*+', '')"/>
-        <xsl:variable name="one-hyphen" select="replace($asterisks, '-+', '_')"/>
+        <xsl:variable name="one-hyphen" select="replace($asterisks, '[‑‐﹣－-]+', '_')"/>
         <xsl:variable name="one-em" select="replace($one-hyphen, '[—―]+', '_')"/>
         
         <!-- To declare another variable for replacing additional special characters as needed, follow 
