@@ -1,6 +1,6 @@
 title: "Word Vectors Intro"
 author: "Jonathan Fitzgerald & Sarah Connell"
-date: "6/3/2019"
+date: "5/5/2021"
 output: pdf_document
 ---
 
@@ -8,39 +8,58 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
+# Getting started
 ## Using this File
 
-This file is an introduction to training and querying a model using word2vec.   
+This file is an introduction to training and querying a model using word2vec with R and RStudio on your own computer. 
 
 This is an R Markdown file, which means that it contains both text (what you're reading now) that can be formatted for display on the web or as a pdf file, and snippets of code, which you can run right from the file. 
 
-To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-return` or `control-return` (the one exception is defining functions, which we'll cover later on).  If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, select the section you want to run and hit `command-return` or `control-return`.
+Before running any code, you should do a quick check on your preferences for how RStudio will handle R Markdown files. Go to the Tools menu above, select "Global Options", then select "R Markdown Preferences," and make sure that "Show output inline for all R Markdown documents" is *not* selected. 
 
-Much of the code you'll need will run almost instantly, but some things will take a few seconds or minutes (and, depending on the size of your corpus, training a model can take even longer). You can tell code is still running if you see a red stop sign in the top-right corner of the console—if you'd like to stop a process, you can hit this stop sign. You will know that the code has been run when you see a new `>` prompt in the bottom of the console. If you are running code in a block line by line, your cursor will automatically move down to the next line, so you can move through the block by repeatedly hitting `command-return` or `control-return`.
+To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-return` or `control-return.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, select the section you want to run and hit `command-return` or `control-return`. 
+
+Much of the code you'll need will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console—if you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console. 
+
+If you don't see the stop sign but want to cancel a process, you can also hit `control-C.`
+
+If you are running code in a block line by line, your cursor will automatically move down to the next line, so you can move through the block by repeatedly hitting `command-return` or `control-return`.
+Below is a code block: try running the code below, 
 
 ```{r}
 print("Put your cursor on this line and try running it!")
-print("Try running this entire code snippet!")
+print("Now run this line.")
+print("Now run all three lines at once by selecting them or hitting the green play triangle")
 
 ```
 
-You can also run code directly in the console (the window below this text) by typing or pasting it in and hitting `return`. You will get the same results, but if you want to save some code you've written, it's better to keep it in the R Markdown file, since that's more permanent. On the other hand, if you'd prefer to run some code but not make changes to this file, you can just run that code in the console. 
+You can also run code directly in the Console by typing or pasting it in and hitting `return`. You will get the same results, but if you want to save code that you have written, it is better to keep it in the R Markdown file, since edits there will be saved. On the other hand, if you prefer to run some code but *not* make changes to your file, you can just run that in the console.  
 
-If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space. Projects are a way to organize your work in RStudio; as long as you have this project open, your files should be where you expect them to be. Going forward, whenever you open RStudio, it should also open this project. If it does not, however, you can open the project by going to `File` then `Open Project...` in the menu bar at the top of RStudio.
+## Projects
+Projects are a way to organize your work in RStudio. If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space—and, as long as you have this project open, your files should be where you expect them to be. 
+
+To confirm that you have the correct project open, check the top-right corner of the RStudio screen. Going forward, when you open RStudio, it may also open this project. If it does not, however, you can open the project by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file. Always check at the beginning of a session to make sure you have the project open; if you don't, it will likely cause errors.
 
 This introduction provides some basic instructions to get you started, but it is not a substitute for learning the fundamentals of R and RStudio. Fortunately, there are many helpful resources online, including tutorials by the [Programming Historian](https://programminghistorian.org/en/lessons/) and Lincoln Mullen's [Digital History Methods in R](https://lincolnmullen.com/projects/dh-r2/).
 
+## Downloading and installing R and RStudio
 
-## Set and Check the Working Directory
+You can download R from the CRAN (Comprehensive R Archive Network) repository: https://cloud.r-project.org/. There are specific instructions for downloading to Linus, Mac OS X, and Windows machines.
 
-You will want to make sure your working directory is in the right place; if you opened this file from within the "WordVectors" project, then it should be, but checking your working directory before you begin a session is always a good idea, because if the working directory is *not* where you're expecting, then not much else will work. Any time you see an error message that says a file does not exist in the current working directory, that's a good sign your working directory isn't where you think it is. 
+To download RStudio see: https://rstudio.com/products/rstudio/download/.
 
-There are two lines of code in the block below; the first will allow you to check your working directory and the second will allow you to set your working directory, if you ever need to change it. If you run the first line of code and the results in the console show that your working directory is wherever you have saved the "WordVectors" folder on your computer, then you don't need to run the second line of code.
+You can read these instructions in the class RStudio Server instance, and then begin working on your own computer once you have downloaded everything. 
 
-If you ever do need to change your working directory, use the `setwd()` function. As you can see, we've provided you with some template text that you can replace with a file path specific to your computer. 
 
-Navigating file paths can be a bit confusing, but, fortunately there is a trick you can use. If you try deleting the text inside of the quotation marks below and then hitting `tab`, you should get a pop-up with a view of the folder system you're used to navigating; you can use this to fill in file paths whenever you need to (again, you are not likely to need to change your working directory if you opened this file from the "WordVectors" project, but it's good to know how to do this, in case you do need to). 
+## Setting and checking your working directory
+
+If this is a new RStudio session, you should check your working directory with the code below. As long as you opened this file from the WordVectors project, your working directory should be the right place: the "WordVectors" folder. 
+
+Checking your working directory before you begin a session is always a good idea, because if the working directory is *not* where you're expecting, then not much else will work. Any time you see an error message that says a file does not exist in the current working directory, that's a good sign your working directory isn't where you think it is. 
+
+There are two lines of code in the block below; the first will allow you to check your working directory and the second will allow you to set your working directory, if you ever need to change it. If you do need to change your working directory, use the `setwd()` function. As you can see, we've provided you with some template text that you can replace with a file path specific to your computer. 
+
+Navigating file paths can be a bit confusing, but, fortunately there is a trick you can use. If you try deleting the text inside of the quotation marks below and then hitting `tab`, you should get a pop-up with a view of the folder system you're used to navigating; you can use this to fill in file paths whenever you need to.
 
 ```{r}
 # How to check your working directory (this is also an example of how you add a comment to your code—by typing "#")
@@ -51,9 +70,15 @@ setwd("Path/To/Your/Directory")
 ```
 
 
-## Install Packages
+## Installing packages
 
-There are also some "packages" you will need to install (make sure you have an internet connection beforehand), so that you'll be able to use functions that don't come with R out of the box. Run each line of code below, just as you did above with `getwd()`. 
+*R Packages* are collections of functions, variables, data, and documentation that you can use to get options that go beyond what's available with the base R code. Like extensions for Google Chrome or Plugins on WordPress, these are additions that you can install directly from the internet through R's repository. Packages make it possible to do a wider range of tasks in R and are essential for working with word vectors. 
+
+To install an R package, you can navigate through the Tool menu (Tools --> Install Packages) or install packages directly by running code with the `install()` function, as below. Whenever you are installing packages, make sure that you have an internet connection because the code pulls directly from online repositories.
+
+Once you have installed a package on your computer you do not need to do so again.
+
+Run each line of code below to install the packages you will need.
 
 ```{r}
 install.packages("tidyverse")
@@ -65,9 +90,9 @@ install.packages("tsne")
 ```
 
 
-## Load Packages
+## Loading Packages
 
-Now that the packages have been installed, you'll want to load them using the `library()` function. You should only need to install packages once, but you'll have to load them every time you start a new session in RStudio. In general, you'll want to make a habit of checking your working directory and loading your packages at the start of each session.
+Now that the packages have been installed, you should load them using the `library()` function. You should only need to install packages once, but you'll have to load them every time you start a new session in RStudio. In general, you'll want to make a habit of checking your working directory and loading your packages at the start of each session.
 
 ```{r}
 library(tidyverse)
@@ -81,32 +106,36 @@ library(wordVectors)
 ```
 
 
-## Install word2vec
+## Installing word2vec
 
 Because the `wordVectors` package lives in GitHub, you will need to install it in a different way, using the `devtools()` function. That's why we had you pause before loading `wordVectors` above. After you've installed the `wordVectors` package (by running the code snippet below), you can ignore or even delete the comment above and just load all the packages at once. 
 
-Make sure to load `wordVectors` after you install it; you can either scroll up and load it from the code block above, or you could try writing the code to load it yourself (either in the code block below or right in the console). 
+Make sure to load `wordVectors` after you install it; you can either scroll up and load it from the code block above, or you could try writing the code to load it yourself (either in the code block below or right in the console).  
 
 ```{r}
 devtools::install_github('bmschmidt/wordVectors', force=TRUE)
 
 ```
 
-
-## Read-in and Combine Multiple Text Files
-
+# Training a model
+## Reading in text files
 The following script allows you to "read-in" multiple text files and combine them into a "tibble," which is a type of data table. Think of it as being like a spreadsheet, with rows and columns organizing information.
 
 First, we get a list of the files to read-in (`fileList`), then we create a function (`readTextFiles`) to create a tibble with two columns, `filename` and `text` for each text file in the folder. Then, we run the function to combine everything into one tibble called `combinedTexts`.
 
 There are some special requirements when you want to run code that is defining functions; unlike most of the time, where you can put your cursor anywhere in the line of code to run it, you need to have your cursor either at the beginning or the end of the code defining your function when you run it (or just select the whole thing and run it).
 
-The only thing you'll need to change in the code block below is the file path in the first line; remember that you can use `tab` to navigate to the folder with your text files. As long as you save the folder that has the text files you want to use inside of your "data" folder, you should only need to change the part after the forward slash (the part that reads "name_of_your_folder"). Make sure to change that one line *before* you run any of the code below.
+The *only* thing you'll need to change in the code below is the file path in the first line.
+
+As long as you have the folder with your text files inside the `data` folder, you should only need to change the part after the slash (the part that reads "name_of_your_folder"). Remember that you can use `tab` to navigate to the folder you want.  As long as you save the folder that has the text files you want to use inside of your "data" folder, you should only need to change the part after the forward slash (the part that reads "name_of_your_folder"). Make sure to change that one line *before* you run any of the code below.
+
 
 ```{r}
 # Change "name_of_your_folder" to match the name of the folder with your corpus
 path2file <- "data/name_of_your_folder"
-fileList <- list.files(path2file, full.names=TRUE) # This will create a list of files in the folder
+
+# This will create a list of files in the folder
+fileList <- list.files(path2file, full.names=TRUE) 
 
 # This is where you define a function to read-in multiple texts and paste them into a tibble (remember that the code that defines functions must be run by putting your cursor at the beginning or end, or by selecting the whole section of code). You are only defining the function here; the next section of code is when you actually run the function.
 readTextFiles <- function(file) { 
@@ -118,7 +147,7 @@ readTextFiles <- function(file) {
   return(output)
 }
 
-# This is where you run the function to create a tibble of combined files
+# This is where you run the function to create a tibble of combined files called "combinedTexts"
 combinedTexts <- tibble(filename=fileList) %>% 
   group_by(filename) %>% 
   do(readTextFiles(.$filename)) 
@@ -126,7 +155,7 @@ combinedTexts <- tibble(filename=fileList) %>%
 ```
 
 
-## Prepare Text for word2vec
+## Preparing Text for word2vec
 
 The section below defines several variables so that they can be called on in training your model. Working with general names (such as "w2vInput") for these variables lets you use them in the code that follows without having to change each instance; the first line is where you set up the specifics you need to distinguish one model from another.
 
@@ -145,7 +174,7 @@ combinedTexts$text %>% write_lines(w2vInput)
 ```
 
 
-## Create a Vector Space Model
+## Creating a vector space model
 
 The code below is how you actually train your model. There are some parameters you might want to modify, or, if this is your first time training a model, you can also keep the defaults to start. 
 
@@ -155,20 +184,23 @@ The `vectors` parameter allows you to change the dimensionality of your model to
 
 The `window` parameter allows you to control the number of words on either side of the target word that the model treats as relevant context; the smaller the window, the closer the context words will be.
 
-The `iter` parameter allows you to control how many times your corpus is read through during model training. If your corpus is on the smaller side, than increasing the number of iterations can improve the reliability of your results.
+The `iter` parameter allows you to control how many times your corpus is read through during model training. If your corpus is on the smaller side, then increasing the number of iterations can improve the reliability of your results.
 
 The `negative_samples` parameter allows you to control the number of negative samples used in training; the model will take less time to train if you use this parameter to modify only a percentage of the weights for the non-context terms in your corpus over each iteration. For smaller datasets, a value between 5 and 20 is recommended; for larger ones, you can use smaller values, between 2 and 5.
 
 For more on these parameters, and other options that you have in training a model, see the [code documentation](https://rdrr.io/github/bmschmidt/wordVectors/man/train_word2vec.html). 
 
+You don't need to edit anything here the first time you train a model; just run the code one section at a time. When you begin working on your project, you should vary the parameters to see how they impact your results. 
+
 
 ```{r}
+#This controls how much of your computer's processing power the code is allowed to use. 
 THREADS <- 3
 
 # prep_word2vec will prepare your corpus by creating a single text file and cleaning and lowercasing your text with the `tokenizers` package. If you set the value of `bundle_ngrams` to be greater than 1, it will automatically join common bigrams into a single word. 
 prep_word2vec(origin=w2vInput, destination=w2vCleaned, lowercase=T, bundle_ngrams=1)
 
-# The code below will train or read-in a model (note that if you want to overwrite an existing model, you will first need to delete the .bin file in your data folder or this code will just read-in the model you already have). See above on how you might modify the parameters before training your model. 
+# The code below will train or read-in a model
 if (!file.exists(w2vBin)) {
   w2vModel <- train_word2vec(
     w2vCleaned,
@@ -181,13 +213,14 @@ if (!file.exists(w2vBin)) {
   w2vModel <- read.vectors(w2vBin)
 }
 
-
 ```
 
+#Querying the model
 
-## Visualize 
+## Visualizing 
 
 We can get a glimpse of what the model looks like by plotting it in two dimensions. Keep in mind that the model actually has many more dimensions, so we are, in effect, flattening it. Though the visualization is difficult to read, you should be able to see that similar words—words that are near each other in vector space—tend to clump together. The code below will likely take a minute or two to run, and your results will appear in the "Plots" window to the right (you can hit the "Zoom" button to get a better view).
+
 
 ```{r}
 w2vModel %>% plot(perplexity=10)
@@ -197,7 +230,7 @@ w2vModel %>% plot(perplexity=10)
 
 ## Clustering
 
-The following script provides a way to cluster words that are near each other in vector space, using the k-means clustering algorithm. Below, we choose 150 `centers`, or 150 points around which to cluster words. Then we select ten random clusters and 15 words from each cluster to view. This code will also take a minute or two to run. You can change the number of centers, number of clusters to view, or the number of words to see—you can also increase the number of iterations (the number of times the algorithm should adjust where the centers are and where terms are positioned in relationship to those centers).
+The following script provides a way to cluster words that are near each other in vector space, using the "k-means" clustering algorithm. Below, we choose 150 `centers`, or 150 points around which to cluster words. Then we select ten random clusters and 15 words from each cluster to view. This code will also take a minute or two to run. You can change the number of centers, number of clusters to view, or the number of words to see—you can also increase the number of iterations (the number of times the algorithm should adjust where the centers are and where terms are positioned in relationship to those centers).
 
 ```{r}
 centers <- 150
