@@ -184,6 +184,6 @@ Dewar, Taryn. "R Basics with Tabular Data." _The Programming Historian_ vol. 5, 
 
 ## Credit and thanks
 
-This tutorial was was developed as part of the Word Vectors for the Thoughtful Humanist series at Northeastern University.This walkthrough was informed by tutorials from *The Programming Historian*, and exercises created by Thanasis Kinias and Ryan Cordell for the "Humanities Data Analysis" course.
+This tutorial was developed as part of the Word Vectors for the Thoughtful Humanist series at Northeastern University. This walkthrough was informed by tutorials from *The Programming Historian*, and exercises created by Thanasis Kinias and Ryan Cordell for the "Humanities Data Analysis" course.
 
 Word Vectors for the Thoughtful Humanist has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.
