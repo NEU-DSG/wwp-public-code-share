@@ -1,7 +1,7 @@
 in---
 title: "Word Vectors Template"
 author: "Jonathan Fitzgerald & Sarah Connell"
-date: "6/3/2019"
+date: "5/3/2021"
 output: pdf_document
 ---
 
@@ -11,18 +11,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Using this File
 
-This file is set up so that once you're comfortable with the basics of `word2vec` (which you can learn from the `introduction_word2vec.Rmd` file) and you have installed all the necessary packages, you can use it as a convenient template for working with your data. Most of the instructional language is in the introductory file, so check that if you have questions; this file includes just the code you'll need to load in files, train models, and query them, with a few comments on the things you'll want to pay particularly close attention to. 
+This file is set up so that once you're comfortable with the basics of `word2vec` and you have installed all the necessary packages, you can use it as a convenient template for working with your data. Most of the instructional language is in the other walkthrough files in this directory, so check those if you have questions. This file includes just the code you'll need to load in files, train models, and query them, with a few comments on the things you'll want to pay particularly close attention to. 
 
-##Check the Working Directory
+##Checking the working directory
 
 ```{r}
 
+# Use the `setwd()` function if you need to change the working directory
 getwd()
 
 ```
 
 
-## Load Packages
+## Loading packages
 
 ```{r}
 
@@ -37,9 +38,10 @@ library(lsa)
 ```
 
 
-## Read-in and Combine Multiple Text Files
+## Reading in text files
 
 ```{r}
+
 # Change "name_of_your_folder" to match the name of the folder with your corpus
 path2file <- "data/name_of_your_folder"
 fileList <- list.files(path2file,full.names = TRUE) 
@@ -59,7 +61,7 @@ combinedTexts <- tibble(filename=fileList) %>%
 
 ```
 
-## Prepare Text for VSM
+## Preparing text for word2vec
 
 ```{r}
 
@@ -73,9 +75,10 @@ combinedTexts$text %>% write_lines(w2vInput)
 ```
 
 
-## Create Vector Space Model
+## Creating a vector space model
 
 ```{r}
+
 THREADS <- 3
 
 prep_word2vec(origin=w2vInput,destination=w2vCleaned,lowercase=T,bundle_ngrams=1)
@@ -96,15 +99,17 @@ if (!file.exists(w2vBin)) {
 
 ```
 
-## Read-in Existing Model Files
-You don't need to run this if you want to work with a file you just trained; but if you would like to switch models or read-in an existing one after starting a new session, this is the code you would use.
+
+## Reading in existing model files
+You don't need to run this if you want to work with a file you just trained; but if you would like to switch models or read in an existing one after starting a new session, this is the code you would use.
  
 ```{r}
+
 w2vModel <- read.vectors("data/name_of_your_file.bin")
 
 ```
 
-## Visualize 
+## Visualizing 
 
 ```{r}
 
@@ -125,9 +130,10 @@ sapply(sample(1:centers, 10), function(n) {
 
 ```
 
-## Closest To
+## Closest to
 
 ```{r}
+
 #To have the results appear in the console below
 w2vModel %>% closest_to("girl", 30) 
 
@@ -137,7 +143,7 @@ w2vModel %>% closest_to("girl", 30) %>% View()
 ```
 
 
-## Closest To Two Things
+## Closest to two things
 
 ```{r}
 
@@ -145,7 +151,7 @@ w2vModel %>% closest_to(~"girl"+"woman", 20)
 
 ```
 
-## Closest To The Space Between Two Things
+## Closest to the difference between two things
 
 ```{r}
 
@@ -157,11 +163,12 @@ w2vModel %>% closest_to(~"man"-"woman", 20)
 
 ```{r}
 
-w2vModel %>% closest_to(~"king"-"man"+"woman", 20)
+w2vModel %>% closest_to(~"woman"-"man"+"king", 20)
 
 ```
 
-##Export Queries
+##Exporting queries
+
 ```{r}
 
 w2vExport <- w2vModel %>% closest_to("girl", 30) 
@@ -172,13 +179,16 @@ write.csv(file="output/name_of_your_query.csv", x=w2vExport)
 
 ```
 
-##Export Clusters
+
+##Exporting clusters
+
 ```{r}
 
+#Change "name_of_your_cluster" to a descriptive name that you want to give to your export file.
 centers <- 150
+
 clustering <- kmeans(w2vModel,centers=centers,iter.max = 40)
 
-#Change "name_of_your_query" to a descriptive name that you want to give to your export file.
 w2vExport <-sapply(sample(1:centers,150),function(n) {
   names(clustering$cluster[clustering$cluster==n][1:15])
 })
@@ -186,12 +196,14 @@ w2vExport <-sapply(sample(1:centers,150),function(n) {
 write.csv(file="output/name_of_your_cluster.csv", x=w2vExport)
 
 ```
+
 ## Evaluate the Model
 
 You can run this test by hitting `command-return` or `control-return` to run one line a time, or just hit the green button in the top right of the code block below. 
 
 ```{r}
-files_list  = list.files(pattern="*.bin$", recursive=TRUE)
+
+files_list  = list.files(pattern = "*.bin$", recursive = TRUE)
 
 rownames <- c()
 
@@ -229,15 +241,15 @@ for(fn in files_list) {
       vector2 <- c(vector2, x)
     }
     
-    sims <- c(sims, cosine(vector1, vector2))
-    f_name <- strsplit(fn, "/")[[1]][[2]]
-    data_list[[f_name]] <- sims
+    sims <- c(sims, cosine(vector1,vector2))
+    #f_name <- strsplit(fn, "/")[[1]][[2]]
+    data_list[[fn]] <- sims
   }
   
 }
 
-for(pairs in data) {
-  rownames <- c(rownames, paste(pairs[1], pairs[2], sep="-"))
+for(pairs in data){
+  rownames <- c(rownames, paste(pairs[1], pairs[2], sep = "-"))
 }
 
 results <- structure(data_list,
@@ -245,9 +257,18 @@ results <- structure(data_list,
                      row.names = rownames
 )
 
+#If you want to give your results document a more specific name; you can edit "model-test-results" below. 
 write.csv(file="output/model-test-results.csv", x=results)
 
 ```
+
+
+## Reminder
+The next time that you want to start a new RStudio session, here is the order of basic housekeeping steps.
++ Open the "WordVectors" project
++ Check working directory with `getwd()`
++ Load packages
++ Load in the model you want to work with, or follow the steps to train a new model
 
 
 ## Credits and Thanks
