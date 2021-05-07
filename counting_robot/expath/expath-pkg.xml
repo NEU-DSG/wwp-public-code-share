@@ -1,0 +1,12 @@
+<package xmlns="http://expath.org/ns/pkg" 
+    name="http://www.wwp.northeastern.edu/pkg/counting-robot" abbrev="counting-robot-lib" 
+    version="1.5.3" spec="1.0">
+  <title>Counting Robot Library</title>
+  
+  <dependency processor="basex"/>
+  <dependency processor="http://exist-db.org" semver-min="4.0.0"/>
+  <xquery>
+    <namespace>http://www.wwp.northeastern.edu/ns/count-sets/functions</namespace>
+    <file>count-sets-library.xql</file>
+  </xquery>
+</package>

@@ -12,9 +12,13 @@ xquery version "3.1";
  : @return tab-delimited text
  :
  : @author Ashley M. Clark, Northeastern University Women Writers Project
- : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
- : @version 2.2
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
+ : @version 2.5
  :
+ : Changelog:
+ :  2020-10-02: v.2.5. Updated GitHub link to use the new default branch "main".
+ :  2020-01-28: v.2.4. Made local:move-anchors() accept empty sequences.
+ :  2019-07-26: v.2.3. Added MIT license. Removed "werr" namespace declaration.
  :  2019-03-19: v.2.2. In order to remove the dependency on Saxon EE, I removed the 
  :              dynamic function call. Instead, an explicit call to 
  :              wft:anchor-notes() has been commented out. To use the feature
@@ -62,6 +66,28 @@ xquery version "3.1";
  :  2017-06-09: Fixed XPaths used to derive documents' publication date and author.
  :              Thanks to Thanasis for finding these bugs!
  :  2017-04-28: v1.0. Created from fulltext2table.xq.
+ :
+ : MIT License
+ :
+ : Copyright (c) 2019 Northeastern University Women Writers Project
+ :
+ : Permission is hereby granted, free of charge, to any person obtaining a copy
+ : of this software and associated documentation files (the "Software"), to deal
+ : in the Software without restriction, including without limitation the rights
+ : to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ : copies of the Software, and to permit persons to whom the Software is
+ : furnished to do so, subject to the following conditions:
+ :
+ : The above copyright notice and this permission notice shall be included in all
+ : copies or substantial portions of the Software.
+ :
+ : THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ : IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ : FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ : AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ : LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ : OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ : SOFTWARE.
  :)
 
 (:  IMPORTS  :)
@@ -69,9 +95,8 @@ xquery version "3.1";
     at "fulltext-library.xql";:)
 (:  NAMESPACES  :)
   declare default element namespace "http://www.wwp.northeastern.edu/ns/textbase";
-  declare namespace tei="http://www.tei-c.org/ns/1.0";
   declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
-  declare namespace werr="http://www.wwp.northeastern.edu/ns/err";
+  declare namespace tei="http://www.tei-c.org/ns/1.0";
   declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
 (:  OPTIONS  :)
   declare option output:method "text";
@@ -114,9 +139,11 @@ xquery version "3.1";
     To accomplish #2 in oXygen, use Saxon EE as your "transformer". Click on the 
     symbol next to "Saxon EE" to open the processor settings. Turn on the "linked 
     tree" model and XQuery Update. Turn off XQuery Update backups. :)
-  declare function local:anchor-notes($xml as node()) {
-    (:wft:anchor-notes($xml):)
-    $xml
+  declare function local:anchor-notes($xml as node()?) {
+    if ( exists($xml) ) then
+      (:wft:anchor-notes($xml):)
+      $xml
+    else $xml
   };
   
   (: Given a type of text output and an element, create a plain text version of the 

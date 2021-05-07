@@ -1,29 +1,53 @@
 xquery version "3.1";
 
 (:~
- : A script to strip out the text from a TEI document, while retaining some metadata 
- : from the header. This version of fulltext2table.xq can be used to generate one 
- : table per TEI document, using an 'XML with XQuery' transformation to dynamically 
- : change the context node.
+ : A script to strip out the text from an XML document. This version can be used to 
+ : generate one table per TEI document, using an 'XML with XQuery' transformation to 
+ : dynamically change the context node.
  :
- : The $ELEMENTS variable gives control over which TEI elements should be output via 
- : XPath. To use morphadorned XML, change $is-morphadorned to true().
+ : The $ELEMENTS variable gives control over which elements should be output via 
+ : XPath.
  :
  : @return tab-delimited text
  :
  : @author Ashley M. Clark and Sarah Connell, Northeastern University Women Writers Project
- : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/master/fulltext
- : @version 1.0
+ : @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
+ : @version 1.3
  :
-
+ : Changelog:
+ :  2020-10-02: v1.3. Updated GitHub link to use the new default branch "main".
+ :  2019-07-26: v1.2. Added MIT License. Removed "werr" namespace declaration.
+ :  2019-07-17: v1.1. Tweaked language in comments and this header. Fixed bug in 
+ :    local:add-spaces(); non-element nodes were being treated as elements.
  :  2019-06-19: v1.0. Created from fulltext2table.enmasse.xq.
+ :
+ : MIT License
+ :
+ : Copyright (c) 2019 Northeastern University Women Writers Project
+ : 
+ : Permission is hereby granted, free of charge, to any person obtaining a copy
+ : of this software and associated documentation files (the "Software"), to deal
+ : in the Software without restriction, including without limitation the rights
+ : to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ : copies of the Software, and to permit persons to whom the Software is
+ : furnished to do so, subject to the following conditions:
+ :
+ : The above copyright notice and this permission notice shall be included in all
+ : copies or substantial portions of the Software.
+ :
+ : THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ : IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ : FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ : AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ : LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ : OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ : SOFTWARE.
  :)
 
 (:  NAMESPACES  :)
-(: declare default element namespace "http://www.wwp.northeastern.edu/ns/textbase";:)
-  declare namespace tei="http://www.tei-c.org/ns/1.0";
+  (:declare default element namespace "http://www.tei-c.org/ns/1.0";:)
   declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
-  declare namespace werr="http://www.wwp.northeastern.edu/ns/err";
+  declare namespace tei="http://www.tei-c.org/ns/1.0";
   declare namespace wwp="http://www.wwp.northeastern.edu/ns/textbase";
 (:  OPTIONS  :)
   declare option output:method "text";
@@ -37,7 +61,6 @@ xquery version "3.1";
     
     
 (:  FUNCTIONS  :)
-  
   
   (: Get the normalized text content of an element. :)
   declare function local:get-text($element as node()) as xs:string {
@@ -66,23 +89,28 @@ xquery version "3.1";
       }
   };
 
-(:Add a space after certain named elements:)
-    declare function local:add-spaces($node as node(), $element-names as xs:string*) as node()* {
-     if ( empty($element-names) ) then $node
-    else if ( $node[self::text()] ) then text { $node }
-    else
-      (element { $node/name() } {
-        $node/@*,
-        for $child in $node/node()
-        return local:add-spaces($child, $element-names)}, 
-        if ( $node[self::*]/local-name() = $element-names ) then text{" "}
-        else ()
+  (: Add a space after certain named elements. :)
+  declare function local:add-spaces($node as node(), $element-names as xs:string*) as node()* {
+   if ( empty($element-names) ) then $node
+  else
+    typeswitch ($node)
+      case element(*) return
+        ( element { $node/name() } {
+            $node/@*,
+            for $child in $node/node()
+            return local:add-spaces($child, $element-names)
+          }, 
+          if ( $node[self::*]/local-name() = $element-names ) then text{" "}
+          else ()
         )
-    };
+      case text() return text { $node }
+      default return $node
+  };
+
 
 (:  MAIN QUERY  :)
 
-let $file := tokenize(/base-uri(),'/')[last()]
+let $filename := tokenize(/base-uri(),'/')[last()]
 let $headerRow := ('full text')
 let $allRows := 
   (
@@ -90,19 +118,18 @@ let $allRows :=
     else local:make-cells-in-row($headerRow)
     ,
     let $Doc := /*
-    
-  (: Change $ELEMENTS to reflect the elements for which you want full-text 
-      representations. :)
+    (: Change $ELEMENTS to reflect the elements for which you want full-text 
+       representations. :)
     let $ELEMENTS := $Doc
-  (: Below, add the names of elements that you wish to add a space after from within $ELEMENTS.
-      For example, 
-        ('page')
-  :)
+    (: Below, add the names of elements that you wish to add a space after from within $ELEMENTS.
+       For example, 
+          ('page', 'paragraph')
+    :)
     let $ELEMENTS2SPACE := ('page')
-      (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
-      For example, 
-        ('castList', 'elision', 'figDesc', 'label', 'speaker')
-  :)
+    (: Below, add the names of elements that you wish to remove from within $ELEMENTS.
+       For example, 
+          ('castList', 'elision', 'figDesc', 'label', 'speaker')
+    :)
     let $ELEMENTS2OMIT := ()
     let $fulltext := 
       let $wordSeq := for $element in $ELEMENTS
@@ -114,7 +141,7 @@ let $allRows :=
       return normalize-space(string-join(($wordSeq), $wordSeparator))
     (: The variable $optionalMetadata will be empty if $return-only-words is 'true()'. :)
     let $dataSeq := ( $fulltext )
-    order by $file
+    order by $filename
     return 
       if ( $fulltext ne '' ) then 
         local:make-cells-in-row($dataSeq)

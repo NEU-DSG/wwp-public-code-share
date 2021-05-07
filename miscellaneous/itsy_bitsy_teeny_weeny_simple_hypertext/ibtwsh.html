@@ -1,0 +1,2979 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!--THIS FILE IS GENERATED FROM AN XML MASTER. DO NOT EDIT (5)-->
+  <head><title>IBTWSHT</title><meta name="author" content="John Cowan"/><meta name="generator" content="Text Encoding Initiative Consortium XSLT stylesheets"/><meta name="DC.Title" content="IBTWSHT"/><meta name="DC.Type" content="Text"/><meta name="DC.Format" content="application/xhtml+xml"/><meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"/><link href="http://www.tei-c.org/release/xml/tei/stylesheet/tei.css" rel="stylesheet" type="text/css"/><link href="http://www.tei-c.org/release/xml/tei/stylesheet/odd.css" media="screen" rel="stylesheet" type="text/css"/><link rel="stylesheet" media="print" type="text/css" href="http://www.tei-c.org/release/xml/tei/stylesheet/tei-print.css"/>
+<script type="text/javascript">
+	    function startUp() {
+	  } 
+
+	function openpopup(location){ 
+	var newwin =
+        window.open(location,"OUCSPopup","status=no,menu=no,toolbar=no,width=350,height=400,resizable=yes,scrollbars=yes")
+          }
+	</script><script type="text/javascript"><!--
+var displayXML=0;
+states=new Array()
+states[0]="element-a"
+states[1]="element-b"
+states[2]="element-c"
+states[3]="element-d"
+states[4]="element-e"
+states[5]="element-f"
+states[6]="element-g"
+states[7]="element-h"
+states[8]="element-i"
+states[9]="element-j"
+states[10]="element-k"
+states[11]="element-l"
+states[12]="element-m"
+states[13]="element-n"
+states[14]="element-o"
+states[15]="element-p"
+states[16]="element-q"
+states[17]="element-r"
+states[18]="element-s"
+states[19]="element-t"
+states[20]="element-u"
+states[21]="element-v"
+states[22]="element-w"
+states[23]="element-x"
+states[24]="element-y"
+states[25]="element-z"
+
+function startUp() {
+ hideallExcept('');
+}
+
+function hideallExcept(elm) {
+for (var i = 0; i < states.length; i++) {
+ var layer;
+ if (layer = document.getElementById(states[i]) ) {
+  if (states[i] != elm) {
+    layer.style.display = "none";
+  }
+  else {
+   layer.style.display = "block";
+      }
+  }
+ }
+ var mod;
+ if ( mod = document.getElementById('byMod') ) {
+     mod.style.display = "none";
+ }
+}
+
+function showall() {
+ for (var i = 0; i < states.length; i++) {
+   var layer;
+   if (layer = document.getElementById(states[i]) ) {
+      layer.style.display = "block";
+      }
+  }
+}
+
+function showByMod() {
+  hideallExcept('');
+  var mod;
+  if (mod = document.getElementById('byMod') ) {
+     mod.style.display = "block";
+     }
+}
+
+	--></script></head>
+  <body class="simple" id="TOP" onload="startUp()">
+    <div class="stdheader">
+      <h2 class="institution"/>
+      <h2 class="department"/>
+      <h1 class="maintitle">
+        <a href="index.html">IBTWSHT</a>
+      </h1>
+    </div>
+    <p><span id="id346658"><!--anchor--></span>This is an XML DTD which describes a subset of HTML 4.0 for embedded use within other XML
+      DTDs. It is by intention equivalent (within its scope) to -//W3C//DTD HTML 4.0
+      Transitional//EN, but is not a derived work in the copyright sense. (Brief excerpts from
+      HTML 4.0 Transitional appear here and there.)</p>
+    <p><span id="id346666"><!--anchor--></span>It is often convenient for XML documents to have a bit of documentation somewhere in them.
+      In the absence of a DTD like this one, that documentation winds up being #PCDATA only, which
+      is a pity, because rich text adds measurably to the readability of documents. By
+      incorporating this DTD by reference (as an external parameter entity) into another DTD, that
+      DTD inherits the capabilities of this one. Using HTML-compatible elements and attributes
+      allows the documentation to be passed straight through to HTML renderers.</p>
+    <p><span id="id346670"><!--anchor--></span>Current HTML renderers can cope with most XML tags, but empty tags require special
+      treatment. Inserting a space before the terminating "/&gt;" usually makes the "/" (which is not
+      HTML) invisible. Using "&lt;TAG&gt;&lt;/TAG&gt;" is not as effective, as the latter is
+      often misinterpreted as a second "&lt;TAG&gt;".</p>
+    <p><span id="id346674"><!--anchor--></span>Note that since the elements of this DTD are intended to be used within domain-specific
+      elements of the surrounding DTD, there is no "root element" corresponding to the HTML
+      element in HTML. Recommended content models for elements containing documentation are
+      "%horiz.model;" for simple text fragments, and "%struct.model;" for documents in
+      extenso.</p>
+    <p><span id="id346677"><!--anchor--></span>You can use the XML element to embed arbitrary XML content into elements declared in this
+      DTD. If you'd rather use some other element instead, define it (or a group of alternatives)
+      as the value of the parameter entity "ibtwsh.include".</p>
+    <p><span id="id346692"><!--anchor--></span>Note on draft 4.0: This draft removes the ugly FONT element in favor of BIG and SMALL, and
+      no longer provides ways to set color, the support for which is broken in many browsers
+      anyhow.</p>
+    <p><span id="id346699"><!--anchor--></span>Draft 5.0 adds support for using IBTWSH as a replacement for full HTML. It now defines the
+      elements HTML, HEAD, TITLE, STYLE, and BODY, with appropriate content models and attributes.
+      You can suppress these elements by defining the parameter entity "ibtwsh.document" as
+      "IGNORE".</p>
+    <h2>Schema ibtwsh: Model classes</h2>
+    <div>
+      <h3 class="oddSpec"><span id="headers"><!--anchor--></span>headers</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">headers</span> </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#struct">struct</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_element" href="#H1">H1</a> <a class="link_odd_element" href="#H2">H2</a> <a class="link_odd_element" href="#H3">H3</a></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="horiz"><!--anchor--></span>horiz</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">horiz</span> </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#ADDRESS">ADDRESS</a>  <a class="link_odd_macro" href="#horiz.model">horiz.model</a>  <a class="link_odd_class" href="#vert">vert</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#local">local</a><span class="showmembers2"> [ <a class="link_odd_element" href="#ABBR">ABBR</a> <a class="link_odd_element" href="#ACRONYM">ACRONYM</a> <a class="link_odd_element" href="#BIG">BIG</a> <a class="link_odd_element" href="#CITE">CITE</a> <a class="link_odd_element" href="#CODE">CODE</a> <a class="link_odd_element" href="#DFN">DFN</a> <a class="link_odd_element" href="#EM">EM</a> <a class="link_odd_element" href="#KBD">KBD</a> <a class="link_odd_element" href="#SAMP">SAMP</a> <a class="link_odd_element" href="#SMALL">SMALL</a> <a class="link_odd_element" href="#STRONG">STRONG</a> <a class="link_odd_element" href="#VAR">VAR</a>] </span> <a class="link_odd_element" href="#A">A</a> <a class="link_odd_element" href="#BR">BR</a> <a class="link_odd_element" href="#SPAN">SPAN</a> <a class="link_odd_element" href="#XML">XML</a></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="local"><!--anchor--></span>local</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">local</span> </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#horiz">horiz</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_element" href="#ABBR">ABBR</a> <a class="link_odd_element" href="#ACRONYM">ACRONYM</a> <a class="link_odd_element" href="#BIG">BIG</a> <a class="link_odd_element" href="#CITE">CITE</a> <a class="link_odd_element" href="#CODE">CODE</a> <a class="link_odd_element" href="#DFN">DFN</a> <a class="link_odd_element" href="#EM">EM</a> <a class="link_odd_element" href="#KBD">KBD</a> <a class="link_odd_element" href="#SAMP">SAMP</a> <a class="link_odd_element" href="#SMALL">SMALL</a> <a class="link_odd_element" href="#STRONG">STRONG</a> <a class="link_odd_element" href="#VAR">VAR</a></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="model.addrPart"><!--anchor--></span>model.addrPart</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">model.addrPart</span> groups elements such as names or postal codes which may appear
+  as part of a  postal address.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#model.nameLike">model.nameLike</a><span class="showmembers2"> [ <a class="link_odd_class" href="#model.placeStateLike">model.placeStateLike</a>] </span></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="model.common"><!--anchor--></span>model.common</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">model.common</span> groups common chunk- and inter-level elements.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#model.divPart">model.divPart</a> <a class="link_odd_class" href="#model.inter">model.inter</a><span class="showmembers2"> [ <a class="link_odd_class" href="#model.qLike">model.qLike</a>] </span></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Note</span>
+          </td>
+          <td class="wovenodd-col2">
+<!-- -->
+            <div class="p"><span id="id352256"><!--anchor--></span>This class defines the set of chunk- and inter-level elements;
+    it is used in many content models, including those for textual
+    divisions.</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="model.divTop"><!--anchor--></span>model.divTop</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">model.divTop</span> groups elements appearing at  the beginning of a
+  text division.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#model.divTopPart">model.divTopPart</a></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="model.inter"><!--anchor--></span>model.inter</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">model.inter</span> groups elements which can appear either within or between
+  paragraph-like  elements.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#model.common">model.common</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#model.qLike">model.qLike</a></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="model.limitedPhrase"><!--anchor--></span>model.limitedPhrase</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">model.limitedPhrase</span> groups phrase-level elements excluding those elements
+  primarily intended for transcription of existing sources.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#model.pPart.data">model.pPart.data</a><span class="showmembers2"> [ <a class="link_odd_class" href="#model.nameLike">model.nameLike</a><span class="showmembers3"> [ <a class="link_odd_class" href="#model.placeStateLike">model.placeStateLike</a>] </span>] </span></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="model.nameLike"><!--anchor--></span>model.nameLike</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">model.nameLike</span> groups elements which name or refer to a person, place, or organization.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#model.addrPart">model.addrPart</a> <a class="link_odd_class" href="#model.pPart.data">model.pPart.data</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#model.placeStateLike">model.placeStateLike</a></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Note</span>
+          </td>
+          <td class="wovenodd-col2">
+<!-- -->
+            <div class="p"><span id="id351593"><!--anchor--></span>A superset of the naming elements that may appear in datelines,
+    addresses, statements of responsibility, etc.</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="model.pPart.data"><!--anchor--></span>model.pPart.data</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">model.pPart.data</span> groups phrase-level elements containing names, dates, numbers, measures,
+and similar data. </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#model.phrase">model.phrase</a> <a class="link_odd_class" href="#model.limitedPhrase">model.limitedPhrase</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#model.nameLike">model.nameLike</a><span class="showmembers2"> [ <a class="link_odd_class" href="#model.placeStateLike">model.placeStateLike</a>] </span></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="model.phrase"><!--anchor--></span>model.phrase</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">model.phrase</span> groups elements which can occur at the level of individual
+words or phrases.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#model.highlighted">model.highlighted</a> <a class="link_odd_class" href="#model.pPart.data">model.pPart.data</a><span class="showmembers2"> [ <a class="link_odd_class" href="#model.nameLike">model.nameLike</a><span class="showmembers3"> [ <a class="link_odd_class" href="#model.placeStateLike">model.placeStateLike</a>] </span>] </span> <a class="link_odd_class" href="#model.pPart.edit">model.pPart.edit</a></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Note</span>
+          </td>
+          <td class="wovenodd-col2">
+<!-- -->
+            <div class="p"><span id="id352383"><!--anchor--></span>This class of elements can occur only within larger
+elements of the class <span class="term">inter</span> or <span class="term">chunk</span>.
+In prose, this means these elements can occur within paragraphs,
+list items, lines of verse, etc.</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="struct"><!--anchor--></span>struct</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">struct</span> </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#BLOCKQUOTE">BLOCKQUOTE</a> <a class="link_odd_element" href="#BODY">BODY</a> <a class="link_odd_element" href="#DIV">DIV</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#headers">headers</a><span class="showmembers2"> [ <a class="link_odd_element" href="#H1">H1</a> <a class="link_odd_element" href="#H2">H2</a> <a class="link_odd_element" href="#H3">H3</a>] </span> <a class="link_odd_element" href="#ADDRESS">ADDRESS</a></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="vert"><!--anchor--></span>vert</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">vert</span> </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#DD">DD</a> <a class="link_odd_element" href="#LI">LI</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#horiz">horiz</a><span class="showmembers2"> [ <a class="link_odd_class" href="#local">local</a><span class="showmembers3"> [ <a class="link_odd_element" href="#ABBR">ABBR</a> <a class="link_odd_element" href="#ACRONYM">ACRONYM</a> <a class="link_odd_element" href="#BIG">BIG</a> <a class="link_odd_element" href="#CITE">CITE</a> <a class="link_odd_element" href="#CODE">CODE</a> <a class="link_odd_element" href="#DFN">DFN</a> <a class="link_odd_element" href="#EM">EM</a> <a class="link_odd_element" href="#KBD">KBD</a> <a class="link_odd_element" href="#SAMP">SAMP</a> <a class="link_odd_element" href="#SMALL">SMALL</a> <a class="link_odd_element" href="#STRONG">STRONG</a> <a class="link_odd_element" href="#VAR">VAR</a>] </span> <a class="link_odd_element" href="#A">A</a> <a class="link_odd_element" href="#BR">BR</a> <a class="link_odd_element" href="#SPAN">SPAN</a> <a class="link_odd_element" href="#XML">XML</a>] </span></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <h2>Schema ibtwsh: Attribute classes</h2>
+    <div>
+      <h3 class="oddSpec"><span id="align"><!--anchor--></span>align</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">align</span> </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_element" href="#DIV">DIV</a> <a class="link_odd_element" href="#H1">H1</a> <a class="link_odd_element" href="#H2">H2</a> <a class="link_odd_element" href="#H3">H3</a></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2">
+            <table class="attList">
+              <tr>
+                <td class="odd_label">align</td>
+                <td class="odd_value">
+                  <table class="attDef">
+                    <tr>
+                      <td class="odd_label">Status </td>
+                      <td class="odd_value">Optional</td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Datatype </td>
+                      <td class="odd_value">
+                        <code class="eg">
+xsd:Name</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Values are:</td>
+                      <td class="odd_value">
+                        <dl class="valList">
+                          <dt class="odd_label">left</dt>
+                          <dd class="odd_value"/>
+                          <dt class="odd_label">center</dt>
+                          <dd class="odd_value"/>
+                          <dt class="odd_label">right</dt>
+                          <dd class="odd_value"/>
+                        </dl>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="all"><!--anchor--></span>all</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">all</span> All elements (except full-document elements) have these attributes</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#basic">basic</a><span class="showmembers2"> [ <a class="link_odd_element" href="#A">A</a> <a class="link_odd_element" href="#ABBR">ABBR</a> <a class="link_odd_element" href="#ACRONYM">ACRONYM</a> <a class="link_odd_element" href="#ADDRESS">ADDRESS</a> <a class="link_odd_element" href="#BIG">BIG</a> <a class="link_odd_element" href="#BLOCKQUOTE">BLOCKQUOTE</a> <a class="link_odd_element" href="#CITE">CITE</a> <a class="link_odd_element" href="#CODE">CODE</a> <a class="link_odd_element" href="#DD">DD</a> <a class="link_odd_element" href="#DFN">DFN</a> <a class="link_odd_element" href="#DIR">DIR</a> <a class="link_odd_element" href="#DIV">DIV</a> <a class="link_odd_element" href="#DL">DL</a> <a class="link_odd_element" href="#DT">DT</a> <a class="link_odd_element" href="#EM">EM</a> <a class="link_odd_element" href="#H1">H1</a> <a class="link_odd_element" href="#H2">H2</a> <a class="link_odd_element" href="#H3">H3</a> <a class="link_odd_element" href="#KBD">KBD</a> <a class="link_odd_element" href="#LI">LI</a> <a class="link_odd_element" href="#OL">OL</a> <a class="link_odd_element" href="#P">P</a> <a class="link_odd_element" href="#PRE">PRE</a> <a class="link_odd_element" href="#SAMP">SAMP</a> <a class="link_odd_element" href="#SMALL">SMALL</a> <a class="link_odd_element" href="#SPAN">SPAN</a> <a class="link_odd_element" href="#STRONG">STRONG</a> <a class="link_odd_element" href="#UL">UL</a> <a class="link_odd_element" href="#VAR">VAR</a> <a class="link_odd_element" href="#XML">XML</a>] </span> <a class="link_odd_element" href="#BODY">BODY</a> <a class="link_odd_element" href="#BR">BR</a> <a class="link_odd_element" href="#HR">HR</a></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2">
+            <table class="attList">
+              <tr>
+                <td class="odd_label">id</td>
+                <td class="odd_value">
+                  <table class="attDef">
+                    <tr>
+                      <td class="odd_label">Status </td>
+                      <td class="odd_value">Optional</td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Datatype </td>
+                      <td class="odd_value">
+                        <code class="eg">
+xsd:ID</code>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td class="odd_label">class</td>
+                <td class="odd_value">
+                  <table class="attDef">
+                    <tr>
+                      <td class="odd_label">Status </td>
+                      <td class="odd_value">Optional</td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Datatype </td>
+                      <td class="odd_value"> 1–∞ occurrences of  <code class="eg">
+token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }</code>separated by whitespace</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td class="odd_label">style</td>
+                <td class="odd_value">
+                  <table class="attDef">
+                    <tr>
+                      <td class="odd_label">Status </td>
+                      <td class="odd_value">Optional</td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Datatype </td>
+                      <td class="odd_value">
+                        <code class="eg">
+text</code>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="att.canonical"><!--anchor--></span>att.canonical</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">att.canonical</span> provides attributes which can be used to associate a
+  representation such as a name or title with canonical information about
+  the object being named or referenced.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#att.naming">att.naming</a></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2">
+            <table class="attList">
+              <tr>
+                <td class="odd_label">key</td>
+                <td class="odd_value">provides an externally-defined means
+ of identifying the entity (or entities) being named, using a coded value
+      of some kind.<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+string</code></td></tr><tr><td class="odd_label">Values </td><td class="attribute">any string of Unicode characters</td></tr><tr><td class="wovenodd-col1"><span class="label">Note</span></td><td class="wovenodd-col2"><!-- --><div class="p"><span id="id346759"><!--anchor--></span>The value may be a unique identifier from a database, or
+	any other externally-defined string identifying the referent. </div></td></tr></table></td>
+              </tr>
+              <tr>
+                <td class="odd_label">ref</td>
+                <td class="odd_value"> (reference) provides an explicit means of locating a full definition
+      for the entity being named by means of one or more URIs.<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"> 1–∞ occurrences of  <code class="eg">
+xsd:anyURI</code>separated by whitespace</td></tr><tr><td class="wovenodd-col1"><span class="label">Note</span></td><td class="wovenodd-col2"><!-- --><div class="p"><span id="id346794"><!--anchor--></span>The value must point directly to one or more XML elements
+        by means of one or more URIs, separated by whitespace. If more
+        than one is supplied, the implication is that the name
+        identifies several distinct entities. </div></td></tr></table></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="att.dimensions"><!--anchor--></span>att.dimensions</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">att.dimensions</span> provides attributes for describing the size of physical  objects.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#att.editLike">att.editLike</a></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2">
+            <table class="attList">
+              <tr>
+                <td class="odd_label">unit</td>
+                <td class="odd_value">names the unit used for the measurement<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:Name</code></td></tr><tr><td class="odd_label">Suggested values include:</td><td class="odd_value"><dl class="valList"><dt class="odd_label">cm</dt><dd class="odd_value">(centimetres) </dd><dt class="odd_label">mm</dt><dd class="odd_value">(millimetres) </dd><dt class="odd_label">in</dt><dd class="odd_value">(inches) </dd><dt class="odd_label">lines</dt><dd class="odd_value">lines of text</dd><dt class="odd_label">chars</dt><dd class="odd_value">(characters) characters of text</dd></dl></td></tr></table></td>
+              </tr>
+              <tr>
+                <td class="odd_label">quantity</td>
+                <td class="odd_value">specifies the length in the units specified<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:double | xsd:decimal</code></td></tr></table></td>
+              </tr>
+              <tr>
+                <td class="odd_label">extent</td>
+                <td class="odd_value">indicates the size of the object concerned using a
+      project-specific vocabulary combining quantity and units in a
+      single string of words.  <table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"> 1–∞ occurrences of  <code class="eg">
+token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }</code>separated by whitespace</td></tr><tr><td class="odd_label">Values </td><td class="attribute">any measurement phrase, e.g. <span class="mentioned">25 letters</span>, <span class="mentioned">2 × 3
+inches</span>.</td></tr><tr><td colspan="2"><div class="pre"><span id="index.xml-egXML-id347268"><!--anchor--></span><span class="element">&lt;<span class="elementname">gap</span> <span class="attribute">extent</span>="<span class="attributevalue">5 words</span>"/&gt;</span><br/><span class="element">&lt;<span class="elementname">height</span> <span class="attribute">extent</span>="<span class="attributevalue">2 ft 8 in</span>"/&gt;</span></div></td></tr></table></td>
+              </tr>
+              <tr>
+                <td class="odd_label">atLeast</td>
+                <td class="odd_value">gives a minimum  estimated value for the  measurement.<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:double | xsd:decimal</code></td></tr></table></td>
+              </tr>
+              <tr>
+                <td class="odd_label">atMost</td>
+                <td class="odd_value">gives a maximum  estimated value for the  measurement.<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:double | xsd:decimal</code></td></tr></table></td>
+              </tr>
+              <tr>
+                <td class="odd_label">min</td>
+                <td class="odd_value">where the measurement summarizes more than one
+      observation, supplies the minimum value observed.<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:double | xsd:decimal</code></td></tr></table></td>
+              </tr>
+              <tr>
+                <td class="odd_label">max</td>
+                <td class="odd_value">where the measurement summarizes more than one
+      observation, supplies the maximum value observed.<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:double | xsd:decimal</code></td></tr></table></td>
+              </tr>
+              <tr>
+                <td class="odd_label">precision</td>
+                <td class="odd_value">characterizes the precision of the values specified by the
+      other attributes.<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+"high" | "medium" | "low" | "unknown"</code></td></tr></table></td>
+              </tr>
+              <tr>
+                <td class="odd_label">scope</td>
+                <td class="odd_value">where the measurement summarizes more than one
+      observation, specifies the applicability of this measurement.<table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:Name</code></td></tr><tr><td class="odd_label">Sample values include:</td><td class="odd_value"><dl class="valList"><dt class="odd_label">all</dt><dd class="odd_value">measurement applies to all instances.</dd><dt class="odd_label">most</dt><dd class="odd_value">measurement applies to most of the instances inspected.</dd><dt class="odd_label">range</dt><dd class="odd_value">measurement applies to only the specified range of instances.</dd></dl></td></tr></table></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="basic"><!--anchor--></span>basic</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">basic</span> </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_element" href="#A">A</a> <a class="link_odd_element" href="#ABBR">ABBR</a> <a class="link_odd_element" href="#ACRONYM">ACRONYM</a> <a class="link_odd_element" href="#ADDRESS">ADDRESS</a> <a class="link_odd_element" href="#BIG">BIG</a> <a class="link_odd_element" href="#BLOCKQUOTE">BLOCKQUOTE</a> <a class="link_odd_element" href="#CITE">CITE</a> <a class="link_odd_element" href="#CODE">CODE</a> <a class="link_odd_element" href="#DD">DD</a> <a class="link_odd_element" href="#DFN">DFN</a> <a class="link_odd_element" href="#DIR">DIR</a> <a class="link_odd_element" href="#DIV">DIV</a> <a class="link_odd_element" href="#DL">DL</a> <a class="link_odd_element" href="#DT">DT</a> <a class="link_odd_element" href="#EM">EM</a> <a class="link_odd_element" href="#H1">H1</a> <a class="link_odd_element" href="#H2">H2</a> <a class="link_odd_element" href="#H3">H3</a> <a class="link_odd_element" href="#KBD">KBD</a> <a class="link_odd_element" href="#LI">LI</a> <a class="link_odd_element" href="#OL">OL</a> <a class="link_odd_element" href="#P">P</a> <a class="link_odd_element" href="#PRE">PRE</a> <a class="link_odd_element" href="#SAMP">SAMP</a> <a class="link_odd_element" href="#SMALL">SMALL</a> <a class="link_odd_element" href="#SPAN">SPAN</a> <a class="link_odd_element" href="#STRONG">STRONG</a> <a class="link_odd_element" href="#UL">UL</a> <a class="link_odd_element" href="#VAR">VAR</a> <a class="link_odd_element" href="#XML">XML</a></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>) <a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>) </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="compact"><!--anchor--></span>compact</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">compact</span> </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_element" href="#DL">DL</a> <a class="link_odd_element" href="#OL">OL</a> <a class="link_odd_element" href="#UL">UL</a></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2">
+            <table class="attList">
+              <tr>
+                <td class="odd_label">compact</td>
+                <td class="odd_value">
+                  <table class="attDef">
+                    <tr>
+                      <td class="odd_label">Status </td>
+                      <td class="odd_value">Optional</td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Datatype </td>
+                      <td class="odd_value">
+                        <code class="eg">
+xsd:Name</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Values are:</td>
+                      <td class="odd_value">
+                        <dl class="valList">
+                          <dt class="odd_label">compact</dt>
+                          <dd class="odd_value"/>
+                        </dl>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="i18n"><!--anchor--></span>i18n</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">i18n</span> All non-empty elements have these attributes</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Members</span>
+          </td>
+          <td class="wovenodd-col2">
+            <span class="showmembers1"> <a class="link_odd_class" href="#basic">basic</a><span class="showmembers2"> [ <a class="link_odd_element" href="#A">A</a> <a class="link_odd_element" href="#ABBR">ABBR</a> <a class="link_odd_element" href="#ACRONYM">ACRONYM</a> <a class="link_odd_element" href="#ADDRESS">ADDRESS</a> <a class="link_odd_element" href="#BIG">BIG</a> <a class="link_odd_element" href="#BLOCKQUOTE">BLOCKQUOTE</a> <a class="link_odd_element" href="#CITE">CITE</a> <a class="link_odd_element" href="#CODE">CODE</a> <a class="link_odd_element" href="#DD">DD</a> <a class="link_odd_element" href="#DFN">DFN</a> <a class="link_odd_element" href="#DIR">DIR</a> <a class="link_odd_element" href="#DIV">DIV</a> <a class="link_odd_element" href="#DL">DL</a> <a class="link_odd_element" href="#DT">DT</a> <a class="link_odd_element" href="#EM">EM</a> <a class="link_odd_element" href="#H1">H1</a> <a class="link_odd_element" href="#H2">H2</a> <a class="link_odd_element" href="#H3">H3</a> <a class="link_odd_element" href="#KBD">KBD</a> <a class="link_odd_element" href="#LI">LI</a> <a class="link_odd_element" href="#OL">OL</a> <a class="link_odd_element" href="#P">P</a> <a class="link_odd_element" href="#PRE">PRE</a> <a class="link_odd_element" href="#SAMP">SAMP</a> <a class="link_odd_element" href="#SMALL">SMALL</a> <a class="link_odd_element" href="#SPAN">SPAN</a> <a class="link_odd_element" href="#STRONG">STRONG</a> <a class="link_odd_element" href="#UL">UL</a> <a class="link_odd_element" href="#VAR">VAR</a> <a class="link_odd_element" href="#XML">XML</a>] </span> <a class="link_odd_element" href="#HEAD">HEAD</a> <a class="link_odd_element" href="#HTML">HTML</a> <a class="link_odd_element" href="#STYLE">STYLE</a> <a class="link_odd_element" href="#TITLE">TITLE</a></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2">
+            <table class="attList">
+              <tr>
+                <td class="odd_label">lang</td>
+                <td class="odd_value">
+                  <table class="attDef">
+                    <tr>
+                      <td class="odd_label">Status </td>
+                      <td class="odd_value">Optional</td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Datatype </td>
+                      <td class="odd_value">
+                        <code class="eg">
+xsd:language</code>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td class="odd_label">dir</td>
+                <td class="odd_value">
+                  <table class="attDef">
+                    <tr>
+                      <td class="odd_label">Status </td>
+                      <td class="odd_value">Optional</td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Datatype </td>
+                      <td class="odd_value">
+                        <code class="eg">
+xsd:Name</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="odd_label">Values are:</td>
+                      <td class="odd_value">
+                        <dl class="valList">
+                          <dt class="odd_label">ltr</dt>
+                          <dd class="odd_value">
+                            <span class="defaultVal"> [Default]</span>
+                          </dd>
+                          <dt class="odd_label">rtl</dt>
+                          <dd class="odd_value"/>
+                        </dl>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <h2>Schema ibtwsh: Macros</h2>
+    <div>
+      <h3 class="oddSpec"><span id="horiz.model"><!--anchor--></span>horiz.model</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2"><span class="label">horiz.model</span> </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+horiz.model = ( <a class="link_odd" href="#horiz">horiz</a> | text )*</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="macro.anyXML"><!--anchor--></span>macro.anyXML</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2"><span class="label">macro.anyXML</span> defines a content model within which any XML elements are
+	  permitted</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">tei</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#XML">XML</a>  <a class="link_odd_macro" href="#macro.anyXML">macro.anyXML</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+macro.anyXML = element * { ( attribute * { text } | text | <a class="link_odd" href="#macro.anyXML">macro.anyXML</a> )* }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <h2>Schema ibtwsh: Elements</h2>
+    <div>
+      <h3 class="oddSpec"><span id="A"><!--anchor--></span>&lt;A&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;A&gt; </span> (Hypertext anchors) CONSTRAINT: A elements are not allowed inside other A elements, a fact that this
+	  schema does not express.</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) <table class="attList"><tr><td class="odd_label">href</td><td class="odd_value"><table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:anyURI</code></td></tr></table></td></tr><tr><td class="odd_label">name</td><td class="odd_value"><table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:ID</code></td></tr></table></td></tr><tr><td class="odd_label">rel</td><td class="odd_value"><table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"> 1–15 occurrences of  <code class="eg">
+xsd:Name</code>separated by whitespace</td></tr><tr><td class="odd_label">Legal values are:</td><td class="odd_value"><dl class="valList"><dt class="odd_label">Alternate</dt><dd class="odd_value">Designates substitute versions for the document in which the link occurs.
+		  When used together with the lang attribute, it implies a translated version of
+		  the document. When used together with the media attribute, it implies a version
+		  designed for a different medium (or media).</dd><dt class="odd_label">Stylesheet</dt><dd class="odd_value">Refers to an external style sheet. See the section on external style sheets
+		  for details. This is used together with the link type "Alternate" for
+		  user-selectable alternate style sheets.</dd><dt class="odd_label">Start</dt><dd class="odd_value">Refers to the first document in a collection of documents. This link type
+		  tells search engines which document is considered by the author to be the
+		  starting point of the collection.</dd><dt class="odd_label">Next</dt><dd class="odd_value">Refers to the next document in a linear sequence of documents. User agents
+		  may choose to preload the "next" document, to reduce the perceived load
+		  time.</dd><dt class="odd_label">Prev</dt><dd class="odd_value">Refers to the previous document in an ordered series of documents. Some user
+		  agents also support the synonym "Previous".</dd><dt class="odd_label">Contents</dt><dd class="odd_value">Refers to a document serving as a table of contents. Some user agents also
+		  support the synonym ToC (from "Table of Contents").</dd><dt class="odd_label">Index</dt><dd class="odd_value">Refers to a document providing an index for the current document.</dd><dt class="odd_label">Glossary</dt><dd class="odd_value">Refers to a document providing a glossary of terms that pertain to the
+		  current document.</dd><dt class="odd_label">Copyright</dt><dd class="odd_value">Refers to a copyright statement for the current document.</dd><dt class="odd_label">Chapter</dt><dd class="odd_value">Refers to a document serving as a chapter in a collection of
+		  documents.</dd><dt class="odd_label">Section</dt><dd class="odd_value">Refers to a document serving as a section in a collection of
+		  documents.</dd><dt class="odd_label">Subsection</dt><dd class="odd_value">Refers to a document serving as a subsection in a collection of
+		  documents.</dd><dt class="odd_label">Appendix</dt><dd class="odd_value">Refers to a document serving as an appendix in a collection of
+		  documents.</dd><dt class="odd_label">Help</dt><dd class="odd_value">Refers to a document offering help (more information, links to other sources
+		  information, etc.)</dd><dt class="odd_label">Bookmark</dt><dd class="odd_value">Refers to a bookmark. A bookmark is a link to a key entry point within an
+		  extended document. The title attribute may be used, for example, to label the
+		  bookmark. Note that several bookmarks may be defined in each document.</dd></dl></td></tr></table></td></tr><tr><td class="odd_label">title</td><td class="odd_value"><table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+text</code></td></tr></table></td></tr></table></td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#horiz">horiz</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+<span class="rnc_keyword">element</span> <span class="rnc_nc">A</span>
+{
+   <a class="link_odd" href="#basic">basic.attributes</a>,
+   attribute href { xsd:anyURI }?,
+   attribute name { xsd:ID }?,
+   <span class="rnc_keyword">attribute</span> <span class="rnc_nc">rel</span>
+   {
+      <span class="rnc_keyword">list</span>
+      {
+         (
+            "Alternate"
+          | "Stylesheet"
+          | "Start"
+          | "Next"
+          | "Prev"
+          | "Contents"
+          | "Index"
+          | "Glossary"
+          | "Copyright"
+          | "Chapter"
+          | "Section"
+          | "Subsection"
+          | "Appendix"
+          | "Help"
+          | "Bookmark"
+         ),
+         (
+            "Alternate"
+          | "Stylesheet"
+          | "Start"
+          | "Next"
+          | "Prev"
+          | "Contents"
+          | "Index"
+          | "Glossary"
+          | "Copyright"
+          | "Chapter"
+          | "Section"
+          | "Subsection"
+          | "Appendix"
+          | "Help"
+          | "Bookmark"
+         )*
+      }
+   }?,
+   attribute title { text }?,
+   <a class="link_odd" href="#horiz.model">horiz.model</a>
+}</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="ABBR"><!--anchor--></span>&lt;ABBR&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;ABBR&gt; </span>Abbreviations (normal)</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element ABBR { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="ACRONYM"><!--anchor--></span>&lt;ACRONYM&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;ACRONYM&gt; </span>Acronyms (normal)</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element ACRONYM { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="ADDRESS"><!--anchor--></span>&lt;ADDRESS&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;ADDRESS&gt; </span>Address block </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#struct">struct</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#P">P</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element ADDRESS { <a class="link_odd" href="#basic">basic.attributes</a>, ( <a class="link_odd" href="#horiz">horiz</a> | <a class="link_odd" href="#P">P</a> )* }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="BIG"><!--anchor--></span>&lt;BIG&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;BIG&gt; </span>Text importance (change of size)</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element BIG { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="BLOCKQUOTE"><!--anchor--></span>&lt;BLOCKQUOTE&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;BLOCKQUOTE&gt; </span> (Block quotation ) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#ADDRESS">ADDRESS</a> <a class="link_odd" href="#H1">H1</a> <a class="link_odd" href="#H2">H2</a> <a class="link_odd" href="#H3">H3</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element BLOCKQUOTE { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#struct">struct</a>* }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="BODY"><!--anchor--></span>&lt;BODY&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2">
+            <span class="label">&lt;BODY&gt; </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#HTML">HTML</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#ADDRESS">ADDRESS</a> <a class="link_odd" href="#H1">H1</a> <a class="link_odd" href="#H2">H2</a> <a class="link_odd" href="#H3">H3</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element BODY { <a class="link_odd" href="#all">all.attributes</a>, <a class="link_odd" href="#struct">struct</a>* }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="BR"><!--anchor--></span>&lt;BR&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;<span class="emptySlash">BR</span>&gt; </span>Mandatory line breaks </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#horiz">horiz</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">Empty element</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element BR { <a class="link_odd" href="#all">all.attributes</a>, empty }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="CITE"><!--anchor--></span>&lt;CITE&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;CITE&gt; </span>Citation (italics)</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element CITE { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="CODE"><!--anchor--></span>&lt;CODE&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;CODE&gt; </span>Source code (monowidth)</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element CODE { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="DD"><!--anchor--></span>&lt;DD&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;DD&gt; </span> (Definition ) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#DL">DL</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element DD { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#vert">vert</a>* }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="DFN"><!--anchor--></span>&lt;DFN&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;DFN&gt; </span>Terms being defined (normal) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element DFN { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="DIR"><!--anchor--></span>&lt;DIR&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;DIR&gt; </span>Directory (minimal) list </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#LI">LI</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element DIR { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#LI">LI</a>+ }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="DIV"><!--anchor--></span>&lt;DIV&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;DIV&gt; </span>General text division </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#align">align</a> (<span class="attribute">@align</span>) <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#ADDRESS">ADDRESS</a> <a class="link_odd" href="#H1">H1</a> <a class="link_odd" href="#H2">H2</a> <a class="link_odd" href="#H3">H3</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element DIV { <a class="link_odd" href="#align">align.attributes</a>, <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#struct">struct</a>* }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="DL"><!--anchor--></span>&lt;DL&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;DL&gt; </span> (Definition list ) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#compact">compact</a> (<span class="attribute">@compact</span>) <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#DD">DD</a> <a class="link_odd" href="#DT">DT</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element DL { <a class="link_odd" href="#compact">compact.attributes</a>, <a class="link_odd" href="#basic">basic.attributes</a>, ( <a class="link_odd" href="#DT">DT</a> | <a class="link_odd" href="#DD">DD</a> )+ }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="DT"><!--anchor--></span>&lt;DT&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;DT&gt; </span> (Defined term ) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#DL">DL</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element DT { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="EM"><!--anchor--></span>&lt;EM&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;EM&gt; </span>Emphasis (italics) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element EM { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="H1"><!--anchor--></span>&lt;H1&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2">
+            <span class="label">&lt;H1&gt; </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#align">align</a> (<span class="attribute">@align</span>) <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#headers">headers</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element H1 { <a class="link_odd" href="#align">align.attributes</a>, <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="H2"><!--anchor--></span>&lt;H2&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2">
+            <span class="label">&lt;H2&gt; </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#align">align</a> (<span class="attribute">@align</span>) <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#headers">headers</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element H2 { <a class="link_odd" href="#align">align.attributes</a>, <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="H3"><!--anchor--></span>&lt;H3&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2">
+            <span class="label">&lt;H3&gt; </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#align">align</a> (<span class="attribute">@align</span>) <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#headers">headers</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element H3 { <a class="link_odd" href="#align">align.attributes</a>, <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="HEAD"><!--anchor--></span>&lt;HEAD&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2">
+            <span class="label">&lt;HEAD&gt; </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#HTML">HTML</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#STYLE">STYLE</a> <a class="link_odd" href="#TITLE">TITLE</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element HEAD { <a class="link_odd" href="#i18n">i18n.attributes</a>, ( ( <a class="link_odd" href="#TITLE">TITLE</a>, <a class="link_odd" href="#STYLE">STYLE</a>? ) | ( <a class="link_odd" href="#STYLE">STYLE</a>, <a class="link_odd" href="#TITLE">TITLE</a> ) ) }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="HR"><!--anchor--></span>&lt;HR&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;<span class="emptySlash">HR</span>&gt; </span> (Horizontal rule ) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">Empty element</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element HR { <a class="link_odd" href="#all">all.attributes</a>, empty }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="HTML"><!--anchor--></span>&lt;HTML&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2">
+            <span class="label">&lt;HTML&gt; </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#BODY">BODY</a> <a class="link_odd" href="#HEAD">HEAD</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element HTML { <a class="link_odd" href="#i18n">i18n.attributes</a>, <a class="link_odd" href="#HEAD">HEAD</a>?, <a class="link_odd" href="#BODY">BODY</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="KBD"><!--anchor--></span>&lt;KBD&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;KBD&gt; </span>Keyboard input </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element KBD { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="LI"><!--anchor--></span>&lt;LI&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;LI&gt; </span>List element </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#DIR">DIR</a> <a class="link_odd_element" href="#OL">OL</a> <a class="link_odd_element" href="#UL">UL</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element LI { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#vert">vert</a>* }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="OL"><!--anchor--></span>&lt;OL&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;OL&gt; </span> (Ordered list ) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#compact">compact</a> (<span class="attribute">@compact</span>) <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) <table class="attList"><tr><td class="odd_label">start</td><td class="odd_value"><table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:NMTOKEN</code></td></tr></table></td></tr><tr><td class="odd_label">type</td><td class="odd_value"><table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+token { pattern = "1|a|A|i|I" }</code></td></tr></table></td></tr></table></td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#LI">LI</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+<span class="rnc_keyword">element</span> <span class="rnc_nc">OL</span>
+{
+   <a class="link_odd" href="#compact">compact.attributes</a>,
+   <a class="link_odd" href="#basic">basic.attributes</a>,
+   attribute start { xsd:NMTOKEN }?,
+   attribute type { token { pattern = "1|a|A|i|I" } }?,
+   <a class="link_odd" href="#LI">LI</a>+
+}</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="P"><!--anchor--></span>&lt;P&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;P&gt; </span> (Paragraph ) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#ADDRESS">ADDRESS</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element P { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="PRE"><!--anchor--></span>&lt;PRE&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;PRE&gt; </span> (Preformatted text ) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) <table class="attList"><tr><td class="odd_label">width</td><td class="odd_value"><table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value">Optional</td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+xsd:NMTOKEN</code></td></tr></table></td></tr></table></td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element PRE { <a class="link_odd" href="#basic">basic.attributes</a>, attribute width { xsd:NMTOKEN }?, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="SAMP"><!--anchor--></span>&lt;SAMP&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;SAMP&gt; </span>Sample output text (monowidth)</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element SAMP { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="SMALL"><!--anchor--></span>&lt;SMALL&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2">
+            <span class="label">&lt;SMALL&gt; </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element SMALL { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="SPAN"><!--anchor--></span>&lt;SPAN&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;SPAN&gt; </span>Spans of text with changes in basic attributes </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#horiz">horiz</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element SPAN { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="STRONG"><!--anchor--></span>&lt;STRONG&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;STRONG&gt; </span>Strong emphasis (boldface)</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element STRONG { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="STYLE"><!--anchor--></span>&lt;STYLE&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2">
+            <span class="label">&lt;STYLE&gt; </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>) <table class="attList"><tr><td class="odd_label">type</td><td class="odd_value"><table class="attDef"><tr><td class="odd_label">Status </td><td class="odd_value"><span class="required">Required</span></td></tr><tr><td class="odd_label">Datatype </td><td class="odd_value"><code class="eg">
+text</code></td></tr></table></td></tr></table></td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#HEAD">HEAD</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">Character data only</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element STYLE { <a class="link_odd" href="#i18n">i18n.attributes</a>, attribute type { text }, text }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="TITLE"><!--anchor--></span>&lt;TITLE&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2">
+            <span class="label">&lt;TITLE&gt; </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"><a class="link_odd_element" href="#HEAD">HEAD</a> </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">Character data only</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element TITLE { <a class="link_odd" href="#i18n">i18n.attributes</a>, text }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="UL"><!--anchor--></span>&lt;UL&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;UL&gt; </span> (Unordered list ) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#compact">compact</a> (<span class="attribute">@compact</span>) <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#LI">LI</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element UL { <a class="link_odd" href="#compact">compact.attributes</a>, <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#LI">LI</a>+ }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="VAR"><!--anchor--></span>&lt;VAR&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;VAR&gt; </span>Variable names (italics)</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#local">local</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="specChildren">
+              <div class="specChild">
+                <span class="specChildModule">derived-module-ibtwsh: </span>
+                <span class="specChildElements"><a class="link_odd" href="#A">A</a> <a class="link_odd" href="#ABBR">ABBR</a> <a class="link_odd" href="#ACRONYM">ACRONYM</a> <a class="link_odd" href="#BIG">BIG</a> <a class="link_odd" href="#BR">BR</a> <a class="link_odd" href="#CITE">CITE</a> <a class="link_odd" href="#CODE">CODE</a> <a class="link_odd" href="#DFN">DFN</a> <a class="link_odd" href="#EM">EM</a> <a class="link_odd" href="#KBD">KBD</a> <a class="link_odd" href="#SAMP">SAMP</a> <a class="link_odd" href="#SMALL">SMALL</a> <a class="link_odd" href="#SPAN">SPAN</a> <a class="link_odd" href="#STRONG">STRONG</a> <a class="link_odd" href="#VAR">VAR</a> <a class="link_odd" href="#XML">XML</a> </span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element VAR { <a class="link_odd" href="#basic">basic.attributes</a>, <a class="link_odd" href="#horiz.model">horiz.model</a> }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h3 class="oddSpec"><span id="XML"><!--anchor--></span>&lt;XML&gt;</h3>
+      <table class="wovenodd">
+        <tr>
+          <td colspan="2" class="wovenodd-col2"><span class="label">&lt;XML&gt; </span>Arbitrary embedded XML (not HTML-compatible yet) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Module</span>
+          </td>
+          <td class="wovenodd-col2">derived-module-ibtwsh</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Attributes</span>
+          </td>
+          <td class="wovenodd-col2"> <a class="classlink" href="#basic">basic</a> (<a class="classlink" href="#i18n">i18n</a> (<span class="attribute">@lang</span>, <span class="attribute">@dir</span>))  (<a class="classlink" href="#all">all</a> (<span class="attribute">@id</span>, <span class="attribute">@class</span>, <span class="attribute">@style</span>)) </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Used by</span>
+          </td>
+          <td class="wovenodd-col2">
+            <div class="parent"> <a class="link_odd_class" href="#horiz">horiz</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">May contain</span>
+          </td>
+          <td class="wovenodd-col2">Empty element</td>
+        </tr>
+        <tr>
+          <td class="wovenodd-col1">
+            <span class="label">Declaration</span>
+          </td>
+          <td class="wovenodd-col2">
+            <pre class="eg">
+element XML { <a class="link_odd" href="#basic">basic.attributes</a>, element * { <a class="link_odd" href="#macro.anyXML">macro.anyXML</a>* }* }</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="stdfooter">
+      <hr/>
+      <div class="footer"><a class="plain" href="http://www.example.com/"/> | <a class="plain" href="index.html">Home</a> | <a class="plain" href="#">Feedback</a></div>
+      <hr/>
+      <address> John Cowan.
+      Date: <br/><!--
+	  Generated from index.xml using an XSLT version 1.0 stylesheet
+	  based on http://www.tei-c.org/Stylesheets/teic/tei.xsl
+	  processed using libxslt
+	  on 2009-03-01T06:40:52-05:00--></address>
+    </div>
+  </body>
+</html>
