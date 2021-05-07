@@ -1,0 +1,10 @@
+<meta xmlns="http://exist-db.org/xquery/repo">
+  <description>A library of functions for producing “counting robot” reports and 
+    manipulating them with naive set theory.</description>
+  <author>Ashley M. Clark, Northeastern University Women Writers Project</author>
+  <website>https://github.com/NEU-DSG/wwp-public-code-share/tree/master/counting_robot</website>
+  <status>stable</status>
+  <license>MIT</license>
+  <copyright>true</copyright>
+  <type>library</type>
+</meta>
