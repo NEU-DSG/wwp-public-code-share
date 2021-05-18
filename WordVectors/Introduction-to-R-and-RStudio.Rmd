@@ -63,7 +63,8 @@ To confirm that you have the correct project open, check the top-right corner of
 
 ## Working directory and file structure
 
-When you open RStudio to begin a new session, the first thing you should do is check your working directory. A working directory is, essentially, the starting location for the set of files that you are working in. Think of your file structure as a tree where the levels of nested folders are the places where branches split. If you were to climb a tree, your position on a particular branch would be your *current working directory*—that is, your location within the entire directory. The direction of the folder structure, or branch, is the file path.
+When you open RStudio to begin a new session, the first thing you should do is check your working directory. A working directory is, essentially, the starting location for the set of files that you are working in. The locations of those files (and RStudio's knowledge of where to find them) are relative to the working directory. Think of your file structure as a set of directions for getting somewhere, relative to a specific starting point (like "start at the train station, go south two blocks, turn right, third house on the left"). If you started at a train station in a different town, you might follow those directions but end up in the wrong place. So your *current working directory* says "This is our starting point!". The set of directions ("go into the output directory...") is the file path.
+
 
 You should check your working directory because if the working directory is *not* where you are expecting, then not much else in your files will work. Any time you see an error message that says a file does not exist in the current working directory, that's a good sign your working directory isn't where you think it is.
 
@@ -162,7 +163,7 @@ We won't be covering all of these concepts directly, but we're including a full 
 + *Data Frame*: data frames are the R version of tabular data, like CSVs or TSVs, that can contain numerical and textual data, and be created and edited by code.
 + *Environment*: a coding environment is the context in which code is being run or executed, including all of the variables and the working directory for a machine—whether it is local or on a server.
 + *Function*: functions are code that performs a specific task.
-+ *Pipe*: a pipe is a small piece of code `%>%` that allows you to apply the sequence of multiple operations at once.
++ *Pipe*: a pipe is a small piece of code `%>%` that allows you to apply the sequence of multiple operations, in which the output of one operation is then fed into the next operation as its input.
 + *Programming language*: a programming language is a vocabulary and set of grammatical rules used to instruct computers to perform specific tasks.
 + *Project*: a project in R is a file that is associated with a working directory, meaning that it preserves the layout and files within your R environment and can be saved and re-opened in a new session.
 + *R*: is a programming language and environment used for statistical computation, textual analysis, and graphics.
