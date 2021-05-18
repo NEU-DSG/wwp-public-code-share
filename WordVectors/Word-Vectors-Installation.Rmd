@@ -95,6 +95,8 @@ install.packages("tsne")
 
 Now that the packages have been installed, you should load them using the `library()` function. You should only need to install packages once, but you'll have to load them every time you start a new session in RStudio. In general, you'll want to make a habit of checking your working directory and loading your packages at the start of each session.
 
+When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means you loaded the packages properly and you are all set. 
+
 ```{r}
 
 library(tidyverse)
