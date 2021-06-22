@@ -19,11 +19,12 @@ Before running any code, you should do a quick check on your preferences for how
 
 To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-return` or `control-return.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, select the section you want to run and hit `command-return` or `control-return`. In the "console" below, you will see that the code has run, and the results of your code. 
 
-Much of the code you'll need will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console—if you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console. 
+Much of the code you'll need will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console. If you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console. 
 
 If you don't see the stop sign but want to cancel a process, you can also hit `control-C.`
 
-If you are running code in a block line by line, your cursor will automatically move down to the next line, so you can move through the block by repeatedly hitting `command-return` or `control-return`.
+If you are running code in a block line by line, your cursor will automatically go down to the next line after each is run, so you can move through the block by repeatedly hitting `command-return` or `control-return`.
+
 Below is a code block: try running the code below, 
 
 ```{r}
@@ -37,11 +38,11 @@ print("Now run all three lines at once by selecting them and running them togeth
 You can also run code directly in the console by typing or pasting it in and hitting `return`. You will get the same results, but if you want to save code that you have written, it is better to keep it in the R Markdown file, since edits there will be saved. On the other hand, if you prefer to run some code but *not* make changes to your file, you can just run that in the console.  
 
 ## Projects
-Projects are a way to organize your work in RStudio. If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space—and, as long as you have this project open, your files should be where you expect them to be. 
+Projects are a way to organize your work in RStudio. If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space—and, as long as you have this project open, your files should be where you expect them to be. It will usually be easiest to start any session by opening the "WordVectors.Rproj" file, at least while you are getting used to working in RStudio.
 
-To confirm that you have the correct project open, check the top-right corner of the RStudio screen. Going forward, when you open RStudio, it may also open this project automatically. If it does not, however, you can open the project by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file in the "Files" window. Always check at the beginning of a session to make sure you have the project open; if you don't, it will likely cause errors.
+To confirm that you have the correct project open, check the top-right corner of the RStudio screen. If the project is not open, you can open it by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file. Always check at the beginning of a session to make sure you have the project open; if you don't, it will likely cause errors. If you do hit an error, one of the first things you should check is whether your project is open.
 
-This introduction provides some basic instructions to get you started, but it is not a substitute for learning the fundamentals of R and RStudio. Fortunately, there are many helpful resources online, including tutorials by the [Programming Historian](https://programminghistorian.org/en/lessons/) and Lincoln Mullen's [Digital History Methods in R](https://lincolnmullen.com/projects/dh-r2/).
+This introduction provides some basic instructions to get you started, but it is not a substitute for learning the fundamentals of R and RStudio. For a very basic intro to some key principles, see the "Introduction to R and RStudio" in the WordVectors folder. For more detailed information, there are many helpful resources online, including tutorials by the [Programming Historian](https://programminghistorian.org/en/lessons/) and Lincoln Mullen's [Digital History Methods in R](https://lincolnmullen.com/projects/dh-r2/).
 
 ## Downloading and installing R and RStudio
 
@@ -64,6 +65,7 @@ Navigating file paths can be a bit confusing, but, fortunately there is a trick 
 
 # How to check your working directory (this is also an example of how you add a comment to your code—by typing "#")
 getwd()
+
 # How to set your working directory; don't run this unless you need to change your working directory
 setwd("Path/To/Your/Directory")
 
@@ -74,7 +76,7 @@ setwd("Path/To/Your/Directory")
 
 *R Packages* are collections of functions, variables, data, and documentation that you can use to get options that go beyond what's available with the base R code. Like extensions for Google Chrome or Plugins on WordPress, these are additions that you can install directly from the internet through R's repository. Packages make it possible to do a wider range of tasks in R and are essential for working with word vectors. 
 
-To install an R package, you can navigate through the Tool menu (Tools --> Install Packages) or install packages directly by running code with the `install()` function, as below. Whenever you are installing packages, make sure that you have an internet connection because the code pulls directly from online repositories.
+To install an R package, you can navigate through the Tools menu (Tools --> Install Packages) or install packages directly by running code with the `install()` function, as below. Whenever you are installing packages, make sure that you have an internet connection because the code pulls directly from online repositories.
 
 Once you have installed a package on your computer you do not need to do so again.
 
@@ -87,13 +89,15 @@ install.packages("tidytext")
 install.packages("magrittr")
 install.packages("devtools")
 install.packages("tsne")
+install.packages("lsa")
+
 
 ```
 
 
 ## Loading packages
 
-Now that the packages have been installed, you should load them using the `library()` function. You should only need to install packages once, but you'll have to load them every time you start a new session in RStudio. In general, you'll want to make a habit of checking your working directory and loading your packages at the start of each session.
+Once the packages have been installed, you should load them using the `library()` function. You only need to install packages once, but you'll have to load them every time you start a new session in RStudio. You'll want to make a habit of checking your working directory and loading your packages at the start of each session.
 
 When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means you loaded the packages properly and you are all set. 
 
@@ -104,6 +108,8 @@ library(tidytext)
 library(magrittr)
 library(devtools)
 library(tsne)
+library(lsa)
+
 # Hold off on running the line below until after you get to the next section 
 library(wordVectors)
 
@@ -118,6 +124,7 @@ Make sure to load `wordVectors` after you install it; you can either scroll up a
 
 ```{r}
 
+#This is the code to install the `WordVectors` package from GitHub
 devtools::install_github('bmschmidt/wordVectors', force=TRUE)
 
 ```
@@ -193,16 +200,16 @@ The `window` parameter allows you to control the number of words on either side 
 
 The `iter` parameter allows you to control how many times your corpus is read through during model training. If your corpus is on the smaller side, then increasing the number of iterations can improve the reliability of your results.
 
-The `negative_samples` parameter allows you to control the number of negative samples used in training; the model will take less time to train if you use this parameter to modify only a percentage of the weights for the non-context terms in your corpus over each iteration. For smaller datasets, a value between 5 and 20 is recommended; for larger ones, you can use smaller values, between 2 and 5.
+The `negative_samples` parameter allows you to control the number of negative samples used in training. The model will take less time to train if you use this parameter to modify only a limited number of the weights for each word's non-context terms in each pass through the corpus. For smaller datasets, a value between 5 and 20 is recommended; for larger ones, you can use smaller values, between 2 and 5.
 
 For more on these parameters, and other options that you have in training a model, see the [code documentation](https://rdrr.io/github/bmschmidt/wordVectors/man/train_word2vec.html). 
 
-This code will check if there is already a .bin file with the same name in the current directory—if there isn't, it will train a new model. If there is, it will read in the existing one. If you ever want to overwrite a model you've already trained, make sure to delete that model's .bin file first. 
+This code will check if there is already a .bin file with the same name in the current directory—if there isn't, it will train a new model. If there is, it will read in the existing one. If you ever want to overwrite a model you've already trained, make sure to delete or rename that model's .bin file first. 
 
 
 ```{r}
 
-#This controls how much of your computer's processing power the code is allowed to use. 
+# This controls how much of your computer's processing power the code is allowed to use. 
 THREADS <- 3
 
 # prep_word2vec will prepare your corpus by creating a single text file and cleaning and lowercasing your text with the `tokenizers` package. If you set the value of `bundle_ngrams` to be greater than 1, it will automatically join common bigrams into a single word. 
@@ -264,18 +271,22 @@ w2vModel %>% closest_to("girl", 30)
 ```
 
 
-## Closest to two things
+## Closest to two terms
 
-You might also want to see the words closest to a combination of two (or more) words. Notice that this will open a new window with the results because of the `view()` function. If you prefer to see your results in this format, you can paste "%>% view()" at the end of the code above; or, if you prefer to see your results in the console, you can delete "%>% View()" from the code below. Note that the code below also shows just 20 results, instead of 30. If you want to continue adding terms, just follow the format as in the example by putting a `+` between each pair and putting each word in quotation marks.
+You might also want to see the words closest to a combination of two (or more) words. Notice that this will open a new window with the results because of the `view()` function. If you prefer to see your results in this format, you can paste "%>% view()" at the end of the code above; or, if you prefer to see your results in the console, you can delete "%>% View()" from the code below. Note that the code below also shows 20 results, instead of 30. If you want to continue adding terms, just follow the format as in the example by putting a `+` between each pair and putting each word in quotation marks.
 
 ```{r}
 
+# Closest to two terms
 w2vModel %>% closest_to(~"girl"+"woman", 20) %>% view()
+
+# Closest to more than two terms
+w2vModel %>% closest_to(~"girl"+"woman"+"daughter"+"aunt"+"sister"+"lady", 20) %>% view()
 
 ```
 
 
-## Closest to the difference between two things
+## Closest to the difference between two terms
 Or, you might want to look at the difference between two terms, to see which words are similar to one term but not another: 
 
 ```{r}
@@ -293,17 +304,27 @@ In the classic example, you might start with the vector for "woman" and subtract
 
 Or, to frame this as an analogy: this lets you ask questions like "man" is to "king" as "woman" is to *what*? 
 
+
 ```{r}
 
 w2vModel %>% closest_to(~"woman"-"man"+"king", 20)
 
 ```
 
+It is not always helpful to think strictly within the analogy framework; in many cases, it can be more productive to think about constructing a vector that represents the difference between two terms, and then adding the contexts of a third term. In the line of code below, for instance, we are constructing a vector that might be described as a "wealth" vector (by looking at the contexts for "rich" as distinct from "poor") and adding to that vector the semantic space of clothing (by adding the contexts for "dress"). We might expect to get results associated with expensive clothing or the dress habits of the wealthy. 
+
+To experiment with this, try adding different third terms (perhaps "food" or "house") or reverse the first two terms, to look at the contexts for poverty instead of wealth.
+
+```{r}
+
+w2vModel %>% closest_to(~"rich"-"poor"+"dress", 20)
+
+```
 
 # Working with other models and exporting results
 ## Reading in existing model files
 
-If you want to read in an existing model, you can do so with the code below (just replace "name_of_your_file" with the name of your file, and make sure you don't delete the .bin extension or the quotation marks). As long as you follow all of the instructions above about training your models and setting up the folders for your work in RStudio, all of your trained models will be saved as binary files (with a .bin extension) in your `data` folder. You only need to train each model once, and then you can use this code to read it in at the start of each new session.
+If you want to read in an existing model, you can do so with the code below (just replace "name_of_your_file" with the name of your file, and make sure you don't delete the .bin extension or the quotation marks). If you follow the instructions above, all of your trained models will be saved as binary files (with a .bin extension) in your `data` folder. You only need to train each model once, and then you can use this code to read it in at the start of each new session.
 
 You can also read in models trained by others if you save them to your `data` folder and then read them in with the code below. 
 
@@ -317,22 +338,22 @@ w2vModel <- read.vectors("data/name_of_your_file.bin")
 ```
 
 ## Exporting queries
-The code below will enable you to export the results from a particular query. To export query results, all you need to do is change the part after "w2vModel %>%" to match the query that you want to export. An example is filled in so that you can see what this looks like; to export the terms closest to a particular query term, change the text inside of the quotation marks. You can also adjust the number of words in the results set, if you want to see more or fewer. If you'd like to export results from a different query, such as addition or subtraction, just paste over the example query with the one that you want to export. 
+The code below will enable you to export the results from a particular query. To export query results, change the part after "w2vModel %>%" to match the query that you want to export. An example is filled in so that you can see what this looks like. You can also adjust the number of words in the results set, if you want to see more or fewer. If you'd like to export results from a different query, such as addition or subtraction, paste over the example query with the one that you want to export. 
 
-The first line of code defines the variable "w2vExport" as whatever query you set. The second line exports a csv file (which you can open in any program on your computer that works with tabular data, including Excel and Numbers). You can call the file whatever you like by replacing the template text inside of the quotation marks. The csv file will be exported to the "output" folder in your current working directory, and it will overwrite existing files with the same name, so make sure to rename the export file if you want to keep earlier versions.
+The first line of code defines the variable "w2vExport" as whatever query you set. The second line exports a csv file (which you can open in any program on your computer that works with tabular data, including Excel and Numbers). You can call the file whatever you like by replacing the template text inside of the quotation marks. The csv file will be exported to the "output" folder in your current working directory, and it will overwrite existing files with the same name, so make sure to rename the export file if you want to keep earlier versions. Make sure not to use any spaces in the file names you choose. 
 
 ```{r}
 
 w2vExport <- w2vModel %>% closest_to("girl", 30) 
 
-#Change "name_of_your_query" to a descriptive name that you want to give to your export file.
+#Change "name_of_your_query" to a descriptive name that you want to give to your export file. Don't put any spaces in the file name.
 write.csv(file="output/name_of_your_query.csv", x=w2vExport)
 
 
 ```
 
 ## Exporting clusters
-You can use a similar method to export your clusters; the code below will first generate a set of clusters and then export a specified (by you) number of terms from those clusters. As above, you can change the number of centers and iterations when you are generating the clusters; you can also change how many sets of clusters and words from each cluster to export. The exporting mechanism is the same as with exporting queries above; you just change the language in the quotation marks to match the name that you want to give your file. The export file can be fairly large, so this code might take a bit of time to run.
+You can use a similar method to export your clusters; the code below will first generate a set of clusters and then export a specified (by you) number of terms from those clusters. As above, you can change the number of centers and iterations when you are generating the clusters; you can also change how many sets of clusters and words from each cluster to export. The exporting mechanism is the same as with exporting queries above; you change the language in the quotation marks to match the name that you want to give your file. The export file can be fairly large, so this code might take a bit of time to run.
 
 ```{r}
 #Change "name_of_your_cluster" to a descriptive name that you want to give to your export file.
@@ -350,23 +371,12 @@ write.csv(file="output/name_of_your_cluster.csv", x=w2vExport)
 
 ## Evaluate the Model
 
-Below is a very simple test that will calculate the cosine similarities for a small set of word pairs that are likely to be related in many models. You can customize this list for your own corpus by editing the pairs below, or adding new ones (add as many as you like, but just make sure to follow the same format as in the examples below). This code will produce a "model-test-results.csv" file with cosine similarity scores on these word pairs for every model in your folder. The results file will be in the "output" folder of your current working directory. This is meant to be an example of the kinds of testing that are used in model evaluation, and is not a substitute for more rigorous testing processes. 
+Below is a very simple test that will calculate the cosine similarities for a small set of word pairs that are likely to be related in many models. You can customize this list for your own corpus by editing the pairs below, or adding new ones (add as many as you like, but make sure to follow the same format as in the examples below). This code will produce a "model-test-results.csv" file with cosine similarity scores on these word pairs for every model in your folder. The results file will be in the "output" folder of your current working directory. This is meant to be an example of the kinds of testing that are used in model evaluation, and is not a substitute for more rigorous testing processes. 
 
-There's one additional package you'll need for this test; the line of code below installs it. You don't need to run this code again, after you've installed the package.
-
-```{r}
-
-install.packages("lsa")
-
-```
-
-Now, you can run this test by hitting `command-return` or `control-return` to run one line a time, or just hit the green button in the top right of the code block below. 
 
 ```{r}
-# This first line just loads that additional package; if you've already loaded it in a particular session, there's no need to run it again.
-library(lsa)
 
-files_list  = list.files(pattern = "*.bin$", recursive = TRUE)
+files_list = list.files(pattern = "*.bin$", recursive = TRUE)
 
 rownames <- c()
 

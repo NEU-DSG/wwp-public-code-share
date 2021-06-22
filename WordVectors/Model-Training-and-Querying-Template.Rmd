@@ -44,9 +44,11 @@ library(lsa)
 
 # Change "name_of_your_folder" to match the name of the folder with your corpus
 path2file <- "data/name_of_your_folder"
+
 fileList <- list.files(path2file,full.names = TRUE) 
 
-readTextFiles <- function(file) { # Remember that the code that defines functions must be run by putting your cursor at the beginning or end, or by selecting the whole section of code
+# Remember that the code that defines functions must be run by putting your cursor at the beginning or end, or by selecting the whole section of code
+readTextFiles <- function(file) {
   message(file)
   rawText = paste(scan(file, sep="\n",what="raw",strip.white = TRUE))
   output = tibble(filename=gsub(path2file,"",file),text=rawText) %>% 
@@ -65,8 +67,8 @@ combinedTexts <- tibble(filename=fileList) %>%
 
 ```{r}
 
-# Don't forget to change the text in the first line to whatever you want to call your model file
-baseFile <- "your_file_name"
+# Don't forget to change the template text in the first line to whatever you want to call your model file
+baseFile <- "your_file_namse"
 w2vInput <- paste("data/",baseFile,".txt", sep = "")
 w2vCleaned <- paste("data/",baseFile,"_cleaned.txt", sep="")
 w2vBin <- paste("data/",baseFile,".bin", sep="")
@@ -83,7 +85,7 @@ THREADS <- 3
 
 prep_word2vec(origin=w2vInput,destination=w2vCleaned,lowercase=T,bundle_ngrams=1)
 
-#See the introductory file for a reminder on how you might adjust the parameters below
+#See the "Word Vectors Training, Querying, and Validation" file for a reminder on how you might adjust the parameters below
 if (!file.exists(w2vBin)) {
   w2vModel <- train_word2vec(
     w2vCleaned,
@@ -143,15 +145,17 @@ w2vModel %>% closest_to("girl", 30) %>% View()
 ```
 
 
-## Closest to two things
+## Closest to two or more terms
 
 ```{r}
 
 w2vModel %>% closest_to(~"girl"+"woman", 20)
 
+w2vModel %>% closest_to(~"girl"+"woman"+"daughter"+"aunt"+"sister"+"lady", 20) %>% View()
+
 ```
 
-## Closest to the difference between two things
+## Closest to the difference between two terms
 
 ```{r}
 
@@ -163,7 +167,7 @@ w2vModel %>% closest_to(~"man"-"woman", 20)
 
 ```{r}
 
-w2vModel %>% closest_to(~"woman"-"man"+"king", 20)
+w2vModel %>% closest_to(~"rich"-"poor"+"dress", 20)
 
 ```
 
@@ -203,7 +207,7 @@ You can run this test by hitting `command-return` or `control-return` to run one
 
 ```{r}
 
-files_list  = list.files(pattern = "*.bin$", recursive = TRUE)
+files_list = list.files(pattern = "*.bin$", recursive = TRUE)
 
 rownames <- c()
 
@@ -258,7 +262,7 @@ results <- structure(data_list,
 )
 
 #If you want to give your results document a more specific name; you can edit "model-test-results" below. 
-write.csv(file="output/model-test-results.csv", x=results)
+write.csv(file="output/model-test-refsults.csv", x=results)
 
 ```
 
