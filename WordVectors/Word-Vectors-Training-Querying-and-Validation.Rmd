@@ -35,7 +35,6 @@ getwd()
 
 
 
-
 ## Loading packages
 
 All the packages you will need for this exercise have been installed ahead of time on our RStudio Server instance, but you'll want to load them using the `library()` function if this is a new session. You'll have to load these packages every time you start a new session in RStudio.
@@ -50,6 +49,7 @@ library(magrittr)
 library(devtools)
 library(tsne)
 library(wordVectors)
+library(ggplot2)
 library(lsa)
 
 ```

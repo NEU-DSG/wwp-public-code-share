@@ -90,6 +90,7 @@ install.packages("magrittr")
 install.packages("devtools")
 install.packages("tsne")
 install.packages("lsa")
+install.packages("ggplot2")
 
 
 ```
@@ -109,6 +110,7 @@ library(magrittr)
 library(devtools)
 library(tsne)
 library(lsa)
+library(ggplot2)
 
 # Hold off on running the line below until after you get to the next section 
 library(wordVectors)

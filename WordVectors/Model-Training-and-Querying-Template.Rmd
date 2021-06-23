@@ -33,6 +33,7 @@ library(magrittr)
 library(devtools)
 library(tsne)
 library(wordVectors)
+library(ggplot2)
 library(lsa)
 
 ```
