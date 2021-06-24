@@ -1,5 +1,5 @@
-in---
-title: "Word Vectors Template"
+---
+title: "Model Training and Querying Template"
 author: "Jonathan Fitzgerald & Sarah Connell"
 date: "5/3/2021"
 output: pdf_document
@@ -202,7 +202,7 @@ write.csv(file="output/name_of_your_cluster.csv", x=w2vExport)
 
 ```
 
-## Evaluate the Model
+## Evaluating the Model
 
 You can run this test by hitting `command-return` or `control-return` to run one line a time, or just hit the green button in the top right of the code block below. 
 

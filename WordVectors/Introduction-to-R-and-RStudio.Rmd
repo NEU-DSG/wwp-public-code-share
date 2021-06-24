@@ -1,5 +1,5 @@
 ---
-title: "Introduction to R"
+title: "Introduction to R and RStudio"
 author: "Laura Johnson, Sarah Connell, and Ash Clark"
 date: "5/7/2021"
 output: html_document
@@ -59,7 +59,7 @@ Try this out by writing and running a few simple math operations directly in the
 ## Projects
 Projects are a way to organize your work in RStudio. If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space—and, as long as you have this project open, your files should be where you expect them to be. It will usually be easiest to start any session by opening the "WordVectors.Rproj" file, at least while you are getting used to working in RStudio.
 
-To confirm that you have the correct project open, check the top-right corner of the RStudio screen. If the project is not open, you can open it by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file. Always check at the beginning of a session to make sure you have the project open; if you don't, it will likely cause errors. If you do hit an error, one of the first things you should check is whether your project is open.
+To confirm that you have the correct project open, check the top-right corner of the RStudio screen and make sure it says "WordVectors" in the project selection dropdown. If the project is not open, you can open it by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file. Always check at the beginning of a session to make sure you have the project open; if you don't, it will likely cause errors. If you do hit an error, one of the first things you should check is whether your project is open.
 
 ## Working directory and file structure
 
@@ -149,12 +149,13 @@ However, that variable would not be very helpful to us if we were trying to reme
 After you are done with an RStudio session, you need to take two important steps. First, *save* any changes to your files you will want to access later. Next—especially when you are working on a RStudio Server—you need to quit the session. There are two options for this: 1) navigate to the "Session" tab of the menu and click "Quit Session" or 2) run the following chunk of code or enter the command in the Console. If you go with the first option, it will ask you whether you want to save your workspace image; you can say "no" to this. If you run the command instead, it will prompt a question about whether or not you want to save your workspace; you can respond 'n' ("no") to this query. 
 
 ```{r}
+
 #Here is the command for quitting a session
 q()
 
 ```
 
-On our RStudio Server instance, this step is *very* important because the session will continue in the browser until you end it. If there are multiple sessions open, it can bog down the servers. So always remember to save and quit RStudio!
+If you are on an RStudio Server instance, this step is *very* important because the session will continue in the browser until you end it. If there are multiple sessions open, it can bog down the server. So always remember to save and quit RStudio!
 
 ## Key concepts and terminology
 

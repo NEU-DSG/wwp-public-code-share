@@ -1,4 +1,5 @@
-title: "Word Vectors Intro"
+---
+title: "Word Vectors Training, Querying, and Validation"
 author: "Jonathan Fitzgerald & Sarah Connell"
 date: "5/5/2021"
 output: pdf_document
@@ -34,12 +35,11 @@ getwd()
 ```
 
 
-
 ## Loading packages
 
 All the packages you will need for this exercise have been installed ahead of time on our RStudio Server instance, but you'll want to load them using the `library()` function if this is a new session. You'll have to load these packages every time you start a new session in RStudio.
 
-When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means you loaded the packages properly and you are all set. 
+When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means you have loaded the packages properly and you are all set. 
 
 ```{r}
 
@@ -63,7 +63,7 @@ The following script allows you to "read-in" multiple text files and combine the
 
 First, we get a list of the files to read-in (`fileList`), then we create a function (`readTextFiles`) to produce a tibble with two columns, `filename` and `text` for each text file in the folder. Then, we run the function to combine everything into one tibble called `combinedTexts`.
 
-There are some special requirements when you want to run code that is defining functions; unlike most of the time, where you can put your cursor anywhere in the line of code to run it, you need to have your cursor either at the beginning or the end of the code defining your function when you run it (or just select the whole thing).
+There are some special requirements when you want to run code that is defining functions; unlike most of the time, where you can put your cursor anywhere in the line of code to run it, you need to have your cursor either at the beginning or the end of the code defining your function when you run it (or just select the whole thing). There are comments both before and after the code that defines the function, so you can see what its boundaries are.
 
 The only thing you'll need to change in the code below is the file path in the first line.
 
@@ -104,11 +104,11 @@ The section below defines several variables so that they can be called on in tra
 
 You can pick any name you want in the first line of code below; make sure there are no spaces in the name you select and that it is descriptive enough that you will remember which corpus you were working from when you want to read in a trained model. 
 
-The only line in the block of code below that you will need to change is the first one, but make sure to do this, or you will end up with a file called "your_file_name.bin"!
+The only line in the block of code below that you will need to change is the first one, but make sure to do this, or you will end up with a model file called "your_file_name.bin"!
 
 ```{r}
 
-# This section is where you define the variables you will be using to train your model; don't forget to change the text in the first line to whatever you want to call your model file
+# This section is where you define the variables you will be using to train your model; change the text in the first line to whatever you want to call your model file
 baseFile <- "your_file_name"
 w2vInput <- paste("data/",baseFile,".txt", sep = "")
 w2vCleaned <- paste("data/",baseFile,"_cleaned.txt", sep="")
@@ -164,7 +164,7 @@ if (!file.exists(w2vBin)) {
 
 ## Visualizing 
 
-We can get a glimpse of what the model looks like by plotting it in two dimensions. Keep in mind that the model actually has many more dimensions, so we are, in effect, flattening it. Though the visualization is difficult to read, you should be able to see that similar words—words that are near each other in vector space—tend to clump together. The code below will likely take a minute or two to run, and your results will appear in the "Plots" window to the right (you can hit the "Zoom" button to get a better view).
+We can get a glimpse of what the model looks like by plotting it in two dimensions. Keep in mind that the model actually has many more dimensions, so we are, in effect, flattening it. Though the visualization may be somewhat difficult to read, you should be able to see that similar words—words that are near each other in vector space—tend to clump together. The code below will likely take a minute or two to run, and your results will appear in the "Plots" window to the right (you can hit the "Zoom" button to get a better view).
 
 
 ```{r}
@@ -192,7 +192,7 @@ sapply(sample(1:centers, 10), function(n) {
 
 ## Closest to
 
-To find the words closest to a particular word in vector space, fill in that term and then run the code below. If you want to see more words, just increase the number. Make sure not to delete the quotation marks, and enter your word in lowercase
+To find the words closest to a particular word in vector space, fill in that term and then run the code below. If you want to see more or fewer words, you can change the number. Make sure not to delete the quotation marks, and enter your word in lowercase
 
 ```{r}
 
@@ -221,7 +221,7 @@ Or, you might want to look at the difference between two terms, to see which wor
 
 ```{r}
 
-w2vModel %>% closest_to(~'woman'-'man',20) 
+w2vModel %>% closest_to(~'rose'-'flower',20) 
 
 ```
 
@@ -232,7 +232,7 @@ You can even construct analogies, such as in the example below; these use vector
 
 In the classic example, you might start with the vector for "woman" and subtract the vector for "man", thus producing a vector that represents the contexts for "woman" as distinct from those for "man". You might then add a third term, such as "king", to add its own contexts to the query. This would let you look at a vector associated with something like *femininity* and then adds a vector associated with *royalty*; you might expect to get a result like "queen". 
 
-Or, to frame this as an analogy: this lets you ask questions like "man" is to "king" as "woman" is to *what*? 
+To frame this as an analogy: this lets you ask questions like "man" is to "king" as "woman" is to *what*? 
 
 
 ```{r}
@@ -241,7 +241,7 @@ w2vModel %>% closest_to(~"woman"-"man"+"king", 20)
 
 ```
 
-It is not always helpful to think strictly within the analogy framework; in many cases, it can be more productive to think about constructing a vector that represents the difference between two terms, and then adding the contexts of a third term. In the line of code below, for instance, we are constructing a vector that might be described as a "wealth" vector (by looking at the contexts for "rich" as distinct from "poor") and adding to that vector the semantic space of clothing (by adding the contexts for "dress"). We might expect to get results associated with expensive clothing or the dress habits of the wealthy. 
+It is not always helpful to think about this approach strictly within the analogy framework; in many cases, it can be more productive to think about constructing a vector that represents the difference between two terms, and then adding the contexts of a third term. In the line of code below, for instance, we are constructing a vector that might be described as a *wealth* vector (by looking at the contexts for "rich" as distinct from "poor") and adding to that vector the semantic space of *clothing* (by adding the contexts for "dress"). We might expect to get results associated with expensive clothing or the dress habits of the wealthy. 
 
 To experiment with this, try adding different third terms (perhaps "food" or "house") or reverse the first two terms, to look at the contexts for poverty instead of wealth.
 
@@ -256,7 +256,7 @@ w2vModel %>% closest_to(~"rich"-"poor"+"dress", 20)
 
 If you want to read in an existing model, you can do so with the code below (just replace "name_of_your_file" with the name of your file, and make sure you don't delete the .bin extension or the quotation marks). If you follow the instructions above, all of your trained models will be saved as binary files (with a .bin extension) in your `data` folder. You only need to train each model once, and then you can use this code to read it in at the start of each new session.
 
-You can also read-in models trained by others if you upload them to your `data` folder and then read them in with the code below.
+You can also read in models trained by others if you upload their .bin file to your `data` folder using the `Upload` button near the top of the `Files` menu (make sure you are already inside the `data` folder when you do this!). After you have uploaded the files to RStudio Server, you can read them in with the code below.
 
 After you've restarted RStudio (in addition to checking your working directory and loading your packages), you'll also need to use the code below to read in your model again. 
 
@@ -268,7 +268,7 @@ w2vModel <- read.vectors("data/name_of_your_file.bin")
 ```
 
 ## Exporting queries
-The code below will enable you to export the results from a particular query. To export query results, change the part after "w2vModel %>%" to match the query that you want to export. An example is filled in so that you can see what this looks like. You can also adjust the number of words in the results set, if you want to see more or fewer. If you'd like to export results from a different query, such as addition or subtraction, paste over the example query with the one that you want to export. 
+The code below will enable you to export the results from a particular query. To export query results, change the part after "w2vModel %>%" to match the query that you want to export. An example is filled in so that you can see what this looks like. You can also adjust the number of words in the results set, if you want to see more or fewer terms. If you'd like to export results from a different query, such as addition or subtraction, paste over the example query with the one that you want to export. 
 
 The first line of code defines the variable "w2vExport" as whatever query you set. The second line exports a csv file (which you can open in any program on your computer that works with tabular data, including Excel and Numbers). You can call the file whatever you like by replacing the template text inside of the quotation marks. The csv file will be exported to the "output" folder in your current working directory, and it will overwrite existing files with the same name, so make sure to rename the export file if you want to keep earlier versions. Make sure not to use any spaces in the file names you choose. 
 
@@ -286,7 +286,9 @@ write.csv(file="output/name_of_your_query.csv", x=w2vExport)
 ```
 
 ## Exporting clusters
-You can use a similar method to export your clusters; the code below will first generate a set of clusters and then export a specified (by you) number of terms from those clusters. As above, you can change the number of centers and iterations when you are generating the clusters; you can also change how many sets of clusters and words from each cluster to export. The exporting mechanism is the same as with exporting queries above; you change the language in the quotation marks to match the name that you want to give your file. The export file can be fairly large, so this code might take a bit of time to run. And, again, you can use the instructions above to export from RStudio Server to your own computer. 
+You can use a similar method to export your clusters; the code below will first generate a set of clusters and then export a specified (by you) number of terms from those clusters. As above, you can change the number of centers and iterations when you are generating the clusters; you can also change how many sets of clusters and words from each cluster to export. 
+
+The exporting mechanism is the same as with exporting queries above; you change the language in the quotation marks to match the name that you want to give your file. The export file can be fairly large, so this code might take a bit of time to run. And, again, you can follow the instructions above to export from RStudio Server to your own computer. 
 
 ```{r}
 #Change "name_of_your_cluster" to a descriptive name that you want to give to your export file.
@@ -302,7 +304,7 @@ write.csv(file="output/name_of_your_cluster.csv", x=w2vExport)
 
 ```
 
-## Evaluate the Model
+## Evaluating the Model
 
 Below is a very simple test that will calculate the cosine similarities for a small set of word pairs that are likely to be related in many models. You can customize this list for your own corpus by editing the pairs below, or adding new ones (add as many as you like, but make sure to follow the same format as in the examples below). This code will produce a "model-test-results.csv" file with cosine similarity scores on these word pairs for every model in your folder. The results file will be in the "output" folder of your current working directory. This is meant to be an example of the kinds of testing that are used in model evaluation, and is not a substitute for more rigorous testing processes. 
 

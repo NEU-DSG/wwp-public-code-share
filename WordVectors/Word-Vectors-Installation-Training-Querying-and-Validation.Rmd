@@ -1,4 +1,5 @@
-title: "Word Vectors Intro"
+---
+title: "Word Vectors Installation, Training, Querying, and Validation"
 author: "Jonathan Fitzgerald & Sarah Connell"
 date: "5/5/2021"
 output: pdf_document
@@ -137,7 +138,7 @@ The following script allows you to "read in" multiple text files and combine the
 
 First, we get a list of the files to read in (`fileList`), then we create a function (`readTextFiles`) to create a tibble with two columns, `filename` and `text` for each text file in the folder. Then, we run the function to combine everything into one tibble called `combinedTexts`.
 
-There are some special requirements when you want to run code that is defining functions; unlike most of the time, where you can put your cursor anywhere in the line of code to run it, you need to have your cursor either at the beginning or the end of the code defining your function when you run it (or just select the whole thing and run it).
+There are some special requirements when you want to run code that is defining functions; unlike most of the time, where you can put your cursor anywhere in the line of code to run it, you need to have your cursor either at the beginning or the end of the code defining your function when you run it (or just select the whole thing and run it). There are comments both before and after the code that defines the function, so you can see what its boundaries are.
 
 The *only* thing you'll need to change in the code below is the file path in the first line.
 
@@ -236,7 +237,7 @@ if (!file.exists(w2vBin)) {
 
 ## Visualizing 
 
-We can get a glimpse of what the model looks like by plotting it in two dimensions. Keep in mind that the model actually has many more dimensions, so we are, in effect, flattening it. Though the visualization is difficult to read, you should be able to see that similar words—words that are near each other in vector space—tend to clump together. The code below will likely take a minute or two to run, and your results will appear in the "Plots" window to the right (you can hit the "Zoom" button to get a better view).
+We can get a glimpse of what the model looks like by plotting it in two dimensions. Keep in mind that the model actually has many more dimensions, so we are, in effect, flattening it. Though the visualization may be somewhat difficult to read, you should be able to see that similar words—words that are near each other in vector space—tend to clump together. The code below will likely take a minute or two to run, and your results will appear in the "Plots" window to the right (you can hit the "Zoom" button to get a better view).
 
 
 ```{r}
@@ -371,7 +372,7 @@ write.csv(file="output/name_of_your_cluster.csv", x=w2vExport)
 
 ```
 
-## Evaluate the Model
+## Evaluating the Model
 
 Below is a very simple test that will calculate the cosine similarities for a small set of word pairs that are likely to be related in many models. You can customize this list for your own corpus by editing the pairs below, or adding new ones (add as many as you like, but make sure to follow the same format as in the examples below). This code will produce a "model-test-results.csv" file with cosine similarity scores on these word pairs for every model in your folder. The results file will be in the "output" folder of your current working directory. This is meant to be an example of the kinds of testing that are used in model evaluation, and is not a substitute for more rigorous testing processes. 
 
