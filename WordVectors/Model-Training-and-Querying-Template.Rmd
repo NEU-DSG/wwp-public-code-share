@@ -69,7 +69,7 @@ combinedTexts <- tibble(filename=fileList) %>%
 ```{r}
 
 # Don't forget to change the template text in the first line to whatever you want to call your model file
-baseFile <- "your_file_namse"
+baseFile <- "your_file_name"
 w2vInput <- paste("data/",baseFile,".txt", sep = "")
 w2vCleaned <- paste("data/",baseFile,"_cleaned.txt", sep="")
 w2vBin <- paste("data/",baseFile,".bin", sep="")
