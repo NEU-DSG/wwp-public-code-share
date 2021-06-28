@@ -106,6 +106,8 @@ You can pick any name you want in the first line of code below; make sure there 
 
 The only line in the block of code below that you will need to change is the first one, but make sure to do this, or you will end up with a model file called "your_file_name.bin"!
 
+The last line of this code section creates a single text file, with a name based on the one that you chose, combining all of the texts in your corpus.
+
 ```{r}
 
 # This section is where you define the variables you will be using to train your model; change the text in the first line to whatever you want to call your model file
@@ -164,7 +166,9 @@ if (!file.exists(w2vBin)) {
 
 ## Visualizing 
 
-We can get a glimpse of what the model looks like by plotting it in two dimensions. Keep in mind that the model actually has many more dimensions, so we are, in effect, flattening it. Though the visualization may be somewhat difficult to read, you should be able to see that similar words—words that are near each other in vector space—tend to clump together. The code below will likely take a minute or two to run, and your results will appear in the "Plots" window to the right (you can hit the "Zoom" button to get a better view).
+We can get a glimpse of what the model looks like by plotting it in two dimensions. Keep in mind that the model actually has many more dimensions, so we are, in effect, flattening it. Though the visualization may be somewhat difficult to read, you should be able to see that similar words—words that are near each other in vector space—tend to clump together. The code below will likely take a minute or two to run, and your results will appear in the "Plots" window to the right (you can hit the "Zoom" button to get a better view). 
+
+As the code is running, you'll see a set of lines in the console that will something like "Epoch: Iteration #100 error is: 20.3048394873336"; note that this is not an error message! As the code runs, the values for "error" should decrease—this reflects increasing confidence about how to plot the vector representation. 
 
 
 ```{r}

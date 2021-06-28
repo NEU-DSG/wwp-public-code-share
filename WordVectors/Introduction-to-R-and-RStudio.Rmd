@@ -5,6 +5,8 @@ date: "5/7/2021"
 output: html_document
 ---
 
+The code chunk below is just part of the setup for this file. You can ignore it and skip down to the next section. No need to run this code! 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -81,7 +83,7 @@ Navigating file paths can be a bit confusing, but, fortunately there is a trick 
 # How to check your working directory (this is also an example of how you add a comment to your code—by typing "#")
 getwd()
 
-# How to set your working directory (do not run this unless you actually want to change your working directory!)
+# How to set your working directory (do not run this unless you actually want to change your working directory—as long as you opened the project file first, you should not need to change your working directory!)
 setwd("path/to/your/directory")
 
 ```
