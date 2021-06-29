@@ -127,7 +127,7 @@ print(demo_text)
 
 In R, the names of variables are arbitrary. You can choose whatever makes sense to you, with a few limitations discussed below. It helps to pick something specific that you will remember. Variables can be reassigned (or, "overwritten") at any time. 
 
-Try this by going up into the code block below and defining a `demo_text` variable with different text inside of the quotation marks, then printing it with the `print()` function. You can copy from the code above or, if you're feeling adventurous, type the code out yourself. 
+Try this by going into the code block below and defining a `demo_text` variable with different text inside of the quotation marks, then printing it with the `print()` function. You can copy from the code above or, if you're feeling adventurous, type the code out yourself. 
 
 ```{r}
 
@@ -144,7 +144,7 @@ print(giant_amazonian_river_otter)
 
 ```
 
-However, that variable would not be very helpful to us if we were trying to remember and use it later. Generally, you want to make your variable names clear and descriptive, and use consistent systems for things like marking word boundaries and the deciding how much detail to include.
+However, that variable would not be very helpful to us if we were trying to remember and use it later. Generally, you want to make your variable names clear and descriptive, and use consistent systems for things like marking word boundaries and deciding how much detail to include.
 
 ## Saving and quitting a session
 

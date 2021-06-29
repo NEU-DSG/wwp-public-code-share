@@ -28,7 +28,7 @@ As a reminder, at the start of any new session, you should make sure that you ha
 
 If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space. To confirm that you have the correct project open, check the top-right corner of the RStudio screen and make sure it says "WordVectors" in the project selection dropdown. If the project is not open, you can open it by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file. 
 
-At the start of each new session, you should check your working directory with the code below. As long as you opened this file from the WordVectors project, your working directory should be the right place: the "WordVectors" folder. If you do need to change your working directory, you can do so with the `setwd()` function.
+At the start of each new session, you should check your working directory with the code below. As long as you opened this file from the WordVectors project, your working directory should be in the right place: the "WordVectors" folder. If you do need to change your working directory, you can do so with the `setwd()` function.
 
 ```{r}
 
@@ -58,7 +58,7 @@ library(wordVectors)
 
 Before you train models of your own, you'll start by reading in existing models. We've provided a set of sample models (all the files that end in '.bin') in the `data` folder; to read one of them in, edit and run the code below. You can also use this code to read in models that you've trained when you start a new session. And, you can even read in models trained by others, if you upload their .bin file to your `data` folder using the `Upload` button near the top of the `Files` menu (make sure you are already inside the `data` folder when you do this!). 
 
-We've filled in sample model to get you started. If you want to use a different one, change the file path in the code below to select a different '.bin' file. Navigating file paths can be a bit confusing, but fortunately there is a trick you can use. Delete the text inside of the quotation marks below (but don't delete the quotation marks!) and then hit `tab`. You should get a pop-up with a view of the folder system you're more used to navigating; you can use this to fill in file paths whenever you need to.
+We've filled in a sample model to get you started. If you want to use a different one, change the file path in the code below to select a different '.bin' file. Navigating file paths can be a bit confusing, but fortunately there is a trick you can use. Delete the text inside of the quotation marks below (but don't delete the quotation marks!) and then hit `tab`. You should get a pop-up with a view of the folder system you're more used to navigating; you can use this to fill in file paths whenever you need to.
 
 ```{r}
 
@@ -80,7 +80,7 @@ w2vModel %>% plot(perplexity=10)
 
 ## Clustering
 
-The following script provides a way to cluster words that are near each other in vector space, using the "k-means" clustering algorithm. Below, we choose 150 `centers`, or 150 points around which to cluster words. Then we select 10 random clusters and 15 words from each cluster to view. This code will also take a minute or two to run. You can change the number of centers, the number of clusters to view, or the number of words to see—you can also increase the number of iterations (the number of times the algorithm should adjust where the centers are and where terms are positioned in relationship to those centers).
+The following script provides a way to cluster words that are near each other in vector space, using the "k-means" clustering algorithm. Below, we choose 150 `centers`, or 150 points around which to cluster words. Then we select 10 random clusters and 15 words from each cluster to view. This code will also take a minute or two to run. You can change the number of centers, the number of clusters to view, or the number of words to see—you can also increase the number of iterations (the number of times the algorithm should adjust where the centers are and where terms are positioned in relation to those centers).
 
 ```{r}
 
