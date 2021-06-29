@@ -24,7 +24,7 @@ As a reminder, at the start of any new session, you should make sure that you ha
 
 If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space. To confirm that you have the correct project open, check the top-right corner of the RStudio screen. If the project is not open, you can open it by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file. 
 
-At the start of each new session, you should check your working directory with the code below. As long as you opened this file from the WordVectors project, your working directory should be the right place: the "WordVectors" folder. If you do need to change your working directory, you can do so with the `setwd()` function.
+At the start of each new session, you should check your working directory with the code below. As long as you opened this file from the WordVectors project, your working directory should be in the right place: the "WordVectors" folder. If you do need to change your working directory, you can do so with the `setwd()` function.
 
 
 ```{r}
@@ -58,6 +58,8 @@ library(lsa)
 # Training a model
 ## Reading in text files
 The code we will be using in this session is set up to require minimal editing, but that does mean that you will need to have your input files in a very specific format. You need to have a set of .txt files all saved in the same folder (without any files in subfolders). To add a new folder to RStudio Server, you should compress that folder on your computer (create a zip file) and then upload it to the `data` folder with the `Upload` button near the top of the `Files` menu (make sure you are already inside the `data` folder when you do this!). 
+
+This tutorial also comes with a small sample folder, called "WomensNovelsDemo"; it is not large enough to produce a useful model, but will run more quickly and so is useful for initial experimentation. 
 
 The following script allows you to "read-in" multiple text files and combine them into a "tibble," which is a type of data table. Think of it as being like a spreadsheet, with rows and columns organizing information.
 
@@ -132,7 +134,7 @@ The `window` parameter allows you to control the number of words on either side 
 
 The `iter` parameter allows you to control how many times your corpus is read through during model training. If your corpus is on the smaller side, then increasing the number of iterations can improve the reliability of your results.
 
-The `negative_samples` parameter allows you to control the number of negative samples used in training. The model will take less time to train if you use this parameter to modify only a limited number of the weights for each word's non-context terms in each pass through the corpus. For smaller datasets, a value between 5 and 20 is recommended; for larger ones, you can use smaller values, between 2 and 5.
+The `negative_samples` parameter allows you to control the number of "negative samples" used in training. During the training process, each iteration updates the information about the position of each word in the model (making it progressively more and more accurate). Because there are many thousands of words in the model, doing that update with every iteration is time-consuming and computationally costly. With negative sampling, instead of updating every word, the training process updates only the words directly observed within the window, plus a random sampling of the other words in the model. For smaller datasets, a value between 5 and 20 is recommended; for larger ones, you can use smaller values, between 2 and 5.
 
 For more on these parameters, and other options that you have in training a model, see the [code documentation](https://rdrr.io/github/bmschmidt/wordVectors/man/train_word2vec.html). 
 
@@ -180,7 +182,7 @@ w2vModel %>% plot(perplexity=10)
 
 ## Clustering
 
-The following script provides a way to cluster words that are near each other in vector space, using the "k-means" clustering algorithm. Below, we choose 150 `centers`, or 150 points around which to cluster words. Then we select 10 random clusters and 15 words from each cluster to view. This code will also take a minute or two to run. You can change the number of centers, the number of clusters to view, or the number of words to see—you can also increase the number of iterations (the number of times the algorithm should adjust where the centers are and where terms are positioned in relationship to those centers).
+The following script provides a way to cluster words that are near each other in vector space, using the "k-means" clustering algorithm. Below, we choose 150 `centers`, or 150 points around which to cluster words. Then we select 10 random clusters and 15 words from each cluster to view. This code will also take a minute or two to run. You can change the number of centers, the number of clusters to view, or the number of words to see—you can also increase the number of iterations (the number of times the algorithm should adjust where the centers are and where terms are positioned in relation to those centers).
 
 ```{r}
 
