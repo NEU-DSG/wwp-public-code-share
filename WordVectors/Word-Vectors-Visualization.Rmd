@@ -90,12 +90,13 @@ To read a dendrogram, look for the lines showing the height at which any two wor
 
 You can include as many query terms as you like, following the pattern in the example by adding new terms in quotation marks, separated by commas. You can also specify how many of the words nearest to each of your query terms to include in the resulting dendrogram. 
 
+
 ```{r}
 
 # Here is where you define the terms that you want to investigate.
 query_words <- c("dress","lace","frock","silk","hat")
 
-# This establishes the set of terms to be used in your dendrogram. For each term you've defined in `query_set`, the function below selects a specified number of its closest words. You can determine the maximum number of words to plot by changing the number below. In the sample code, the number of selected words is set at 10. With 5 words in `query_set`, `term_set` will contain at most 50 words, since some may be duplicates.
+# This establishes the set of terms to be used in your dendrogram. For each term you've defined in `query_set`, the function below selects a specified number of its closest words. You can determine the maximum number of words to plot by changing the number below. In the sample code, the number of selected words is set at 10. With 5 words in `query_set`, `term_set` will contain at most 50 words, since some may be closest to more than one of your query terms.
 query_set <- lapply(query_words, 
        function(query_term) {
           nearest_words <- w2vModel %>% closest_to(w2vModel[[query_term]], 10) 
@@ -125,10 +126,10 @@ You can fill in any two terms in the first line of the code block below. You can
 query_words <- c("rich","poor")
 query_set <- w2vModel[[query_words, average=FALSE]]
 
-# Here, `model[1:3000,]` restricts the dataset to the 3000 most common words in your corpus; you can adjust this number to include more or fewer words by frequency.
+# Here, `model[1:3000,]` restricts the dataset to the 3000 most common words in your corpus; you can adjust this number to include more or fewer words.
 concept_pairs <- w2vModel[1:3000,] %>% cosineSimilarity(query_set)
 
-# This filters to the top n words related to the input terms; change the numbers following the greater-than symbols below to see more or fewer words in your plot (set to 50 in the example).
+# This filters to the top *n* words related to the input terms; change the numbers following the greater-than symbols below to see more or fewer words in your plot (set to 50 in the example).
 concept_pairs <- concept_pairs[
   rank(-concept_pairs[,1]) < 50 |
   rank(-concept_pairs[,2]) < 50,
@@ -145,7 +146,7 @@ text(concept_pairs, labels=rownames(concept_pairs))
 
 This option makes it possible to plot the words closest to multiple input terms with principal component analysis (see above for a quick explanation of how PCA works). This method allows you to explore more complex word relationships for cases in which the concepts you wish to examine are better expressed with multiple terms. 
 
-As with the example above, the code below first restricts results to the most common words in the set; it then filters the results down to the *n* words closest to any of the input terms (where "n" is a number that you can define; the default is 50), and then plots those using principal component analysis. 
+As with the example above, the code below first selects the most common words in the set; it then filters the results down to the *n* words closest to any of the input terms (where "n" is a number that you can define; the default is 50), and then plots those using principal component analysis. 
 
 You can include as many query terms as you like, following the pattern in the example by adding new terms in quotation marks, separated by commas. You can also show more or fewer words in the resulting plot and adjust the frequency threshold for which terms are part of the calulations.
 
@@ -155,10 +156,10 @@ You can include as many query terms as you like, following the pattern in the ex
 query_words <- c("sight","taste","touch","smell","hearing")
 query_set <- w2vModel[[query_words, average=FALSE]]
 
-# Here, `model[1:3000,]` restricts to the 3000 most common words in the set; you can adjust this number to include more or fewer words by frequency.
+# Here, `model[1:3000,]` restricts to the 3000 most common words in the set; you can adjust this number to include more or fewer words.
 common_similarities <- w2vModel[1:3000,] %>% cosineSimilarity(query_set)
 
-# Here is where you set the number of terms you want to plot; to adjust this, change the number after the less-than sign (set to 50 in the example).
+# Here is where you set the number of terms that you want to plot; to adjust this, change the number after the less-than sign (set to 50 in the example).
 high_similarities_to_query_set <- common_similarities[rank(-apply(common_similarities, 1, max)) < 50,]
 
 # This line plots your terms with principal component analysis.
@@ -171,29 +172,29 @@ high_similarities_to_query_set %>%
 
 ## Plotting related terms in a multi-concept plane
 
-This more complex visualization allows you to define a conceptual plane according to two sets of binaries or otherwise paired concepts (for example: rich and poor, female and male, or good and evil) and plot a set of terms within that space. 
+This more complex visualization allows you to define a conceptual plane according to two sets of binaries or otherwise paired concepts (for example: rich and poor, female and male, society and nature, or good and evil) and plot a set of terms within that space. 
 
-The terms in the plot are generated from their proximity in vector space to a set of key terms that you define. Thus, this visualization allows you to identify a domain that you wish to explore (for example, clothing words, food words, or animal words), and plot terms related to that domain across a plane in which each axis represents the distinction between two sets of concepts that you also define. Words will appear higher or lower on the y axis, depending on how close they are to each of the two conceptual poles from one set of opposed concepts; words will appear farther to the left or right on the x axis, depending on how close they are to each of the other sets. 
+The terms that appear in the plot are generated from their proximity to a set of key terms that you define. Thus, this visualization allows you to identify a domain that you wish to explore (for example, clothing words, food words, or animal words), and plot terms related to that domain across a plane in which each axis represents the distinction between two sets of concepts that you also define. Words will appear higher or lower on the y axis, depending on how close they are to each of the two conceptual poles from one set of opposed concepts; words will appear farther to the left or right on the x axis, depending on how close they are to each of the poles in the other set of concepts. 
 
-In addition to selecting terms, you can also determine how many words to plot in this space (the example is set to 300). You can include as many query terms as you like, following the pattern in the example by adding new terms in quotation marks, separated by commas. In fact, the example below has a relatively small number of input terms; to explore this in earnest, you will probably want to have quite a few more. To come up with more words for your list, try querying the terms that are closest to some of the words that you want to examine. 
+In addition to selecting terms, you can also determine how many words to plot in this space (the example is set to 300). You can include as many query terms as you like, following the pattern in the example by adding new terms in quotation marks, separated by commas. In fact, the example below has a relatively small number of input terms; to explore this in earnest, you would want to have more. To come up with more words for your list, try querying the terms that are closest to some of the words that you want to examine. 
 
-You can also have more or fewer contrast words in each of your concept pairs, following the model in the sample code below. These will strongly impact your results, so you will want to try multiple variations to make sure that you're getting as close as possible to the concepts you want to investigate—remember that we are using these terms as proxies for much more complex concepts, and that it is unlikely that a single term or small set of terms will fully express the complexity at stake.  
+You can also have more or fewer contrast words in each of your concept pairs, following the model in the sample code below. These will strongly impact your results, so you should try multiple variations to make sure that you're getting as close as possible to the concepts you want to investigate—remember that we are using these terms as proxies for much more complex concepts, and that it is unlikely that a single term or small set of terms will fully express the complexity at stake.  
 
 ```{r}
 
-# Here is where you define the terms that you want to investigate. In the sample, we are looking at clothing words. 
+# Here is where you define the terms that you want to investigate. In this sample, we are looking at clothing words. 
 query_words <- c("dress","frock","gown","coat","linen","silk","lace","hem","clothing","garment","muslin","garments","clothes","satin","shoes","waistcoat","brocade","hat","cloak","apron","aprons","robe","pelisse","diamond","rags","cap","tattered","plaid","cotton")
 
-# Here is where you are establishing the "query_set" variable and deciding how many words to include in the plot
+# Here is where you are establishing the `query_set` variable and deciding how many words to include in the plot
 query_set <- w2vModel %>% nearest_to(w2vModel[[query_words]], 300) %>% names
 
 # The line below isn't necessary for generating the plot, but it will show you a sample of the resulting words from your query above, so you have a better sense of what you are examining.
 sample(query_set, 50)
 
-# This line is where you define the first set of opposed concepts; below, you will refer to the first group of terms as "Thing A" and the second one as "Thing B".
+# This line is where you define the first set of opposed concepts; below, the template text refers to the first group of terms as "Thing A" and the second group as "Thing B".
 first_binary_vector <- w2vModel[[c("rich","richer","riches" ,"wealth")]] - w2vModel[[c("poor","poorer","poverty","indigence")]]
 
-# This line is where you define the second set of opposed concepts; below, you will refer to the first group of terms as "Thing X" and the second one as "Thing Y".
+# This line is where you define the second set of opposed concepts; below, the template text refers to the first group of terms as "Thing X" and the second group as "Thing Y".
 second_binary_vector <- w2vModel[[c("man","boy","he" ,"his")]] - w2vModel[[c("woman","girl","she","her")]]
 
 # These four lines set up a dataframe with the words and vectors from your queries above.
@@ -202,7 +203,7 @@ all_concepts <- data.frame(word = rownames(concepts))
 all_concepts$thingX_vs_thingY <- cosineSimilarity(concepts, first_binary_vector)
 all_concepts$thingA_vs_thingB <- cosineSimilarity(concepts, second_binary_vector)
 
-# Here is where you create a plot from your dataframe above; you can edit the text for the labels to match your queries.
+# Here is where you create a plot from your dataframe above; you can edit the text for the labels (e.g., "closer to thing X" and "closer to thing Y") to match your queries. You might get a warning message about removing rows containing missing values, but you can ignore that.
 ggplot(all_concepts, aes(x=thingX_vs_thingY, y=thingA_vs_thingB, label=word)) + geom_text(size=2.5) +
   scale_y_continuous("<----- closer to thing Y ..............  closer to thing X ------>", limits=c(-.45, .25)) +
   scale_x_continuous("<----- closer to thing B ..............  closer to thing A ------>", limits=c(-.25, .33))
@@ -215,9 +216,8 @@ ggplot(all_concepts, aes(x=thingX_vs_thingY, y=thingA_vs_thingB, label=word)) + 
 ## Credits and thanks
 This tutorial uses the `wordVectors` package developed by Ben Schmidt and Jian Li, itself based on the original `word2vec` code developed by Mikolov et al. 
 
-These walkthroughs are drawn from code published by Ben Schmidt in two vignettes: an ["Introduction"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/introduction.Rmd) and an ["Exploration"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/exploration.Rmd) accompanying the `WordVectors` package, as well as code samples in Schmidt's post ["Vector Space Models for the Digital Humanities"](http://bookworm.benschmidt.org/posts/2015-10-25-Word-Embeddings.html). The code has been generalized and lightly modified, and additional explanation has been added for this walkthrough.  
+These walkthroughs are drawn from code published by Ben Schmidt in two vignettes: an ["Introduction"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/introduction.Rmd) and an ["Exploration"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/exploration.Rmd) accompanying the `WordVectors` package, as well as code samples in Schmidt's post ["Vector Space Models for the Digital Humanities"](http://bookworm.benschmidt.org/posts/2015-10-25-Word-Embeddings.html). The code has been generalized and lightly modified, and additional explanations have been added for this walkthrough.  
 
-
-This version of the walkthrough was developed as part of the Word Vectors for the Thoughtful Humanist series at Northeastern. Word Vectors for the Thoughtful Humanist has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.
+This walkthrough was developed as part of the Word Vectors for the Thoughtful Humanist series at Northeastern. Word Vectors for the Thoughtful Humanist has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.
 
 
