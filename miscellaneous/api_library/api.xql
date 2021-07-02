@@ -11,10 +11,11 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   A library of functions to simplify the development of an XQuery API.
   
   @author Ashley M. Clark, Northeastern University Women Writers Project
-  @version 1.5.1
+  @version 1.5.2
   @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/miscellaneous/api_library
   
   Changelog:
+    2021-02-23, v1.5.2: Allowed arrays of parameter values in wpi:get-query-url().
     2020-10-02, v1.5.1: Updated GitHub link to use the new default branch "main".
       Uncommented namespace declaration; this library now won't work in eXist v2.2.
     2020-09-29, v1.5.0: Added $wpi:sortRegexCharacterRemoval, 
@@ -132,9 +133,13 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
      map(xs:string, item()*)) as xs:string {
     let $paramBits :=
       for $key in map:keys($queryParams)
-      let $seq := map:get($queryParams,$key)
+      let $seq := map:get($queryParams, $key)
+      let $valSeq :=
+        typeswitch ($seq)
+          case array(item()*) return $seq?*
+          default return $seq
       return 
-        for $value in $seq
+        for $value in $valSeq
         return concat($key,'=',$value)
     let $queryStr :=  if ( count($paramBits) ge 1 ) then 
                         concat('?',string-join($paramBits,'&amp;'))
