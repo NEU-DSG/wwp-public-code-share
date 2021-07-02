@@ -26,4 +26,4 @@ These walkthroughs use the `wordVectors` package developed by Ben Schmidt and Ji
 
 The walkthroughs were developed as part of the Word Vectors for the Thoughtful Humanist series at Northeastern. Word Vectors for the Thoughtful Humanist has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.
 
-The walkthroughs are freely available on GitHub at <https://github.com/NEU-DSG/wwp-public-code-share/releases/tag/WordVectors/latest>.
+The walkthroughs are freely available on GitHub at <https://github.com/NEU-DSG/wwp-public-code-share/releases>.
