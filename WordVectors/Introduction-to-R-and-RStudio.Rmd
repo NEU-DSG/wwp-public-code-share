@@ -1,6 +1,6 @@
 ---
 title: "Introduction to R and RStudio"
-author: "Laura Johnson, Sarah Connell, and Ash Clark"
+author: "Juniper Johnson, Sarah Connell, and Ash Clark"
 date: "5/7/2021"
 output: html_document
 ---
