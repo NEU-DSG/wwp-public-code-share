@@ -46,8 +46,8 @@ If this is the first time you are working with word2vec on your computer, there 
 - Open the Word-Vectors-Installation-Training-Querying-and-Validation.Rmd file from the &quot;Files&quot; pane in the bottom-right of RStudio
 - Run the code in the block starting at line 86 to install the necessary packages
 - Run the code in the block starting at line 106 to load in the necessary packages, skipping line 117
-- Run the code in the block starting at line 128 to install the `wordVectors`package using the `devtools` package
-- Go back up to line 117 and run the code to load in the `wordVectors`package
+- Run the code in the block starting at line 128 to install the `wordVectors` package using the `devtools` package
+- Go back up to line 117 and run the code to load in the `wordVectors` package
 
 You only need to install the packages once, but you will need to load them in at the start of each new session. In the sections below, the instructions assume that you are starting a new session but that the necessary packages have already been installed.
 
@@ -151,7 +151,7 @@ At some point, you may encounter error messages! It&#39;s tempting to try to int
 
 If you see that a command isn't completing and seems to be stuck, you may need to interrupt the command, restart R, or restart your whole RStudio application. Training a model can take a very long time (hours or longer), so you don&#39;t need to worry if that seems to be stuck—it&#39;s probably still running.
 
-You can tell that a command is stuck if you don&#39;t see the command prompt (a greater-than sign, >) in the Console window on the lower left of the RStudio window, and if you&#39;re not seeing progress (for instance, no new lines of text appearing in the console reporting on progress.
+You can tell that a command is stuck if you don&#39;t see the command prompt (a greater-than sign, `>`) in the Console window on the lower left of the RStudio window, and if you&#39;re not seeing progress (for instance, no new lines of text appearing in the console reporting on progress.
  
 First, try clicking the stop sign to stop the command.
 
