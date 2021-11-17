@@ -17,6 +17,8 @@ Before you open these files, it is helpful to download R and RStudio. You can do
 To download RStudio see: [https://rstudio.com/products/rstudio/download/](https://rstudio.com/products/rstudio/download/).
 
 ## Support Files
+The directory contains a [model loading and training](https://github.com/NEU-DSG/wwp-public-code-share/blob/WordVectors/WordVectors/Model-Loading-and-Training.md) document that provides detailed instructions on how to train, query, and visualize a model using these resources.
+
 The directory also contains a "data" folder with a small set of test texts. It should be noted that these are intended only to provide an example of data setup and a quick sample set for training—the corpus is too small to produce a valid model. There is also an "output" folder where any exports can be saved, with a sample file that shows the results of the basic model test included in this walkthrough.
 
 Finally, the directory contains a project file, `WordVectors.Rproj`. The easiest way to get started with these walkthroughs is to download the whole folder and then open the project file in RStudio. From there, navigate to the "Files" panel and open either `Introduction-to-R-and-RStudio`, if you want a quick introduction to R and RStudio, or `Word-Vectors-Installation` if you want to get right to training and querying models. The `Installation` file includes all the instructions necessary to install and load required packages, read in text files, and train a model. 
