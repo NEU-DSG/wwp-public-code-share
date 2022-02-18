@@ -17,6 +17,7 @@
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
     
     Changelog:
+      2022-02-18, v2.13: Changed <xsl:value-of> to <xsl:sequence>.
       2020-10-02, v2.12: Updated GitHub link to use the new default branch "main".
       2019-12-19, v2.11: When $move-notes-to-anchors is turned on, <note>s with
         @targetEnd should now only appear once, after the anchor referenced in that
@@ -195,7 +196,7 @@
     break over lines and pages. -->
   <xsl:function name="wf:has-break-attribute-no" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
-    <xsl:value-of 
+    <xsl:sequence 
       select="exists($node[self::*][@break eq 'no']) 
               or exists($node[self::ab][@type eq 'pbGroup']/*[wf:has-break-attribute-no(.)])"/>
   </xsl:function>
@@ -203,7 +204,7 @@
   <!-- Determine if a given element has both element and text node children. -->
   <xsl:function name="wf:has-mixed-content" as="xs:boolean">
     <xsl:param name="element" as="element()"/>
-    <xsl:value-of select="exists($element[*][text()])"/>
+    <xsl:sequence select="exists($element[*][text()])"/>
   </xsl:function>
   
   <!-- Determine if a node meets the criteria for belonging to a pbGroup. This 
@@ -211,7 +212,7 @@
     it could belong to one. -->
   <xsl:function name="wf:is-pbGroup-candidate" as="xs:boolean">
     <xsl:param name="node" as="node()"/>
-    <xsl:value-of 
+    <xsl:sequence 
       select="exists( $node[  self::mw[@type = ('catch', 'pageNum', 'sig', 'vol')] 
                            (: The XPath above tests for mw with types that could trigger a pbGroup. 
                               The XPath below tests for mw that could belong to a pbGroup. :)
