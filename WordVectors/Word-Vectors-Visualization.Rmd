@@ -96,7 +96,7 @@ You can include as many query terms as you like, following the pattern in the ex
 # Here is where you define the terms that you want to investigate.
 query_words <- c("dress","lace","frock","silk","hat")
 
-# This establishes the set of terms to be used in your dendrogram. For each term you've defined in `query_set`, the function below selects a specified number of its closest words. You can determine the maximum number of words to plot by changing the number below. In the sample code, the number of selected words is set at 10. With 5 words in `query_set`, `term_set` will contain at most 50 words, since some may be closest to more than one of your query terms.
+# This establishes the set of terms to be used in your dendrogram. For each term you've defined in `query_set`, the function below selects a specified number of its closest words. You can determine the maximum number of words to plot by changing the number below. In the sample code, the number of selected words is set at 10. With 5 words in `query_set`, `subset` will contain at most 50 words, since some may be closest to more than one of your query terms.
 query_set <- lapply(query_words, 
        function(query_term) {
           nearest_words <- w2vModel %>% closest_to(w2vModel[[query_term]], 10) 
