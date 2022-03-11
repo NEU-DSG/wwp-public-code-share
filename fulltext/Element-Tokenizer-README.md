@@ -1,6 +1,6 @@
 # XML Element Tokenization for Word Embedding Models
 
-**By Laura Johnson**
+**By Juniper Johnson**
 
 The “[Element Tokenizer](https://github.com/NEU-DSG/wwp-public-code-share/blob/master/fulltext/element-tokenizer.xslt)” is a simple XSLT that tokenizes the content of elements in XML documents. Developed to tokenize specific data for creating word embedding models using [the wordVectors R wrapper for the Women Writers Vector Toolkit](https://github.com/NEU-DSG/wwp-public-code-share/tree/master/WordVectors), this script replaces special characters (including spaces, asterisks, and hyphens) with underscores in the content of the elements specified. The wordVectors algorithm does not remove underscores when it cleans a corpus, thus allowing for content connected by underscores to be treated as single tokens in the word embedding model training process.
 
@@ -108,4 +108,4 @@ In order to run this transformation, you will need to set up a transformation sc
 The transformation scenario has now been saved in Oxygen and can be used to transform whatever files that you want with the Element Tokenizer. To do so, simply control- or right-click on the folder in the Project Menu in Oxygen and choose “Transform with” and choose the scenario you just created.
 
 # Credit and Thanks
-This XSLT was developed by Laura Johnson and Ash Clark as part of the “Word Vectors for the Thoughtful Humanist” series at Northeastern University. “Word Vectors for the Thoughtful Humanist” has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.
+This XSLT was developed by Juniper Johnson and Ash Clark as part of the “Word Vectors for the Thoughtful Humanist” series at Northeastern University. “Word Vectors for the Thoughtful Humanist” has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.
