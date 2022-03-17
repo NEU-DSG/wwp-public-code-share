@@ -13,11 +13,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This walkthrough offers options for exploring word2vec models, using several methods for plotting and visualization. 
 
-This code uses the "wwo-regularized.bin" model as an example, with query terms chosen to work with that model. You can read in any model you like, and update the terms to match your own research interests. Depending on your model and the terms that you select, your results may not necessarily be revelatory, but they should give you different ways to think about and engage with your model.
+This code uses the "wwo-regularized.bin" model as an example, with query terms chosen to work with that model. You can read in any model you like, and update the terms to match your own interests. Depending on your model and the terms that you select, your results may not necessarily be revelatory, but they should give you different ways to think about and engage with your models.
 
 This walkthrough assumes you are familiar with the basics of setting up new RStudio sessions, running code, and reading in models. If you would like more information on these, see the introductory walkthroughs in this folder. If you are working on your own computer, you will need to first install the necessary packages outlined in the "Word Vectors Installation, Training, Querying, and Validation" file. 
 
-These walkthroughs are drawn from code published by Ben Schmidt in two vignettes: an ["Introduction"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/introduction.Rmd) and an ["Exploration"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/exploration.Rmd) accompanying the `WordVectors` package, as well as code samples in Schmidt's post ["Vector Space Models for the Digital Humanities"](http://bookworm.benschmidt.org/posts/2015-10-25-Word-Embeddings.html). The code has been generalized and lightly modified, and additional explanations have been added for this walkthrough.  
+These walkthroughs are drawn from code published by Ben Schmidt in two vignettes: an ["Introduction"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/introduction.Rmd) and an ["Exploration"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/exploration.Rmd) accompanying the `WordVectors` package, as well as code samples in Schmidt's post ["Vector Space Models for the Digital Humanities"](http://bookworm.benschmidt.org/posts/2015-10-25-Word-Embeddings.html). The code has been generalized and lightly modified, and additional explanations have been added.  
 
 # Getting started
 ## Checking your working directory
@@ -57,9 +57,9 @@ w2vModel <- read.vectors("data/wwo-regularized.bin")
 
 ## Plotting the terms closest to a query set
 
-This is a way to visualize the words closest to a set of terms that you choose, giving you a view of your results that's a bit different from a list of the closest terms and their cosine similarities. You lose the information on specific cosine similarities, but you gain the ability to review the whole set of results simultaneously, without the linearity of a list. You can also start to explore whether there might be patterns in the relationships among the closest terms in your results.
+This is a way to visualize the words closest to a set of terms that you choose, giving you a view of your results that's a bit different from the lists of terms and their cosine similarities that we've been working with. You lose the information on specific cosine similarities, but you gain the ability to review the whole set of results simultaneously, without the linearity of a list. You can also start to explore whether there might be patterns in the relationships among the closest terms in your results.
 
-This visualization relies on principal component analysis, a statistical procedure that makes it possible to plot a set of items—in this case, the terms closest to your query terms—as a way to identify patterns and highlight variations in a dataset. The details are fairly complex (and we encourage you to read more about them if you plan to go further with this kind of analysis), but, essentially, principal component analysis reduces a large set of variables into a smaller set that still contains most of the information from the original. Each of the principal components is calculated to account for as much of the variation in the initial dataset as possible: the first principal component covers the most variation, the second the next most, and so on. Organizing data by these principal components makes it possible to reduce the dimensionality of your analysis without losing as much information, since you're selecting from the principal components that are able to represent the maximum amount of variance in the original variables.    
+This visualization relies on principal component analysis, a statistical procedure that makes it possible to plot a set of items—in this case, the terms closest to your query terms—as a way to identify patterns in a dataset. The details are fairly complex (and we encourage you to read more about them if you plan to go further with this kind of analysis), but, essentially, principal component analysis reduces a large set of variables into a smaller set that still contains much of the information from the original. Each of the principal components is calculated to account for as much of the variation in the initial dataset as possible: the first principal component covers the most variation, the second the next most, and so on. Organizing data by these principal components makes it possible to reduce the dimensionality of your analysis without losing as much information, since you're selecting from the principal components that are able to represent the maximum amount of variance in the original variables.    
 
 Looking at a set of animal words in the regularized Women Writers Online model, you can see that the terms closely related to foods cluster together and that the second principal component seems to be capturing something about domesticated vs. wild animals.
 
@@ -67,8 +67,10 @@ You can include as many query terms as you like, following the pattern in the ex
 
 ```{r}
 
-# Here is where you define the terms that you want to investigate. You can also determine how many words you want to plot by changing the number at the end of the second line of code (set to 100 in the example).
+# Here is where you define the terms that you want to investigate. 
 query_words <- c("dog","pig","horse","cat","fish","goose","lion","tiger")
+
+# You can determine how many words you want to plot by changing the number at the end of this line of code (set to 100 in the example).
 query_set <- closest_to(w2vModel, w2vModel[[query_words]], 100)
 
 # This produces a vector space model object with the words and vectors defined above.
@@ -82,9 +84,9 @@ plot(model_object, method="pca")
 
 ## Defining and exploring clusters with dendrograms
 
-This is a way of looking for clusters among the words closest to a set of terms that you choose. The result is a dendrogram, rather than a list or a two-axis plot. This is a bit like the clustering you've seen already, but instead of operating on the level of the whole model, it instead clusters the results that are closest to a specified set of terms in vector space. 
+This is a way of looking for clusters among the words closest to a set of terms that you choose. The result is a dendrogram, or tree diagram. This is a bit like the clustering you've seen already, but instead of operating on the level of the whole model, it instead clusters the results that are closest to a specified set of terms in vector space. 
 
-The clustering algorithm here is also different, using the `hclust` function for performing hierarchical clustering analysis. By default, `hclust` uses the `complete linkage` agglomeration method, which merges the two nearest clusters in the set at every stage in the clustering process until there is a single cluster; this process determines which clusters are closest to each other (the ones that merge sooner).
+The clustering algorithm here is also different, using the `hclust` function for performing hierarchical clustering analysis. By default, `hclust` uses the `complete linkage` agglomeration method, which merges the two nearest clusters in the set at every stage in the clustering process until there is a single cluster; this process determines which clusters are closest to each other (the ones that merge sooner). An important difference between hierarchical clustering and the k-means clustering we've done is that with hierarchical clustering you don't specify the number of clusters to group your results into. 
 
 To read a dendrogram, look for the lines showing the height at which any two words are joined together; the shorter the height, the closer the two words are clustered. You can also look for broader clusters of terms among the branches (called "clades") of the tree diagram. The greater the height of the branch points for each clade, the greater the difference between them. 
 
@@ -96,7 +98,7 @@ You can include as many query terms as you like, following the pattern in the ex
 # Here is where you define the terms that you want to investigate.
 query_words <- c("dress","lace","frock","silk","hat")
 
-# This establishes the set of terms to be used in your dendrogram. For each term you've defined in `query_set`, the function below selects a specified number of its closest words. You can determine the maximum number of words to plot by changing the number below. In the sample code, the number of selected words is set at 10. With 5 words in `query_set`, `subset` will contain at most 50 words, since some may be closest to more than one of your query terms.
+# This establishes the set of terms to be used in your dendrogram. For each term you've defined in `query_set`, the code below selects a specified number of its closest words. You can determine the maximum number of words to plot by changing the number below. In the sample code, the number of selected words is set at 10. With 5 words in `query_set`, the `subset` will contain at most 50 words, since some may be closest to more than one of your query terms.
 query_set <- lapply(query_words, 
        function(query_term) {
           nearest_words <- w2vModel %>% closest_to(w2vModel[[query_term]], 10) 
@@ -126,7 +128,7 @@ You can fill in any two terms in the first line of the code block below. You can
 query_words <- c("rich","poor")
 query_set <- w2vModel[[query_words, average=FALSE]]
 
-# Here, `model[1:3000,]` restricts the dataset to the 3000 most common words in your corpus; you can adjust this number to include more or fewer words.
+# Here, `model[1:3000,]` restricts the dataset to the 3000 most common words in your corpus. You can adjust this number to include more or fewer words.
 concept_pairs <- w2vModel[1:3000,] %>% cosineSimilarity(query_set)
 
 # This filters to the top *n* words related to the input terms; change the numbers following the greater-than symbols below to see more or fewer words in your plot (set to 50 in the example).
@@ -148,7 +150,7 @@ This option makes it possible to plot the words closest to multiple input terms 
 
 As with the example above, the code below first selects the most common words in the set; it then filters the results down to the *n* words closest to any of the input terms (where "n" is a number that you can define; the default is 50), and then plots those using principal component analysis. 
 
-You can include as many query terms as you like, following the pattern in the example by adding new terms in quotation marks, separated by commas. You can also show more or fewer words in the resulting plot and adjust the frequency threshold for which terms are part of the calulations.
+You can include as many query terms as you like, following the pattern in the example by adding new terms in quotation marks, separated by commas. You can also show more or fewer words in the resulting plot and adjust the frequency threshold for which terms are part of the calculations.
 
 ```{r}
 
@@ -176,7 +178,7 @@ This more complex visualization allows you to define a conceptual plane accordin
 
 The terms that appear in the plot are generated from their proximity to a set of key terms that you define. Thus, this visualization allows you to identify a domain that you wish to explore (for example, clothing words, food words, or animal words), and plot terms related to that domain across a plane in which each axis represents the distinction between two sets of concepts that you also define. Words will appear higher or lower on the y axis, depending on how close they are to each of the two conceptual poles from one set of opposed concepts; words will appear farther to the left or right on the x axis, depending on how close they are to each of the poles in the other set of concepts. 
 
-In addition to selecting terms, you can also determine how many words to plot in this space (the example is set to 300). You can include as many query terms as you like, following the pattern in the example by adding new terms in quotation marks, separated by commas. In fact, the example below has a relatively small number of input terms; to explore this in earnest, you would want to have more. To come up with more words for your list, try querying the terms that are closest to some of the words that you want to examine. 
+In addition to selecting terms, you can also determine how many words to plot in this space (the example is set to 300). You can include as many query terms as you like, following the pattern in the example by adding new terms in quotation marks, separated by commas. In fact, the example below has a relatively small number of input terms; to explore this in earnest, you would want to have many more. To come up with more words for your list, try querying the terms that are closest to some of the words that you want to examine. 
 
 You can also have more or fewer contrast words in each of your concept pairs, following the model in the sample code below. These will strongly impact your results, so you should try multiple variations to make sure that you're getting as close as possible to the concepts you want to investigate—remember that we are using these terms as proxies for much more complex concepts, and that it is unlikely that a single term or small set of terms will fully express the complexity at stake.  
 
