@@ -18,13 +18,13 @@ This is an R Markdown file, which means that it contains both text (what you're 
 
 Before running any code, you should do a quick check on your preferences for how RStudio will handle R Markdown files. Go to the Tools menu above, select "Global Options", then select "R Markdown Preferences," and make sure that "Show output inline for all R Markdown documents" is *not* selected. 
 
-To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-return` or `control-return.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, select the section you want to run and hit `command-return` or `control-return`. In the "console" below, you will see that the code has run, and the results of your code. 
+To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-enter` or `control-enter.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, highlight the section you want to run and hit `command-enter` or `control-enter`. 
 
-Much of the code you'll need will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console. If you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console. 
+Much of our code will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console. If you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console. 
 
 If you don't see the stop sign but want to cancel a process, you can also hit `control-C.`
 
-If you are running code in a block line by line, your cursor will automatically go down to the next line after each is run, so you can move through the block by repeatedly hitting `command-return` or `control-return`.
+If you are running code in a block line by line, your cursor will automatically go down to the next line after each is run, so you can move through the block by repeatedly hitting `command-enter` or `control-enter`.
 
 Below is a code block: try running the code below, 
 
@@ -36,7 +36,7 @@ print("Now run all three lines at once by selecting them and running them togeth
 
 ```
 
-You can also run code directly in the console by typing or pasting it in and hitting `return`. You will get the same results, but if you want to save code that you have written, it is better to keep it in the R Markdown file, since edits there will be saved. On the other hand, if you prefer to run some code but *not* make changes to your file, you can just run that in the console.  
+You can also run code directly in the console by typing or pasting it in and hitting `enter`. You will get the same results, but if you want to save code that you have written, it is better to keep it in the R Markdown file, since edits there will be saved. On the other hand, if you prefer to run some code but *not* make changes to your file, you can just run that in the console.  
 
 ## Projects
 Projects are a way to organize your work in RStudio. If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space—and, as long as you have this project open, your files should be where you expect them to be. It will usually be easiest to start any session by opening the "WordVectors.Rproj" file, at least while you are getting used to working in RStudio.
@@ -56,7 +56,7 @@ To download RStudio see: https://rstudio.com/products/rstudio/download/.
 
 If this is a new RStudio session, you should check your working directory with the code below. As long as you opened this file from the WordVectors project, your working directory should be in the right place: the "WordVectors" folder. 
 
-Checking your working directory before you begin a session is always a good idea, because if the working directory is *not* where you're expecting, then not much else will work. Any time you see an error message that says a file does not exist in the current working directory, that's a good sign your working directory isn't where you think it is. 
+You should check your working directory because if the working directory is *not* where you are expecting, then not much else in your files will work. Any time you see an error message that says a file does not exist in the current working directory, that's a good sign your working directory isn't where you think it is.
 
 There are two lines of code in the block below; the first will allow you to check your working directory and the second will allow you to set your working directory with the  `setwd()` function, if you ever need to change it. We've provided you with some template text that you can replace with a file path specific to your computer. 
 
@@ -75,7 +75,7 @@ setwd("Path/To/Your/Directory")
 
 ## Installing packages
 
-*R Packages* are collections of functions, variables, data, and documentation that you can use to get options that go beyond what's available with the base R code. Like extensions for Google Chrome or Plugins on WordPress, these are additions that you can install directly from the internet through R's repository. Packages make it possible to do a wider range of tasks in R and are essential for working with word vectors. 
+*R Packages* are collections of functions, variables, data, and documentation that you can use to get options that go beyond what's available with the base R code. Like extensions for Google Chrome or plugins on WordPress, these are additions that you can install directly from the internet, in this case through R's repository. Packages make it possible to do a wider range of tasks in R and are essential for working with word vectors. 
 
 To install an R package, you can navigate through the Tools menu (Tools --> Install Packages) or install packages directly by running code with the `install()` function, as below. Whenever you are installing packages, make sure that you have an internet connection because the code pulls directly from online repositories.
 
@@ -99,9 +99,9 @@ install.packages("ggplot2")
 
 ## Loading packages
 
-Once the packages have been installed, you should load them using the `library()` function. You only need to install packages once, but you'll have to load them every time you start a new session in RStudio. You'll want to make a habit of checking your working directory and loading your packages at the start of each session.
+Once the packages have been installed, you should load them using the `library()` function. You only need to install packages once, but you'll have to load them every time you start a new session in RStudio. You should make a habit of checking your working directory and loading your packages at the start of each session.
 
-When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means you loaded the packages properly and you are all set. 
+When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means the packages loaded properly and you are all set. 
 
 ```{r}
 
@@ -193,6 +193,8 @@ baseFile <- "your_file_name"
 w2vInput <- paste("data/",baseFile,".txt", sep = "")
 w2vCleaned <- paste("data/",baseFile,"_cleaned.txt", sep="")
 w2vBin <- paste("data/",baseFile,".bin", sep="")
+
+#This line creates a singe text file with all the texts in your corpus
 combinedTexts$text %>% write_lines(w2vInput)
 
 ```
@@ -273,7 +275,7 @@ sapply(sample(1:centers, 10), function(n) {
 
 ## Closest to
 
-To find the words closest to a particular word in vector space, fill in that term and then run the code below. If you want to see more words, just increase the number. Make sure not to delete the quotation marks, and enter your word in lowercase
+To find the words closest to a particular word in vector space, fill in that term and then run the code below. If you want to see more words, just increase the number in the argument. Make sure not to delete the quotation marks, and enter your word in lowercase
 
 ```{r}
 
@@ -351,7 +353,7 @@ w2vModel <- read.vectors("data/name_of_your_file.bin")
 ## Exporting queries
 The code below will enable you to export the results from a particular query. To export query results, change the part after "w2vModel %>%" to match the query that you want to export. An example is filled in so that you can see what this looks like. You can also adjust the number of words in the results set, if you want to see more or fewer. If you'd like to export results from a different query, such as addition or subtraction, paste over the example query with the one that you want to export. 
 
-The first line of code defines the variable "w2vExport" as whatever query you set. The second line exports a csv file (which you can open in any program on your computer that works with tabular data, including Excel and Numbers). You can call the file whatever you like by replacing the template text inside of the quotation marks. The csv file will be exported to the "output" folder in your current working directory, and it will overwrite existing files with the same name, so make sure to rename the export file if you want to keep earlier versions. Make sure not to use any spaces in the file names you choose. 
+The first line of code defines the variable "w2vExport" as whatever query you set. The second line exports a CSV file (which you can open in any program on your computer that works with tabular data, including Excel and Numbers). You can call the file whatever you like by replacing the template text inside of the quotation marks. The CSV file will be exported to the "output" folder in your current working directory, and it will overwrite existing files with the same name, so make sure to rename the export file if you want to keep earlier versions. Make sure not to use any spaces in the file names you choose. 
 
 ```{r}
 

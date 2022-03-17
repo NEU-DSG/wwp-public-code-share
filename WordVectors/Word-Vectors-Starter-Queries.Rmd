@@ -18,10 +18,9 @@ knitr::opts_chunk$set(echo = TRUE)
 This file is a first introduction to word vectors; we'll use it to practice querying models before we move on to training models of our own.   
 
 ## Reminder on running code
-To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-return` or `control-return.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, select the section you want to run and hit `command-return` or `control-return`. 
+To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-enter` or `control-enter.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, highlight the section you want to run and hit `command-enter` or `control-enter`. 
 
-Much of the code you'll need will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console. If you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console.
-
+Much of our code will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console. If you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console. 
 
 ## Opening a new session: checking project and working directory
 As a reminder, at the start of any new session, you should make sure that you have the right project open and you should check your working directory. 
@@ -39,7 +38,7 @@ getwd()
 ## Opening a new session: loading packages
 All the packages you will need for this exercise have been installed ahead of time on our RStudio Server instance, but you'll want to load them using the `library()` function at the start of each new session. 
 
-When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means you have loaded the packages properly and you are all set. 
+When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means the packages loaded properly and you are all set. 
 
 ```{r}
 
@@ -58,7 +57,7 @@ library(wordVectors)
 
 Before you train models of your own, you'll start by reading in existing models. We've provided a set of sample models (all the files that end in '.bin') in the `data` folder; to read one of them in, edit and run the code below. You can also use this code to read in models that you've trained when you start a new session. And, you can even read in models trained by others, if you upload their .bin file to your `data` folder using the `Upload` button near the top of the `Files` menu (make sure you are already inside the `data` folder when you do this!). 
 
-We've filled in a sample model to get you started. If you want to use a different one, change the file path in the code below to select a different '.bin' file. Navigating file paths can be a bit confusing, but fortunately there is a trick you can use. Delete the text inside of the quotation marks below (but don't delete the quotation marks!) and then hit `tab`. You should get a pop-up with a view of the folder system you're more used to navigating; you can use this to fill in file paths whenever you need to.
+We've filled in a sample model to get you started. If you want to use a different model, change the file path in the code below to select a different '.bin' file. Navigating file paths can be a bit confusing, but fortunately there is a trick you can use. Delete the text inside of the quotation marks below (but don't delete the quotation marks!) and then hit `tab`. You should get a pop-up with a view of the folder system you're more used to navigating; you can use this to fill in file paths whenever you need to.
 
 ```{r}
 
@@ -70,7 +69,7 @@ w2vModel <- read.vectors("data/wwo-regularized.bin")
 
 We can get a glimpse of what the model looks like by plotting it in two dimensions. Keep in mind that the model actually has many more dimensions, so we are, in effect, flattening it. Though the visualization may be somewhat difficult to read, you should be able to see that similar words—words that are near each other in vector space—tend to clump together. The code below will likely take a minute or two to run, and your results will appear in the "Plots" window to the right (you can hit the "Zoom" button to get a better view).
 
-As the code is running, you'll see a set of lines in the console that will something like "Epoch: Iteration #100 error is: 20.3048394873336"; note that this is not an error message! As the code runs, the values for "error" should decrease—this reflects increasing confidence about how to plot the vector representation. 
+As the code is running, you'll see a set of lines in the console that will say something like "Epoch: Iteration #100 error is: 20.3048394873336"; note that this is not an error message! As the code runs, the values for "error" should decrease—this reflects increasing confidence about how to plot the vector representation. 
 
 ```{r}
 
@@ -95,7 +94,7 @@ sapply(sample(1:centers,10),function(n) {
 
 ## Closest to
 
-Now that you've had a chance to think about the corpus as a whole, it's time to start investigating individual words. To find the words closest to a particular word in vector space, enter a term between the quotation marks and then run the code below. You'll notice the output shows up in the console. If you want to see more words, increase the number. Make sure not to delete the quotation marks, and enter your word in lowercase. 
+Now that you've had a chance to think about the corpus as a whole, it's time to start investigating individual words. To find the words closest to a particular word in vector space, enter a term between the quotation marks and then run the code below. You'll notice the output shows up in the console. If you want to see more words, increase the number inside of the argument. Make sure not to delete the quotation marks, and enter your word in lowercase. 
 
 
 ```{r}
