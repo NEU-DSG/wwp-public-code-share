@@ -211,7 +211,7 @@ write.csv(file="output/name_of_your_cluster.csv", x=w2vExport)
 
 ## Evaluating the Model
 
-You can run this test by hitting `command-return` or `control-return` to run one line at a time, or just hit the green button in the top right of the code block below. 
+You can run this test by hitting `command-enter` or `control-enter` to run one line at a time, or just hit the green button in the top right of the code block below. 
 
 ```{r}
 
