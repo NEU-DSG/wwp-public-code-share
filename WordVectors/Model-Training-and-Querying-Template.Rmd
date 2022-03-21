@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Using this File
+# Using this File
 
 This file is set up so that once you're comfortable with the basics of `word2vec` and you have installed all the necessary packages, you can use it as a convenient template for working with your data. Most of the instructional language is in the other walkthrough files in this directory, so check those if you have questions. This file includes just the code you'll need to load in files, train models, and query them, with a few comments on the things you'll want to pay particularly close attention to. 
 
@@ -20,7 +20,7 @@ Whenever you start a new RStudio session, here is the order of basic housekeepin
 + Load packages
 + Load in the model you want to work with, or follow the steps to train a new model
 
-##Checking the working directory
+## Checking the working directory
 
 ```{r}
 
@@ -179,7 +179,7 @@ w2vModel %>% closest_to(~"rich"-"poor"+"dress", 20)
 
 ```
 
-##Exporting queries
+## Exporting queries
 
 ```{r}
 
@@ -192,7 +192,7 @@ write.csv(file="output/name_of_your_query.csv", x=w2vExport)
 ```
 
 
-##Exporting clusters
+## Exporting clusters
 
 ```{r}
 

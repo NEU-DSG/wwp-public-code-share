@@ -11,7 +11,7 @@ The code chunk below is just part of the setup for this file. You can ignore it 
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#Getting started 
+# Getting started 
 
 ## Using this file
 
@@ -51,7 +51,7 @@ library(wordVectors)
 
 ```
 
-#Working with word2vec models
+# Working with word2vec models
 
 ## Reading in existing models
 
@@ -125,7 +125,7 @@ w2vModel %>% closest_to(~'grace'-'beauty', 20)
 
 In our next walkthrough, we'll cover training models, as well as a few other things you can do with word2vec.
 
-#Credit and thanks
+# Credit and thanks
 This tutorial uses the `wordVectors` package developed by Ben Schmidt and Jian Li, itself based on the original `word2vec` code developed by Mikolov et al. The walkthrough was also informed by workshop materials authored by Schmidt, as well as by an exercise created by Thanasis Kinias and Ryan Cordell for the "Humanities Data Analysis" course, and a later version used in Elizabeth Maddock Dillon and Sarah Connell's "Literature and Digital Diversity" class, both at Northeastern University.
 
 This version of the walkthrough was developed as part of the Word Vectors for the Thoughtful Humanist series at Northeastern. Word Vectors for the Thoughtful Humanist has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.
