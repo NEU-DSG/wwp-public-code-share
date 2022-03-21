@@ -242,7 +242,7 @@ if (!file.exists(w2vBin)) {
 
 ```
 
-#Querying the model
+# Querying the model
 
 ## Visualizing 
 

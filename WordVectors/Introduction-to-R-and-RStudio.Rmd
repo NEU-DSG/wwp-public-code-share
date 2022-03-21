@@ -69,7 +69,7 @@ When you open RStudio to begin a new session, the first thing you should do is c
 
 You should check your working directory because if the working directory is *not* where you are expecting, then not much else in your files will work. Any time you see an error message that says a file does not exist in the current working directory, that's a good sign your working directory isn't where you think it is.
 
-##Checking the working directory
+## Checking the working directory
 If you opened this file from within the "WordVectors" R project, then your working directory should be in the right place. Just to be sure, the code below will help you confirm this.
 
 The first line of code will allow you to check your working directory and the second will allow you to set your working directory, if you need to change it. If you run the first line of code and the results in the console show that your working directory is the "WordVectors" folder, then you don't need to run the second line of code.
@@ -97,6 +97,7 @@ Functions require precise syntax to be run successfully. When you add a function
 To demonstrate this, let's use two basic functions, `sum()` and `print()`. Run this code line by line and then try changing the arguments to practice editing code.
 
 ```{r}
+
 # The `sum()` function calculates the sum of a set of numbers in the parentheses. Make sure to separate by commas.
 sum(91,87,65,86,40,88,90)
 
