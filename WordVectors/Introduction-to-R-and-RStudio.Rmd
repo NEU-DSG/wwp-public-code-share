@@ -2,7 +2,9 @@
 title: "Introduction to R and RStudio"
 author: "Juniper Johnson, Sarah Connell, and Ash Clark"
 date: "5/7/2021"
-output: html_document
+output: 
+  html_document:
+    template: template.html
 ---
 
 The code chunk below is just part of the setup for this file. You can ignore it and skip down to the next section. No need to run this code! 

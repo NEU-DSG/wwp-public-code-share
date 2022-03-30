@@ -2,7 +2,9 @@
 title: "Word Vectors Visualization"
 author: "Benjamin Schmidt & Sarah Connell"
 date: "6/3/2021"
-output: pdf_document
+output: 
+  html_document:
+    template: template.html
 ---
 
 ```{r setup, include=FALSE}
