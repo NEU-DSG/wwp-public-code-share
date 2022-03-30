@@ -11,7 +11,8 @@ This directory contains six RMarkdown files, some of which are designed for RStu
 * `Word Vectors Installation, Training, Querying, and Validation` covers the same functionality as the walkthrough above, but it assumes you are running the walkthrough on your own computer rather than in RStudio Server.
 * `Model Training and Querying Template` provides code for training and querying a model, without the preliminary steps of installing code packages, and with fewer comments (assuming that the user is already familiar with the process, from the other walkthroughs). It can be used in both the RStudio Server environment and on your own computer.
 * `Word Vectors Visualization` provides more detailed code for visualizing an existing trained model, working through a set of example plots with the Women Writers Online collection. It can be used in both the RStudio Server environment and on your own computer.
-You can find web-friendly versions of these notebooks at the [https://wwp.northeastern.edu/lab/wwvt/resources/walkthroughs/index.html](Women Writers Vector Toolkit) site.
+
+You can find web-friendly versions of these notebooks at the [Women Writers Vector Toolkit](https://wwp.northeastern.edu/lab/wwvt/resources/walkthroughs/index.html) site.
 
 ## Downloading R and RStudio
 Before you open these files, it is helpful to download R and RStudio. You can download R from the CRAN (Comprehensive R Archive Network) repository: [https://cloud.r-project.org/](https://cloud.r-project.org/). There are specific instructions for downloading to Linus, Mac OS X, and Windows machines.
