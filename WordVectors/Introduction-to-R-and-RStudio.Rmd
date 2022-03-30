@@ -11,14 +11,14 @@ The code chunk below is just part of the setup for this file. You can ignore it 
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introduction to R
+## Introduction to R
 
 R is a programming language that can be used for a wide range of both textual and statistical analyses. This introduction covers some key concepts and processes for working with R in RStudio.
 
 RStudio is an "integrated development environment" for R. Similar to how word processing software provides an editor for writing and editing text documents, RStudio is an editor for writing and running R code. Essentially, R is the programming language and RStudio is an interface that you can use to work with R. It is possible to work in R and RStudio either locally on your own computer or through RStudio Server, a browser-based interface. 
 
 
-## RStudio environment
+### RStudio environment
 
 The RStudio workspace has several sections, each with a different purpose. On the top left, where you're reading this now, is the *Source* pane, the place where you can write, open, and interact with different kinds of files, including R Notebooks, R Scripts, R Markdown files (like this one), and even files using other programming languages. The Source pane is also the space where you can view any tabular data that you generate.
 
@@ -28,7 +28,7 @@ The top right section will default to show the *Environment* pane, a section tha
 
 The section on the bottom right will default to show the *Files* pane. In this section you can view, navigate, and access all of the files in your working directory. This section also has four other tabs for *Plots*, *Packages*, *Help*, and *Viewer*. In these tabs, you can view plots that you generate, install, and load packages, access help and documentation about R, and view local web content. 
 
-## R Markdown and running code
+### R Markdown and running code
 
 This is an R Markdown file, a format that contains both text (what you are reading now) that can be formatted for display on the web or as a PDF file, and snippets of code that you can run right from the file. 
 
@@ -58,18 +58,20 @@ Alternatively, you can also run code directly in the console by typing or pastin
 
 Try this out by writing and running a few simple math operations directly in the console below.
 
-## Projects
+### Projects
+
 Projects are a way to organize your work in RStudio. If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space—and, as long as you have this project open, your files should be where you expect them. It will usually be easiest to start any session by opening the "WordVectors.Rproj" file, at least while you are getting used to working in RStudio.
 
 To confirm that you have the correct project open, check the top-right corner of the RStudio screen and make sure it says "WordVectors" in the project selection dropdown. If the project is not open, you can open it by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file. Always check at the beginning of a session to make sure you have the project open; if you don't, it will likely cause errors. If you do hit an error, one of the first things you should check is whether your project is open.
 
-## Working directory and file structure
+### Working directory and file structure
 
 When you open RStudio to begin a new session, the first thing you should do is check your working directory. A working directory is, essentially, the starting location for the set of files and folders that you are working in. The locations of those files and folders (and RStudio's knowledge of where to find them) are relative to the working directory. Think of your file structure as a set of directions for getting somewhere, relative to a specific starting point (like "start at the train station, go south two blocks, turn right, third house on the left"). If you started at a train station in a different town, you might follow those directions but end up in the wrong place. So your *current working directory* says "This is our starting point!". The set of directions ("go into the data directory...") is the file path.
 
 You should check your working directory because if the working directory is *not* where you are expecting, then not much else in your files will work. Any time you see an error message that says a file does not exist in the current working directory, that's a good sign your working directory isn't where you think it is.
 
-## Checking the working directory
+### Checking the working directory
+
 If you opened this file from within the "WordVectors" R project, then your working directory should be in the right place. Just to be sure, the code below will help you confirm this.
 
 The first line of code will allow you to check your working directory and the second will allow you to set your working directory, if you need to change it. If you run the first line of code and the results in the console show that your working directory is the "WordVectors" folder, then you don't need to run the second line of code.
@@ -88,7 +90,7 @@ setwd("path/to/your/directory")
 
 ```
 
-## Functions and variables
+### Functions and variables
 
 This section will give you a chance to practice editing code while learning about a core concept in R: functions. Functions are code that you use to perform a specific task. 
 
@@ -147,7 +149,7 @@ print(giant_amazonian_river_otter)
 
 However, that variable would not be very helpful to us if we were trying to remember and use it later. Generally, you want to make your variable names clear and descriptive, and use consistent systems for things like marking word boundaries and deciding how much detail to include.
 
-## Saving and quitting a session
+### Saving and quitting a session
 
 After you are done with an RStudio session, you need to take two important steps. First, *save* any changes to your files you will want to access later. Next—especially when you are working on a RStudio Server—you need to quit the session. There are two options for this: 1) navigate to the "Session" tab of the menu and click "Quit Session" or 2) run the following chunk of code. If you go with the first option, it will ask you whether you want to save your workspace image; you can say "no" to this. If you run the command instead, it will prompt a question about whether or not you want to save your workspace; you can respond 'n' ("no") to this query. 
 
@@ -160,7 +162,7 @@ q()
 
 If you are on an RStudio Server instance, this step is *very* important because the session will continue in the browser until you end it. If there are multiple sessions open, it can bog down the server. So always remember to save and quit RStudio!
 
-## Key concepts and terminology
+### Key concepts and terminology
 
 We won't be covering all of these concepts directly, but we're including a full list of terms that might come up in our discussions. 
 
@@ -181,7 +183,7 @@ We won't be covering all of these concepts directly, but we're including a full 
 + *Variable*: a variable is a character or group of characters (like "x" or "y" or words like "text" or "words") that you define and that R treats as a data object, stored in working memory for later processing.
 + *Working Directory*: a working directory in R is the default location within your folder structure—it's the starting point for any navigation you do among your files and folders.
 
-## References
+### References
 
 Arnold, Taylor and Lauren Tilton. "Basic Text Processing in R." _The Programming Historian_ vol. 6, 2017, https://doi.org/10.46430/phen0061.
 

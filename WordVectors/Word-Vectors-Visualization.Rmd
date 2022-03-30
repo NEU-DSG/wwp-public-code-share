@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Word Vectors Plotting and Exploration
+## Word Vectors Plotting and Exploration
 
 This walkthrough offers options for exploring word2vec models, using several methods for plotting and visualization. 
 
@@ -19,8 +19,9 @@ This walkthrough assumes you are familiar with the basics of setting up new RStu
 
 These walkthroughs are drawn from code published by Ben Schmidt in two vignettes: an ["Introduction"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/introduction.Rmd) and an ["Exploration"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/exploration.Rmd) accompanying the `WordVectors` package, as well as code samples in Schmidt's post ["Vector Space Models for the Digital Humanities"](http://bookworm.benschmidt.org/posts/2015-10-25-Word-Embeddings.html). The code has been generalized and lightly modified, and additional explanations have been added.  
 
-# Getting started
-## Checking your working directory
+## Getting started
+
+### Checking your working directory
 
 ```{r}
 
@@ -29,7 +30,7 @@ getwd()
 ```
 
 
-## Loading packages
+### Loading packages
 
 ```{r}
 
@@ -46,7 +47,7 @@ library(ggplot2)
 ```
 
 
-## Reading in an existing model file
+### Reading in an existing model file
 
 ```{r}
 
@@ -55,7 +56,7 @@ w2vModel <- read.vectors("data/wwo-regularized.bin")
 ```
 
 
-## Plotting the terms closest to a query set
+### Plotting the terms closest to a query set
 
 This is a way to visualize the words closest to a set of terms that you choose, giving you a view of your results that's a bit different from the lists of terms and their cosine similarities that we've been working with. You lose the information on specific cosine similarities, but you gain the ability to review the whole set of results simultaneously, without the linearity of a list. You can also start to explore whether there might be patterns in the relationships among the closest terms in your results.
 
@@ -82,7 +83,7 @@ plot(model_object, method="pca")
 ```
 
 
-## Defining and exploring clusters with dendrograms
+### Defining and exploring clusters with dendrograms
 
 This is a way of looking for clusters among the words closest to a set of terms that you choose. The result is a dendrogram, or tree diagram. This is a bit like the clustering you've seen already, but instead of operating on the level of the whole model, it instead clusters the results that are closest to a specified set of terms in vector space. 
 
@@ -116,7 +117,7 @@ subset %>%
 ```
 
 
-## Plotting related word pairs
+### Plotting related word pairs
 
 A method for looking at related pairs of words, this visualization lets you select a pair of key terms and then plot out the words that are closest to each, according to their cosine similarities. This approach is useful in that it shows your results in two-dimensional space, rather than as individual lists, thus making it easier to review multiple terms at once and look for patterns while still retaining basic information about cosine similarity. The plot allows you to see which resulting words are closely associated with one or the other input term, as well as those associated with both, which will appear in the middle. 
 
@@ -144,7 +145,7 @@ text(concept_pairs, labels=rownames(concept_pairs))
 ```
 
 
-## Plotting terms associated with multiple keywords
+### Plotting terms associated with multiple keywords
 
 This option makes it possible to plot the words closest to multiple input terms with principal component analysis (see above for a quick explanation of how PCA works). This method allows you to explore more complex word relationships for cases in which the concepts you wish to examine are better expressed with multiple terms. 
 
@@ -172,7 +173,7 @@ high_similarities_to_query_set %>%
 ```
 
 
-## Plotting related terms in a multi-concept plane
+### Plotting related terms in a multi-concept plane
 
 This more complex visualization allows you to define a conceptual plane according to two sets of binaries or otherwise paired concepts (for example: rich and poor, female and male, society and nature, or good and evil) and plot a set of terms within that space. 
 
@@ -216,6 +217,7 @@ ggplot(all_concepts, aes(x=thingX_vs_thingY, y=thingA_vs_thingB, label=word)) + 
 
 
 ## Credits and thanks
+
 This tutorial uses the `wordVectors` package developed by Ben Schmidt and Jian Li, itself based on the original `word2vec` code developed by Mikolov et al. 
 
 These walkthroughs are drawn from code published by Ben Schmidt in two vignettes: an ["Introduction"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/introduction.Rmd) and an ["Exploration"](https://github.com/bmschmidt/wordVectors/blob/master/vignettes/exploration.Rmd) accompanying the `WordVectors` package, as well as code samples in Schmidt's post ["Vector Space Models for the Digital Humanities"](http://bookworm.benschmidt.org/posts/2015-10-25-Word-Embeddings.html). The code has been generalized and lightly modified, and additional explanations have been added for this walkthrough.  
