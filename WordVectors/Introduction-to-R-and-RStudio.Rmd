@@ -85,8 +85,9 @@ Navigating file paths can be a bit confusing, but, fortunately there is a trick 
 # How to check your working directory (this is also an example of how you add a comment to your code—by typing "#")
 getwd()
 
-# How to set your working directory (do not run this unless you actually want to change your working directory—as long as you opened the project file first, you should not need to change your working directory!)
-setwd("path/to/your/directory")
+# How to set your working directory (do not run this unless you actually want to change your working directory—as long as you opened the project file first, you should not need to change your working directory!). Delete the hashtag to take the line below out of the comment, then fill your file path in. 
+
+# setwd("path/to/your/directory")
 
 ```
 
@@ -155,8 +156,9 @@ After you are done with an RStudio session, you need to take two important steps
 
 ```{r}
 
-#Here is the command for quitting a session. Don't run this unless you want to quit the session!
-q()
+# Here is the command for quitting a session. Don't run this unless you want to quit the session! The code is commented out for now; if you want to run this, remove the hashtag first.
+
+# q()
 
 ```
 

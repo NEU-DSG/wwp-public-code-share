@@ -69,8 +69,9 @@ Navigating file paths can be a bit confusing, but, fortunately there is a trick 
 # How to check your working directory (this is also an example of how you add a comment to your code—by typing "#")
 getwd()
 
-# How to set your working directory; don't run this unless you need to change your working directory
-setwd("Path/To/Your/Directory")
+# How to set your working directory (do not run this unless you actually want to change your working directory—as long as you opened the project file first, you should not need to change your working directory!). Delete the hashtag to take the line below out of the comment, then fill your file path in. 
+
+# setwd("path/to/your/directory")
 
 ```
 
