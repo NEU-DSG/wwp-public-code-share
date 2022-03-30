@@ -10,7 +10,7 @@ output:
 The code chunk below is just part of the setup for this file. You can ignore it and skip down to the next section. No need to run this code! 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, results = "hide", error=FALSE, warning=FALSE, message=FALSE)
 ```
 
 ## Introduction to R
