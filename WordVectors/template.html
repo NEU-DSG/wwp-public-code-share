@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>$pagetitle$ | Women Writers Vector Toolkit</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+$for(author-meta)$
+<meta name="author" content="$author-meta$" />
+$endfor$
+$if(date-meta)$
+<meta name="dcterms.date" content="$date-meta$" />
+$endif$
+$if(keywords)$
+<meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$" />
+$endif$
+$if(description-meta)$
+<meta name="description" content="$description-meta$" />
+$endif$
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  $for(css)$
+  <link rel="stylesheet" href="$css$" />
+  $endfor$
+  $for(header-includes)$
+  $header-includes$
+  $endfor$
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous" data-external="1">
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400italic,600&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css"  data-external="1"/>
+  <link rel="stylesheet" href="https://raw.githubusercontent.com/NEU-DSG/women-writers-vector-toolkit/proofing/resources/walkthroughs/header.css" type="text/css" data-external="1"/>
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="nav-item nav-item-logo">
+        <img src="https://github.com/NEU-DSG/women-writers-vector-toolkit/raw/proofing/assets/logo.png" width="61" height="52" alt="" data-external="1">
+        <a href="../../index.html" id="wwvt-home">Women Writers Vector Toolkit</a>
+      </div>
+      <div class="nav-item">
+        <a href="index.html">All Code Walkthroughs</a>
+      </div>
+    </nav>
+  </header>
+  
+  <div class="main-body">
+    <div class="container">
+      <p class="h1 title">$title$</p>
+      <p class="metadata">$for(author)$
+      <span class="author">$author$</span>
+      $endfor$
+      $if(date)$
+      <br/><span class="date">$date$</span>
+      $endif$</p>
+      
+      <p><em>This notebook is part of a series published by the Women Writers
+        Project; for the full set of notebooks and more context on their usage,
+        see the <a href="https://github.com/NEU-DSG/wwp-public-code-share/tree/main/WordVectors">GitHub
+          repository</a>.</em></p>
+      
+      $if(toc)$
+      <nav id="$idprefix$TOC" role="doc-toc">
+        $if(toc-title)$
+        <h2 id="$idprefix$toc-title">$toc-title$</h2>
+        $endif$
+        $table-of-contents$
+      </nav>
+      $endif$
+      
+      $body$
+    </div>
+  </div>
+</body>
+</html>
