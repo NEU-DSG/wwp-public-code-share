@@ -22,8 +22,6 @@ During the WWP's institutes, we use six code walkthroughs. Because these institu
 
 You can find web-friendly versions of these notebooks at the [Women Writers Vector Toolkit](https://wwp.northeastern.edu/lab/wwvt/resources/walkthroughs/index.html) site.
 
-site.
-
 ## Working on Your Own
 
 If you want to train and work with models on your own computer, you can download the code walkthroughs from GitHub. Of the walkthroughs listed above, the following are the ones that are useful outside a workshop context:
