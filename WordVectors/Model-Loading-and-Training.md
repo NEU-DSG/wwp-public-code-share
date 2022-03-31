@@ -20,7 +20,9 @@ During the WWP's institutes, we use six code walkthroughs. Because these institu
 
 **Word Vectors Visualization:** This walkthrough provides more detailed code for visualizing an existing trained model, working through a set of example plots with the Women Writers Online collection. It can be used in both the RStudio Server environment and on your own computer.
 
-You can find web-friendly versions of these notebooks at the [https://wwp.northeastern.edu/lab/wwvt/resources/walkthroughs/index.html](Women Writers Vector Toolkit) site.
+You can find web-friendly versions of these notebooks at the [Women Writers Vector Toolkit] (https://wwp.northeastern.edu/lab/wwvt/resources/walkthroughs/index.html) site.
+
+site.
 
 ## Working on Your Own
 
