@@ -34,7 +34,7 @@ The section on the bottom right will default to show the *Files* pane. In this s
 
 This is an R Markdown file, a format that contains both text (what you are reading now) that can be formatted for display on the web or as a PDF file, and snippets of code that you can run right from the file. 
 
-Before running any code, you should do a quick check on your preferences for how RStudio will handle R Markdown files. Go to the Tools menu above, select "Global Options", then select "R Markdown Preferences," and make sure that "Show output inline for all R Markdown documents" is *not* selected. Windows users may need to restart RStudio after deselecting this option.
+Before running any code, you should do a quick check on your preferences for how RStudio will handle R Markdown files. Go to the Tools menu above, select "Global Options", then select "R Markdown Preferences," and make sure that "Show output inline for all R Markdown documents" is *not* selected. Windows users may be required to restart RStudio after deselecting this option.
 
 To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-enter` or `control-enter.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, highlight the section you want to run and hit `command-enter` or `control-enter`. 
 
