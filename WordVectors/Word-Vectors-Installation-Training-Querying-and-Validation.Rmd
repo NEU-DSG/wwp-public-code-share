@@ -163,6 +163,7 @@ path2file <- "data/name_of_your_folder"
 
 # This will create a list of files in the folder
 fileList <- list.files(path2file, full.names=TRUE) 
+?list.files
 
 # This is where you define a function to read in multiple text files and paste them into a tibble (remember that the code that defines functions must be run by putting your cursor at the beginning or end, or by selecting the whole section of code). You are only defining the function here; the next section of code is when you actually run the function.
 readTextFiles <- function(file) { 
