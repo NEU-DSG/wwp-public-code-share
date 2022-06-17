@@ -135,7 +135,7 @@ model = Word2Vec.load("word2vectest.model")
 model.wv.most_similar('recipe', topn=10)
 model.wv.similarity("milk", "cream") #how similar two words are
 model.predict_output_word([ "flour", "eggs", "cream"])  #predict the other words in the sentence given these words
-print(len(model.wv.vocab)) #number of words in the vocabulary
+print(len(model.wv)) #number of words in the vocabulary
 model.wv.most_similar(positive = ["recipe"], negative=["cream"], topn=10)
 model.wv.most_similar(positive = ["recipe", "milk"], topn=10)
 
@@ -144,7 +144,7 @@ model.wv.most_similar(positive = ["recipe", "milk"], topn=10)
 
 ######################  k-means clustering
 
-VOCAB = model[model.wv.vocab]
+VOCAB = model.wv[model.wv.key_to_index]
 NUM_CLUSTERS = 3
 kmeans = cluster.KMeans(n_clusters=NUM_CLUSTERS, max_iter=40).fit(VOCAB) #default is  clusters, 300 iterations
 
@@ -167,7 +167,7 @@ clusters_df.to_csv("random_clusters.csv")  #this will output the random sampling
 # based on this tutorial https://machinelearningmastery.com/develop-word-embeddings-python-gensim/ and the plt documentation
 
 def pca(model):
-    X = model[model.wv.vocab]  #get all the vectors
+    X = model.wv[model.wv.key_to_index]  #get all the vectors
     pca = PCA(n_components=3)
     result = pca.fit_transform(X)
     # create a scatter plot of the projection
@@ -203,7 +203,7 @@ def tsne_plot(model, focus_word = None, n = 50):
             tokens.append(model.wv[neighbor[0]])
             labels.append(neighbor[0])
     else:
-        for word in model.wv.vocab:
+        for word in model.wv.key_to_index:
             tokens.append(model.wv[word])
             labels.append(word)
     
@@ -228,7 +228,7 @@ def tsne_plot(model, focus_word = None, n = 50):
     
 ##########################    Evaluating
 
-dirpath = Path(r"C:\\Users\\avery\\.spyder-py3").glob('*.model') #current directory plus only files that end in 'model' 
+dirpath = Path(r"C:\\Users\\avery\\.spyder-py3\\models\\wordvector models").glob('*.model') #current directory plus only files that end in 'model' 
 files = dirpath
 model_list = [] # a list to hold the actual models
 model_filenames = []  # the filepath for the models so we know where they came from
@@ -265,4 +265,4 @@ for i in range(len(model_list)):
         df = [model_filenames[i], test_words[x], similarity_score]
         evaluation_results.loc[i] = df
         
-evaluation_results.to_csv('word2vec_model_evaluation.csv') #dump the results into a csv
+# evaluation_results.to_csv('word2vec_model_evaluation.csv') #dump the results into a csv
