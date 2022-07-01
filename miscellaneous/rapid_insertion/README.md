@@ -46,3 +46,13 @@ a newline, then the requisite number of spaces, & the
 
 See [our blog post](https://wwp.northeastern.edu/blog/?p=1109) about this
 topic.
+
+### Addendum
+
+A similar case arose in June 2022, and this same solution worked
+beautifully. Only this time (due to the pandemic) it was done over a
+video conference call with screen sharing. We inserted 1263 `<lb>`
+elements in roughly 1.5 hours, for ~842 `<lb>`s per hour (or an
+average of 1 `<lb>` every ~4¼ s), and corrected several other errors
+along the way.
+
