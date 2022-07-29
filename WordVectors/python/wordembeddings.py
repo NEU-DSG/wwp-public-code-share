@@ -154,7 +154,7 @@ labels = kmeans.labels_
 centroids = kmeans.cluster_centers_
 clusters_df = pd.DataFrame()
 for i in range(NUM_CLUSTERS):
-    most_representative = wv.most_similar(positive=[centroids[i]], topn=15)
+    most_representative = model.wv.most_similar(positive=[centroids[i]], topn=15)
     temp_df={'Cluster Number': i, 'Words in Cluster': most_representative}
     clusters_df = clusters_df.append(temp_df, ignore_index = True)
     print(f"Cluster {i}: {most_representative}")
@@ -164,8 +164,10 @@ clusters_df.to_csv("random_clusters.csv")  #this will output the random sampling
 
 ################## PCA
 
-# based on this tutorial https://machinelearningmastery.com/develop-word-embeddings-python-gensim/ and the plt documentation
 
+
+# based on this tutorial https://machinelearningmastery.com/develop-word-embeddings-python-gensim/ and the plt documentation
+labels = list(model.wv.key_to_index)
 def pca(model):
     X = model.wv[model.wv.key_to_index]  #get all the vectors
     pca = PCA(n_components=3)
@@ -177,11 +179,19 @@ def pca(model):
     fig = plt.figure(figsize=(8, 6))
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(x_axis, y_axis, z_axis)
+    for i in range(len(labels)):
+        ax.text(x_axis[i], y_axis[i], z_axis[i], labels[i], style ='italic',
+        fontsize = 10, color ="blue")
     ax.set_xlabel('x axis')
     ax.set_ylabel('y axis')
     ax.set_zlabel('z axis')
+
     
     plt.show()
+    
+
+    
+    
 
 #pca(model)
 
@@ -216,17 +226,31 @@ def tsne_plot(model, focus_word = None, n = 50):
     plt.figure(figsize=(16, 16)) 
     for i in range(len(x)):
         plt.scatter(x[i],y[i])
+        # plt.annotate(labels[i],
+        #              xy=(x[i], y[i]),
+        #              xytext=(5, 2),
+        #              textcoords='offset points',
+        #              ha='right',
+        #              va='bottom')
+    for i in range(20):
         plt.annotate(labels[i],
-                     xy=(x[i], y[i]),
-                     xytext=(5, 2),
-                     textcoords='offset points',
-                     ha='right',
-                     va='bottom')
+                      xy=(x[i], y[i]),
+                      xytext=(5, 2),
+                      textcoords='offset points',
+                      ha='right',
+                      va='bottom')
     plt.show()
     
 #tsne_plot(model)
     
 ##########################    Evaluating
+
+
+word="recipe"
+if word in model.wv.key_to_index:
+    print("The word %s is in your model" % word)
+
+
 
 dirpath = Path(r"C:\\Users\\avery\\.spyder-py3\\models\\wordvector models").glob('*.model') #current directory plus only files that end in 'model' 
 files = dirpath
