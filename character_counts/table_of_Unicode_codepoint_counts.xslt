@@ -330,6 +330,8 @@
     <xsl:if test="self::attribute(rend)">
       <xsl:if test="matches( .,'p(re|ost)\(')">
         <xsl:variable name="rend" select="."/>
+        <!-- Remove keywords ’cause they are not characters -->
+        <xsl:variable name="rend" select="replace( $rend, '#[A-Za-z0-9._-]+','')"/>
         <xsl:variable name="rend" select="replace( $rend, $rlops, $pop )"/>
         <xsl:variable name="rend" select="replace( $rend, $rlcps, $pcp )"/>
         <xsl:variable name="pre">
