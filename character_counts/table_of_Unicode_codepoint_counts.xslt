@@ -516,7 +516,7 @@
                 </ul>
               </xsl:when>
               <xsl:when test="$input/wwp:* | $input/yaps:*">
-                keep only pre() and post() of @rend
+                keep only pre() and post() of @rend, and ignore keywords like “#rule” in those
               </xsl:when>
               <xsl:when test="$input/html:*">
                 keep only @title and @alt
