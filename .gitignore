@@ -8,4 +8,3 @@ Icon
 **/build/
 **/.ipynb_checkpoints/
 *.model
-*.csv
