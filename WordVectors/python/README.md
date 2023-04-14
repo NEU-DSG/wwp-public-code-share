@@ -4,24 +4,24 @@ These walkthroughs provide code and instructions for training and querying model
 
 ## Walkthrough Files
 
-This directory contains four Jupyter Notebook files, each of which contains a combination of prose and executable code cells:
+This directory contains four Jupyter Notebook files, each of which includes a combination of prose and executable code cells:
 
 * [Introduction to Python](python-fundamentals.ipynb) provides an overview of fundamental concepts in the programming language Python that are necessary for the subsequent notebooks. The notebook assumes that users have an understanding of basic programming concepts but perhaps not Python specific knowledge.
-* [Introduction to Word Vectors in Python](word2vec-fundamentals.ipynb) provides an introductory framework for importing data, cleaning data, training a Word2Vec model, querying that model, and finally evaluating that model. The notebooks as they are currently written use a dataset of nineteenth-century American recipes which has been included with the directory. This sample dataset can be modified.
-* [Exploratory Visualization With Word2Vec](word2vec-visualization.ipynb) provides a framework for exploratory visualization techniques using Word2Vec. The notebook is currently written to use a sample model provided with the directory, but this sample model can be swapped out with another.
-* [Further Explorations of Word Vectors in Python](further-explorations.ipynb) elaborates on the Word2Vec notebooks above to provide possibilities for further analysis as well as explain the broader world of machine learning that Word2Vec is a part of.
+* [Introduction to Word Vectors in Python](word2vec-fundamentals.ipynb) provides an introductory framework for importing data, cleaning data, training a Word2Vec model, querying that model, and finally evaluating that model. The notebooks use a sample dataset of nineteenth-century American recipes which has been included with the directory. This sample dataset can be modified.
+* [Exploratory Visualization With Word2Vec](word2vec-visualization.ipynb) provides a framework for exploratory visualization techniques using Word2Vec. The notebook uses a sample model provided with the directory, but this sample model can be swapped out with another.
+* [Further Explorations of Word Vectors in Python](further-explorations.ipynb) elaborates on the Word2Vec notebooks above to provide possibilities for further analysis as well as to discuss the broader world of machine learning that Word2Vec is a part of.
 
 
 ## Downloading Jupyter Notebooks
-The walkthroughs are written in Jupyter Notebook, an IDE with particularly useful pedagogical use given its ability to intermix prose and executable code. The code will work in other Python IDEs, but to execute the code as it is currently written, it is recommended that you download and install Jupyter Notebook. 
+The walkthroughs are written in Jupyter Notebook, which supports both executable code and explanatory prose. The code will work in other Python environments, but to execute the code as it is currently written, it is recommended that you download and install Jupyter Notebook. 
 
-You can follow download instructions through Jupyter's [website](https://jupyter.org/install) or download Jupyter Notebook as part of an [Anaconda Distribution](https://docs.anaconda.com/anaconda/install/) (which comes with other IDEs installed in addition to Jupyter Notebook).
+You can follow download instructions through Jupyter's [website](https://jupyter.org/install) or download Jupyter Notebook as part of an [Anaconda Distribution](https://docs.anaconda.com/anaconda/install/) (which comes with other environments installed in addition to Jupyter Notebook).
 
 ## Support Files
 
 In addition to the four Jupyter Notebook files, the directory also contains three sub-directories. 
 
-The "data" sub-directory contains two versions of the sample recipe dataset. The first, is a folder called "sample-data-recipes" which contains all of the recipes in plain text format. This is the folder that the walkthroughs primarily use. The second version of the dataset is formatted as a .csv file, "sample_csv_recipes.csv" which includes a recipes sampled from nineteenth-century OCR'd newspapers. It should be noted that the .csv data is much messier given that it was produced by applying OCR to historical documents. The .csv file is primarily present to provide a sample set for those wishing to try out the alternative data-importing workflow outlined in the introductory Word2Vec notebook.
+The "data" sub-directory contains two versions of the sample recipe dataset. The first, is a folder called "sample-data-recipes" which contains all of the recipes in plain text format. This is the folder that the notebooks primarily use. The second version of the dataset is formatted as a .csv file, "sample_csv_recipes.csv" which includes a recipes sampled from nineteenth-century OCR'd newspapers. It should be noted that the .csv data is much messier given that it was produced by applying OCR to historical documents. The .csv file is primarily present to provide a sample set for those wishing to try out the alternative data-importing workflow outlined in the introductory Word2Vec notebook.
 
 The directory also includes a "models" sub-directory within which is a sample model ("test.model") and a sample .wordvectors file ("word2vec.wordvectors"). All models produced by the notebooks should be saved to this folder.
 
