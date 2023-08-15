@@ -2,28 +2,31 @@
 title: "Word Vectors Starter Queries"
 author: "Jonathan Fitzgerald & Sarah Connell"
 date: "6/23/2021"
-output: pdf_document
+output:
+  html_document:
+    template: template.html
 ---
 
 The code chunk below is just part of the setup for this file. You can ignore it and skip down to the next section. No need to run this code! 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, results = "hide", error=FALSE, warning=FALSE, message=FALSE)
 ```
 
-#Getting started 
+## Getting started 
 
-## Using this file
+### Using this file
 
 This file is a first introduction to word vectors; we'll use it to practice querying models before we move on to training models of our own.   
 
-## Reminder on running code
-To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-return` or `control-return.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, select the section you want to run and hit `command-return` or `control-return`. 
+### Reminder on running code
 
-Much of the code you'll need will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console. If you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console.
+To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-enter` or `control-enter.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, highlight the section you want to run and hit `command-enter` or `control-enter`. 
 
+Much of our code will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console. If you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console. 
 
-## Opening a new session: checking project and working directory
+### Opening a new session: checking project and working directory
+
 As a reminder, at the start of any new session, you should make sure that you have the right project open and you should check your working directory. 
 
 If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space. To confirm that you have the correct project open, check the top-right corner of the RStudio screen and make sure it says "WordVectors" in the project selection dropdown. If the project is not open, you can open it by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file. 
@@ -36,10 +39,11 @@ getwd()
 
 ```
 
-## Opening a new session: loading packages
+### Opening a new session: loading packages
+
 All the packages you will need for this exercise have been installed ahead of time on our RStudio Server instance, but you'll want to load them using the `library()` function at the start of each new session. 
 
-When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means you have loaded the packages properly and you are all set. 
+When you run this code for the first time after you start a session, you’ll see a lot of text go through the console, possibly with some warning messages. Even if the text looks alarming, it probably won’t cause any issues. To confirm that the packages have loaded correctly, you can run this code a second time—if you see the code pop into the console with no additional text, that means the packages loaded properly and you are all set. 
 
 ```{r}
 
@@ -52,13 +56,13 @@ library(wordVectors)
 
 ```
 
-#Working with word2vec models
+## Working with word2vec models
 
-## Reading in existing models
+### Reading in existing models
 
 Before you train models of your own, you'll start by reading in existing models. We've provided a set of sample models (all the files that end in '.bin') in the `data` folder; to read one of them in, edit and run the code below. You can also use this code to read in models that you've trained when you start a new session. And, you can even read in models trained by others, if you upload their .bin file to your `data` folder using the `Upload` button near the top of the `Files` menu (make sure you are already inside the `data` folder when you do this!). 
 
-We've filled in a sample model to get you started. If you want to use a different one, change the file path in the code below to select a different '.bin' file. Navigating file paths can be a bit confusing, but fortunately there is a trick you can use. Delete the text inside of the quotation marks below (but don't delete the quotation marks!) and then hit `tab`. You should get a pop-up with a view of the folder system you're more used to navigating; you can use this to fill in file paths whenever you need to.
+We've filled in a sample model to get you started. If you want to use a different model, change the file path in the code below to select a different '.bin' file. Navigating file paths can be a bit confusing, but fortunately there is a trick you can use. Delete the text inside of the quotation marks below (but don't delete the quotation marks!) and then hit `tab`. You should get a pop-up with a view of the folder system you're more used to navigating; you can use this to fill in file paths whenever you need to.
 
 ```{r}
 
@@ -66,11 +70,11 @@ w2vModel <- read.vectors("data/wwo-regularized.bin")
 
 ```
 
-## Visualizing models 
+### Visualizing models 
 
 We can get a glimpse of what the model looks like by plotting it in two dimensions. Keep in mind that the model actually has many more dimensions, so we are, in effect, flattening it. Though the visualization may be somewhat difficult to read, you should be able to see that similar words—words that are near each other in vector space—tend to clump together. The code below will likely take a minute or two to run, and your results will appear in the "Plots" window to the right (you can hit the "Zoom" button to get a better view).
 
-As the code is running, you'll see a set of lines in the console that will something like "Epoch: Iteration #100 error is: 20.3048394873336"; note that this is not an error message! As the code runs, the values for "error" should decrease—this reflects increasing confidence about how to plot the vector representation. 
+As the code is running, you'll see a set of lines in the console that will say something like "Epoch: Iteration #100 error is: 20.3048394873336"; note that this is not an error message! As the code runs, the values for "error" should decrease—this reflects increasing confidence about how to plot the vector representation. 
 
 ```{r}
 
@@ -78,7 +82,7 @@ w2vModel %>% plot(perplexity=10)
 
 ```
 
-## Clustering
+### Clustering
 
 The following script provides a way to cluster words that are near each other in vector space, using the "k-means" clustering algorithm. Below, we choose 150 `centers`, or 150 points around which to cluster words. Then we select 10 random clusters and 15 words from each cluster to view. This code will also take a minute or two to run. You can change the number of centers, the number of clusters to view, or the number of words to see—you can also increase the number of iterations (the number of times the algorithm should adjust where the centers are and where terms are positioned in relation to those centers).
 
@@ -93,9 +97,9 @@ sapply(sample(1:centers,10),function(n) {
 
 ```
 
-## Closest to
+### Closest to
 
-Now that you've had a chance to think about the corpus as a whole, it's time to start investigating individual words. To find the words closest to a particular word in vector space, enter a term between the quotation marks and then run the code below. You'll notice the output shows up in the console. If you want to see more words, increase the number. Make sure not to delete the quotation marks, and enter your word in lowercase. 
+Now that you've had a chance to think about the corpus as a whole, it's time to start investigating individual words. To find the words closest to a particular word in vector space, enter a term between the quotation marks and then run the code below. You'll notice the output shows up in the console. If you want to see more words, increase the number inside of the argument. Make sure not to delete the quotation marks, and enter your word in lowercase. 
 
 
 ```{r}
@@ -104,7 +108,7 @@ w2vModel %>% closest_to('grace', 10)
 
 ```
 
-## Closest to two terms
+### Closest to two terms
 
 You might also want to see the words closest to a combination of two words. Notice that this will open a new window with the results because of the `view()` function. If you prefer to see your results in this format, you can paste "%>% view()" at the end of the code above; or, if you prefer to see your results in the console, you can delete "%>% View()" from the code below. Note that the code below also shows 20 results, instead of 10.
 
@@ -115,7 +119,8 @@ w2vModel %>% closest_to(~"grace"+"young", 20) %>% view()
 ```
 
 
-## Closest to the space between two terms
+### Closest to the space between two terms
+
 Or, you might want to look at the space between two terms, to see which words are similar to one term but not another: 
 
 ```{r}
@@ -126,7 +131,8 @@ w2vModel %>% closest_to(~'grace'-'beauty', 20)
 
 In our next walkthrough, we'll cover training models, as well as a few other things you can do with word2vec.
 
-#Credit and thanks
+## Credit and thanks
+
 This tutorial uses the `wordVectors` package developed by Ben Schmidt and Jian Li, itself based on the original `word2vec` code developed by Mikolov et al. The walkthrough was also informed by workshop materials authored by Schmidt, as well as by an exercise created by Thanasis Kinias and Ryan Cordell for the "Humanities Data Analysis" course, and a later version used in Elizabeth Maddock Dillon and Sarah Connell's "Literature and Digital Diversity" class, both at Northeastern University.
 
 This version of the walkthrough was developed as part of the Word Vectors for the Thoughtful Humanist series at Northeastern. Word Vectors for the Thoughtful Humanist has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.
