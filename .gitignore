@@ -6,4 +6,5 @@
 .Rproj.user
 Icon
 **/build/
-
+**/.ipynb_checkpoints/
+*.model
