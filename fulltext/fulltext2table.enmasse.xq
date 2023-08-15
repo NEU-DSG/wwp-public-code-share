@@ -133,7 +133,7 @@ xquery version "3.1";
       (2) make sure the downloaded file is stored in the same location as this 
         script, and that it is named "fulltext-library.xql";
       (3) uncomment the import statement under "IMPORTS" above;
-      (4) uncomment the line below that reads `wft:anchor-notes($xml)`, then comment 
+      (4) uncomment the line below these instructions that reads `wft:anchor-notes($xml)`, then comment 
         out or delete the line that reads `$xml`; and
       (5) use an XQuery processor that recognizes XQuery Update.
     To accomplish #2 in oXygen, use Saxon EE as your "transformer". Click on the 
