@@ -4,7 +4,13 @@ These walkthroughs provide code and instructions for training and querying model
 
 ## Walkthrough Files
 
-This directory contains four Jupyter Notebook files, each of which contains a combination of prose and executable code cells:
+This directory contains four Jupyter Notebook files, each of which contains a combination of prose and executable code cells. 
+
+If you are new to Python, we recommend going through the Notebooks in the order below. 
+
+If you are familiar with Python, you can skip to the [Introduction to Word Vectors in Python](word2vec-fundamentals.ipynb). 
+
+The [Exploratory Visualization With Word2Vec](word2vec-visualization.ipynb) and [Further Explorations of Word Vectors in Python](further-explorations.ipynb) both assume that you are familiar with the contents in the [Introduction to Word Vectors in Python](word2vec-fundamentals.ipynb). 
 
 * [Introduction to Python](python-fundamentals.ipynb) provides an overview of fundamental concepts in the programming language Python that are necessary for the subsequent notebooks. The notebook assumes that users have an understanding of basic programming concepts but perhaps not Python specific knowledge.
 * [Introduction to Word Vectors in Python](word2vec-fundamentals.ipynb) provides an introductory framework for importing data, cleaning data, training a Word2Vec model, querying that model, and finally evaluating that model. The notebooks as they are currently written use a dataset of nineteenth-century American recipes which has been included with the directory. This sample dataset can be modified.
