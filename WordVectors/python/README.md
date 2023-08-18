@@ -2,6 +2,8 @@
 
 These walkthroughs provide code and instructions for training and querying models using the Gensim instantiation of Word2Vec. The walkthroughs also cover fundamental concepts in Python.
 
+<!--A formatted version of this README is available in our GitHub repository: https://github.com/NEU-DSG/wwp-public-code-share/tree/main/WordVectors/python#readme --!>
+
 ## Walkthrough Files
 
 This directory contains four Jupyter Notebook files, each of which contains a combination of prose and executable code cells. 
