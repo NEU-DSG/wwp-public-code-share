@@ -38,7 +38,7 @@ For more information on trusting Notebook files in JupyterLab, please see the [J
 
 If you are interested in running the code in an IDE different from Jupyter Notebook, we have provided the code as .py files in the [py_files folder](./py_files).
 
-The content of these files includes both the code used in the Notebooks as well as the commentary around the code formatted as block comments. Please note that these tutorials were written as notebooks—if you want to see formatted and readable versions of the explanations, the notebooks are the best place.
+The content of these files includes both the code used in the Notebooks as well as the commentary around the code formatted as block comments. Please note that these tutorials were written as notebooks—if you want to see formatted and readable versions of the explanations, the notebooks are the best place. Relative links in the .py files will need to be updated. 
 
 ## Support Files
 
