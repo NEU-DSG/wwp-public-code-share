@@ -5,11 +5,11 @@
 # 
 # Author: Avery Blankenship
 # 
-# Date: 6/25/22
+# Date: 9/6/23
 # 
 # ---
 # 
-# This Jupyter Notebook is designed to walk you through the basics of creating a word embedding model using one of the most popular natural language processing libraries, Gensim. This notebook uses Python 3 and assumes very basic understanding on Python and code more generally. For a brief introduction to core Python concepts, please see our [Python Fundamentals notebook](python-fundamentals.ipynb).
+# This Jupyter Notebook is designed to walk you through the basics of creating a word embedding model using one of the most popular natural language processing libraries, Gensim. This notebook uses Python 3 and assumes very basic understanding of Python and code more generally. For a brief introduction to core Python concepts, please see our [Python Fundamentals notebook](python-fundamentals.ipynb).
 # 
 # ## What are word embedding models useful for?
 # 
@@ -24,11 +24,11 @@
 
 # ## Word Embeddings Using Gensim
 # 
-# One of the first things that we need to do is make sure that all of libraries that we need are installed. For this tutorial, we will be using the following libraries:
+# One of the first things that we need to do is make sure that all of the libraries that we need are installed. For this tutorial, we will be using the following libraries:
 # 
 # - **re** The re library gives us access to regular expressions which makes cleaning data much easier
 # - **os** The os library allows us to access operating-system based information
-# - **string**  the string library gives us access to a wide variety of string functions. Since we are working with text data, this is useful
+# - **string**  The string library gives us access to a wide variety of string functions. Since we are working with text data, this is useful
 # - **glob** The glob library allows you to access files based on their filetype. This will be useful to loading a set of models into memory
 # - **Path** The Path library gives us access to files in other directories besides our current working directory
 # - **gensim** Gensim is the library which contains the particular instance of Word2Vec that we are using 
@@ -38,7 +38,7 @@
 # 
 # In order to install these libraries, you should refer back to the "Libraries" portion of the introduction to Python notebook. It is a good coding practice to have all of your imports at the top of your code, so we are going to go ahead and load everything that we need for the entire tutorial here. There are comments next to each library explaining what each is for. 
 
-# In[1]:
+# In[ ]:
 
 
 # A good practice in programming is to place your import statements at the top of your code,
@@ -104,10 +104,10 @@ import pandas as pd                         # to sort and organize data
 
 # When you run the code block below, you should see a list of loaded files printed as the output under the code cell. If you don't see that list, then check to make sure that `dirpath` and `file_type` are set correctly
 
-# In[2]:
+# In[ ]:
 
 
-dirpath = r'C:\\Users\\avery\\Documents\\vrt\\raw_data\\' # get file path (you can change this)
+dirpath = r'./data/sample-data-recipes/' # get file path (you can change this)
 file_type = ".txt" # if your data is not in a plain text format, you can change this
 filenames = []
 data = []
@@ -185,7 +185,7 @@ df = pd.read_csv(r'./data/sample_csv_recipes.csv', usecols= col_list)
 # 
 # ### The Code ###
 # 
-# The first thing we do is to tokenize our data. Tokenizing means we are separating the words in the data so that they get fed to the model individually rather than as sentence or paragraphs. Word embedding models work with individual words, so we use the `.split()` function to take a list that may look like this: 
+# The first thing we do is to tokenize our data. Tokenizing means we are separating the words in the data so that they get fed to the model individually rather than as sentences or paragraphs. Word embedding models work with individual words, so we use the `.split()` function to take a list that may look like this: 
 # 
 # ```python
 # ["this is a string"]
@@ -213,7 +213,7 @@ df = pd.read_csv(r'./data/sample_csv_recipes.csv', usecols= col_list)
 # 
 # In the code block below, we define a function called `clean_text()` which accepts a list of texts, called `text` in the definition, as a parameter. By storing the code for cleaning our data within the function definition for `clean_text()`, we make the work that `clean_text()` represents available for use at a later point. The code within the function definition will only be executed once you call `clean_text()` with a list of texts as the parameter.
 
-# In[3]:
+# In[ ]:
 
 
 def clean_text(text):
@@ -238,7 +238,7 @@ def clean_text(text):
 
 # Next, we are going to apply the function to our data. This code begins by initializing an empty list called `data_clean` which will hold the cleaned text. Then, using a `for` loop, the code walks through our `data` list from earlier and calls the `clean_text()` function on each item in that list and then adds the cleaned text to our `data_clean` list.
 
-# In[4]:
+# In[ ]:
 
 
 # clean text from folder of text files, stored in the data variable
@@ -249,7 +249,7 @@ for x in data:
 
 # It can be useful to just check that `data_clean` didn't miss any entries from `data`. You can do this by running a few `print()` statements to compare `data_clean` and `data`
 
-# In[5]:
+# In[ ]:
 
 
 # Check that the length of data and the length of data_clean are the same. Both numbers printed should be the same
@@ -260,7 +260,7 @@ print(len(data_clean))
 
 # You can also confirm that the transformation went as expected by checking the first and last items in both variables, as in the code cells below (note the differences in the results):
 
-# In[6]:
+# In[ ]:
 
 
 # check that the first item in data and the first item in data_clean are the same.
@@ -270,7 +270,7 @@ print(data[0].split()[0])
 print(data_clean[0][0])
 
 
-# In[7]:
+# In[ ]:
 
 
 # check that the last item in data_clean and the last item in data are the same
@@ -306,7 +306,7 @@ df['text'] = df['text'].apply(clean_text)
 # - **Min_count** (minimum count) The `min_count` parameter sets how many times a word has to appear in the dictionary in order for it to 'count' as a word in the model. The default value for mincount is 5. You will likely want to change this value depending on the size of your corpus.
 # 
 # 
-# - **Window** The `window` parameter lets you set the size of the "window" that is sliding along the text. The default is 5, which means that the window will look at five words total at a time: 2 words before the target word, the target word, and then 2 words after the target word. The window attribute is important because word embedding models take the approach that you can a tell the context of the word based on the company it keeps. The larger the window, the more words you are including in that calculation of context. Essentially, the window size impacts how far apart words are allowed to be and still be treated as relevant context.
+# - **Window** The `window` parameter lets you set the size of the "window" that is sliding along the text. The default is 5, which means that the window will look at five words total at a time: 2 words before the target word, the target word, and then 2 words after the target word. The window attribute is important because word embedding models take the approach that you can tell the context of the word based on the company it keeps. The larger the window, the more words you are including in that calculation of context. Essentially, the window size impacts how far apart words are allowed to be and still be treated as relevant context.
 # 
 # 
 # - **Workers** The `workers` parameter represents how many "worker" threads you want processing your text at a time. The default setting for this parameter is 3. This parameter is optional.
@@ -334,26 +334,26 @@ df['text'] = df['text'].apply(clean_text)
 # 
 # If you run the `save` call this way, the model will be saved as "word2vec.model" in the Documents folder.  
 
-# In[8]:
+# In[ ]:
 
 
 # train the model
 model = Word2Vec(sentences=data_clean, window=5, min_count=3, workers=4, epochs=5, sg=1)
 
 # save the model
-model.save("./models/white_supremacy_newspapers_61423.model")
+model.save("./models/word2vec.model")
 
 
 # To access the model once its been saved, you can run the code below. 
 # 
 # The code below loads a model file called "word2vec" and saves it in the variable `model`. Note that this code will look for a file called `word2vec.model` in the models folder. If you saved your model in a different folder or with a different name, you should provide the full file path followed by the model name (the same way you saved the model). If you wanted to load more than one model, then all you would need to do is save your second model under a new variable. For instance, instead of `model` you might use `model2`. You can load any number of models that you want as long as they each have a unique variable.
 
-# In[9]:
+# In[ ]:
 
 
 # load the model 
 
-model = Word2Vec.load("./models/white_supremacy_newspapers_61423.model")
+model = Word2Vec.load("./models/word2vec.model")
 
 
 # ## Word2Vec Functions ##
@@ -396,11 +396,11 @@ else:
 
 # **Most_similar**―this function allows you to retrieve words that similar to chosen word. In this case, I am asking for the top ten words in my corpus that are contextually similar to the word "milk." If you want a longer list, change the number assigned to `topn` to the number of items you want in your list. You can replace "milk" with any other term you want to investigate. 
 
-# In[18]:
+# In[ ]:
 
 
 # returns a list with the top ten words used in similar contexts to the word "milk"
-model.wv.most_similar('redskins', topn=30)
+model.wv.most_similar('milk', topn=10)
 
 
 # You can also provide the `most_similar` function with slightly more specific information about your word(s) of interest. In the code block below, you'll notice that one word is tied to the `positive` parameter and the other is associated with `negative.` We'll talk more about what this means below but, in short, because vectors are numerical representations of words, you are able to perform mathematical equations with them such as adding words together or subtracting them. This call to `most_similar` will return a list of words that are most contextually similar to "recipe" but not the word "milk."
@@ -415,11 +415,11 @@ model.wv.most_similar('redskins', topn=30)
 model.wv.most_similar(positive = ["recipe"], negative=["milk"], topn=10)
 
 
-# In[34]:
+# In[ ]:
 
 
 # returns the top ten most similar words to both "recipe" and "milk"
-model.wv.most_similar(positive = ["nightrider", "lynch"], topn=30)
+model.wv.most_similar(positive = ["recipe", "milk"], topn=10)
 
 
 # **Similarity**―this function will return a cosine similarity score for the two words you provide it. We'll get into cosine similarity below, but for now just know that the higher the cosine similarity, the more similar those words are
@@ -641,9 +641,9 @@ for i in range(len(model_list)):
 evaluation_results.to_csv('./output/word2vec_model_evaluation.csv')
 
 
-# Since Word2Vec is an **unsupervised** algorithm—meaning the model draws its own conclusions about the data you provide—evaluation is an important step in testing the validity of the model. However, there is no clear-cut way to evaluate a model. While the method described above will help you determine if the model is making obvious mistakes, there are much more precise and details methods for conducting a model evaluation. For example, a popular method for evaluating a Word2Vec model is using the built in `evaluate_word_analogies()` function to evaluate syntactic analogies. You can also evaluate word pairs using the built in function `evaluate_word_pairs()` which comes with a default dataset of word pairs. You can read more about evaluating a model on Gensim's documentation [website](https://radimrehurek.com/gensim/auto_examples/tutorials/run_word2vec.html#evaluating).
+# Since Word2Vec is an **unsupervised** algorithm—meaning the model draws its own conclusions about the data you provide—evaluation is an important step in testing the validity of the model. However, there is no clear-cut way to evaluate a model. While the method described above will help you determine if the model is making obvious mistakes, there are much more precise and detailed methods for conducting a model evaluation. For example, a popular method for evaluating a Word2Vec model is using the built in `evaluate_word_analogies()` function to evaluate syntactic analogies. You can also evaluate word pairs using the built in function `evaluate_word_pairs()` which comes with a default dataset of word pairs. You can read more about evaluating a model on [Gensim's documentation website](https://radimrehurek.com/gensim/auto_examples/tutorials/run_word2vec.html#evaluating).
 # 
-# Check out the next notebook on [visualizing word](word2vec-visualization.ipynb) embedding data.
+# Check out the next notebook on [visualizing word embedding data](word2vec-visualization.ipynb).
 
 # 
 # _This walkthrough was written on June 25, 2022 using Python 3.8.3, Gensim 4.2.0, and Scikit-learn 0.23.1_
