@@ -559,6 +559,8 @@ tokens = []
 # we'll set focus_word to none for now
 focus_word = None
 
+n = 50
+
 # this if statement is for when there is a focus word
 if focus_word is not None:
     
