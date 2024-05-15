@@ -1,0 +1,201 @@
+---
+title: "Introduction to R and RStudio"
+author: "Juniper Johnson, Sarah Connell, and Ash Clark"
+date: "5/7/2021"
+output: 
+  html_document:
+    template: template.html
+---
+
+The code chunk below is just part of the setup for this file. You can ignore it and skip down to the next section. No need to run this code! 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = "hide", error=FALSE, warning=FALSE, message=FALSE)
+```
+
+## Introduction to R
+
+R is a programming language that can be used for a wide range of both textual and statistical analyses. This introduction covers some key concepts and processes for working with R in RStudio.
+
+RStudio is an "integrated development environment" for R. Similar to how word processing software provides an editor for writing and editing text documents, RStudio is an editor for writing and running R code. Essentially, R is the programming language and RStudio is an interface that you can use to work with R. It is possible to work in R and RStudio either locally on your own computer or through RStudio Server, a browser-based interface. 
+
+
+### RStudio environment
+
+The RStudio workspace has several sections, each with a different purpose. On the top left, where you're reading this now, is the *Source* pane, the place where you can write, open, and interact with different kinds of files, including R Notebooks, R Scripts, R Markdown files (like this one), and even files using other programming languages. The Source pane is also the space where you can view any tabular data that you generate.
+
+The bottom left section is the *Console*, where the code from the Source pane is run by R. To follow the code as it runs in the console, check for the `>` (greater-than sign) character. This indicates that the code has been executed successfully. You can tell that a section of code is finished being run when there is a new line with `>` and the cursor, indicating that the console is "waiting" for new code.
+
+The top right section will default to show the *Environment* pane, a section that stores any of the data objects that you have defined in your R session. Data objects—such as data frames and variables—will be visible in this pane as you are running code. 
+
+The section on the bottom right will default to show the *Files* pane. In this section you can view, navigate, and access all of the files in your working directory. This section also has four other tabs for *Plots*, *Packages*, *Help*, and *Viewer*. In these tabs, you can view plots that you generate, install, and load packages, access help and documentation about R, and view local web content. 
+
+### R Markdown and running code
+
+This is an R Markdown file, a format that contains both text (what you are reading now) that can be formatted for display on the web or as a PDF file, and snippets of code that you can run right from the file. 
+
+Before running any code, you should do a quick check on your preferences for how RStudio will handle R Markdown files. Go to the Tools menu above, select "Global Options", then select "R Markdown Preferences," and make sure that "Show output inline for all R Markdown documents" is *not* selected. Windows users may be required to restart RStudio after deselecting this option.
+
+To run a single line of code from an R Markdown file, put your cursor anywhere in that line of code and then hit `command-enter` or `control-enter.` If you want to run all of the code in a code snippet, you can hit the green triangle button on the right. If you want to run a particular section of code, highlight the section you want to run and hit `command-enter` or `control-enter`. 
+
+Much of our code will run almost instantly, but some things will take a few seconds or minutes, or even longer. You can tell code is still running if you see a red stop sign in the top-right corner of the console. If you'd like to stop a process, you can hit this stop sign. You will know that the code has been run or successfully stopped when you see a new `>` prompt in the bottom of the console. 
+
+If you don't see the stop sign but want to cancel a process, you can also hit `control-C.`
+
+If you are running code in a block line by line, your cursor will automatically go down to the next line after each is run, so you can move through the block by repeatedly hitting `command-enter` or `control-enter`.
+
+Try this now with some simple calculations. The answers will appear in the console below.
+
+
+```{r}
+
+4+10
+15*3
+4^2
+10/5
+
+```
+
+Alternatively, you can also run code directly in the console by typing or pasting it in and hitting `enter`. You will get the same results, but if you want to save code that you have written, it is better to keep it in the R Markdown file, since edits there will be saved. On the other hand, if you prefer to run some code but *not* make changes to your file, you can just run that in the console.  
+
+Try this out by writing and running a few simple math operations directly in the console below.
+
+### Projects
+
+Projects are a way to organize your work in RStudio. If you opened the "WordVectors" project file first, then you should already be working in the "WordVectors" project space—and, as long as you have this project open, your files should be where you expect them. It will usually be easiest to start any session by opening the "WordVectors.Rproj" file, at least while you are getting used to working in RStudio.
+
+To confirm that you have the correct project open, check the top-right corner of the RStudio screen and make sure it says "WordVectors" in the project selection dropdown. If the project is not open, you can open it by going to `File` then `Open Project...` in the menu bar at the top of RStudio, or by clicking on the project file. Always check at the beginning of a session to make sure you have the project open; if you don't, it will likely cause errors. If you do hit an error, one of the first things you should check is whether your project is open.
+
+### Working directory and file structure
+
+When you open RStudio to begin a new session, the first thing you should do is check your working directory. A working directory is, essentially, the starting location for the set of files and folders that you are working in. The locations of those files and folders (and RStudio's knowledge of where to find them) are relative to the working directory. Think of your file structure as a set of directions for getting somewhere, relative to a specific starting point (like "start at the train station, go south two blocks, turn right, third house on the left"). If you started at a train station in a different town, you might follow those directions but end up in the wrong place. So your *current working directory* says "This is our starting point!". The set of directions ("go into the data directory...") is the file path.
+
+You should check your working directory because if the working directory is *not* where you are expecting, then not much else in your files will work. Any time you see an error message that says a file does not exist in the current working directory, that's a good sign your working directory isn't where you think it is.
+
+### Checking the working directory
+
+If you opened this file from within the "WordVectors" R project, then your working directory should be in the right place. Just to be sure, the code below will help you confirm this.
+
+The first line of code will allow you to check your working directory and the second will allow you to set your working directory, if you need to change it. If you run the first line of code and the results in the console show that your working directory is the "WordVectors" folder, then you don't need to run the second line of code.
+
+If you ever do need to change your working directory, use the `setwd()` function. We've provided some template text that you can replace with a file path specific to your computer.
+
+Navigating file paths can be a bit confusing, but, fortunately there is a trick you can use. If you delete the text inside of the quotation marks below and then hit `tab` you should get a pop-up with a view of the folder system you're used to navigating; you can use this to fill in file paths whenever you need to.
+
+```{r}
+
+# How to check your working directory (this is also an example of how you add a comment to your code—by typing "#")
+getwd()
+
+# How to set your working directory (do not run this unless you actually want to change your working directory—as long as you opened the project file first, you should not need to change your working directory!). Delete the hashtag to take the line below out of the comment, then fill your file path in. 
+
+# setwd("path/to/your/directory")
+
+```
+
+### Functions and variables
+
+This section will give you a chance to practice editing code while learning about a core concept in R: functions. Functions are code that you use to perform a specific task. 
+
+Functions require precise syntax to be run successfully. When you add a function to a block of code, it will automatically add open and close parentheses; these contain the *argument*, or the things each function operates on. In addition, some functions require a pair of quotation marks ("") within the parentheses. 
+
+To demonstrate this, let's use two basic functions, `sum()` and `print()`. Run this code line by line and then try changing the arguments to practice editing code.
+
+```{r}
+
+# The `sum()` function calculates the sum of a set of numbers in the parentheses. Make sure to separate by commas.
+sum(91,87,65,86,40,88,90)
+
+# The `print()` function prints out its argument.
+print("Your text here")
+
+```
+
+R has a wide array of functions that perform specific tasks. To more fully understand how functions work, it is important to introduce another key concept: variables.
+
+Variables are things you define to store data for use in later processing. Whatever you define as your variable, R will treat it as a data object and store it in working memory, designated by the label you assign it. In the code below, the `<-` assigns the data on its right to the variable on the left. In this case, we are storing a simple sentence in the variable `demo_text`.
+
+```{r}
+
+demo_text <- "I know I have the body but of a weak and feeble woman; but I have the heart and stomach of a king, and of a king of England too."
+
+```
+
+Once you run this code, you will see that there is a new variable in your environment pane (the top right section). Once you have defined a variable, you can use it in your code by referencing the name that you assigned to it. 
+
+For example, now that we have defined the variable `demo_text`, we can use functions to manipulate it. We might use the `print()` function to print the text stored as the variable's value into the console:
+
+```{r}
+
+print(demo_text)
+
+```
+
+In R, the names of variables are arbitrary. You can choose whatever makes sense to you, with a few limitations discussed below. It helps to pick something specific that you will remember. Variables can be reassigned (or, "overwritten") at any time. 
+
+Try this by going into the code block below and defining a `demo_text` variable with different text inside of the quotation marks, then printing it with the `print()` function. You can copy from the code above or, if you're feeling adventurous, type the code out yourself. 
+
+```{r}
+
+```
+
+There are some rules for writing variable names in R: for example, they must be a combination of letters, digits, periods, and underscores, and they must start with a letter or a period. Variables that start with a period cannot have a digit as the second character. Also, you can't use any of the words from R's own syntax for variables, and you cannot put any spaces in your variable names. Apart from these rules, you technically can use any variable names you like. For instance, we might have had instead: 
+
+
+```{r}
+
+giant_amazonian_river_otter <- "I know I have the body but of a weak and feeble woman; but I have the heart and stomach of a king, and of a king of England too."
+
+print(giant_amazonian_river_otter)
+
+```
+
+However, that variable would not be very helpful to us if we were trying to remember and use it later. Generally, you want to make your variable names clear and descriptive, and use consistent systems for things like marking word boundaries and deciding how much detail to include.
+
+### Saving and quitting a session
+
+After you are done with an RStudio session, you need to take two important steps. First, *save* any changes to your files you will want to access later. Next—especially when you are working on a RStudio Server—you need to quit the session. There are two options for this: 1) navigate to the "Session" tab of the menu and click "Quit Session" or 2) run the following chunk of code. If you go with the first option, it will ask you whether you want to save your workspace image; you can say "no" to this. If you run the command instead, it will prompt a question about whether or not you want to save your workspace; you can respond 'n' ("no") to this query. 
+
+```{r}
+
+# Here is the command for quitting a session. Don't run this unless you want to quit the session! The code is commented out for now; if you want to run this, remove the hashtag first.
+
+# q()
+
+```
+
+If you are on an RStudio Server instance, this step is *very* important because the session will continue in the browser until you end it. If there are multiple sessions open, it can bog down the server. So always remember to save and quit RStudio!
+
+### Key concepts and terminology
+
+We won't be covering all of these concepts directly, but we're including a full list of terms that might come up in our discussions. 
+
++ *Console*: the pane in RStudio that displays the code being run by R.
++ *Data Frame*: data frames are the R version of tabular data, like CSVs or TSVs, that can contain numerical and textual data, and be created and edited by code.
++ *Environment*: a coding environment is the context in which code is being executed, including all of the variables and the working directory for a machine—whether it is local or on a server.
++ *Function*: functions are code that performs a specific task.
++ *Pipe*: a pipe is a small piece of code `%>%` that allows you to apply the sequence of multiple operations, in which the output of one operation is then fed into the next operation as its input.
++ *Programming language*: a programming language is a vocabulary and set of grammatical rules used to instruct computers to perform specific tasks.
++ *Project*: a project in R is a file that is associated with a working directory, meaning that it preserves the layout and files within your R environment and can be saved and re-opened in a new session.
++ *R*: is a programming language and environment used for statistical computation, textual analysis, and visualization.
++ *RMarkdown*: R Markdown is a document format that contains both text and snippets of code that you can edit and run directly in the file.
++ *RStudio*: RStudio is an integrated development environment for R, or an interface editor where you can access the console, terminal, environment, working directory, and source files.
++ *Script*: a script in R is a collection of code.
++ *Stop Words*: stop words are the most common words in a language, often prepositions, pronouns, and conjunctions. For example, words like: the, and, of, for, a, she.
++ *Terminal*: the direct interface with the console where you can write text-based commands, or do command-line coding.
++ *Tokens*: in computation, "tokens" are single units of textual data, usually words, that are created through a process called "tokenization". Tokens allow for textual and computational analyses of textual data.
++ *Variable*: a variable is a character or group of characters (like "x" or "y" or words like "text" or "words") that you define and that R treats as a data object, stored in working memory for later processing.
++ *Working Directory*: a working directory in R is the default location within your folder structure—it's the starting point for any navigation you do among your files and folders.
+
+### References
+
+Arnold, Taylor and Lauren Tilton. "Basic Text Processing in R." _The Programming Historian_ vol. 6, 2017, https://doi.org/10.46430/phen0061.
+
+Dewar, Taryn. "R Basics with Tabular Data." _The Programming Historian_ vol. 5, 2016, https://doi.org/10.46430/phen0056.
+
+
+## Credit and thanks
+
+This tutorial was developed as part of the Word Vectors for the Thoughtful Humanist series at Northeastern University. This walkthrough was informed by tutorials from *The Programming Historian*, and exercises created by Thanasis Kinias and Ryan Cordell for the "Humanities Data Analysis" course.
+
+Word Vectors for the Thoughtful Humanist has been made possible in part by a major grant from the National Endowment for the Humanities: Exploring the human endeavor. Any views, findings, conclusions, or recommendations expressed in this project, do not necessarily represent those of the National Endowment for the Humanities.

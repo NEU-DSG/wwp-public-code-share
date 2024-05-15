@@ -10,11 +10,19 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
 (:~
   A library of functions to simplify the development of an XQuery API.
   
-  @author Ashley M. Clark, Northeastern University Women Writers Project
-  @version 1.5.1
+  @author Ash Clark, Northeastern University Women Writers Project
+  @version 1.6.0
   @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/miscellaneous/api_library
   
   Changelog:
+    2023-11-15, v1.6.0: Added wpi:get-values-as-sequence() to simplify functions 
+      that take in maps of request/response parameters. Also added two versions of 
+      wpi:remove-parameter-value(). These munge a parameter map, scrubbing it of a 
+      single key-value pair OR all values for a single key. The functions can thus 
+      be used when generating a link to remove an applied filter. 
+      wpi:remove-parameter-value() was tested with a new XSpec report. Updated
+      author name.
+    2021-02-23, v1.5.2: Allowed arrays of parameter values in wpi:get-query-url().
     2020-10-02, v1.5.1: Updated GitHub link to use the new default branch "main".
       Uncommented namespace declaration; this library now won't work in eXist v2.2.
     2020-09-29, v1.5.0: Added $wpi:sortRegexCharacterRemoval, 
@@ -132,9 +140,9 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
      map(xs:string, item()*)) as xs:string {
     let $paramBits :=
       for $key in map:keys($queryParams)
-      let $seq := map:get($queryParams,$key)
+      let $valSeq := wpi:get-values-as-sequence($queryParams, $key)
       return 
-        for $value in $seq
+        for $value in $valSeq
         return concat($key,'=',$value)
     let $queryStr :=  if ( count($paramBits) ge 1 ) then 
                         concat('?',string-join($paramBits,'&amp;'))
@@ -383,5 +391,92 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
       else $charCleaned
     return
       replace(normalize-space($wordSplit), ' &amp; ', ' and ')
+  };
+  
+  (:~
+    Given a map of parameter keys and the values which apply to some API response, 
+    return a version of the map without any values corresponding to a given 
+    parameter name. The map entry for the parameter key is kept, but associated 
+    instead with an empty sequence.
+    
+    This function is useful in tandem with wpi:get-query-url(), for creating links 
+    that remove a parameter from an existing request.
+    
+    @param parameter-map key-value pairs to use when constructing a URL
+    @param key the parameter name, or map key, to use for removal
+    @return a version of the input map with the key-value pair removed
+   :)
+  declare function wpi:remove-parameter-value($parameter-map as map(xs:string, item()*), 
+     $key as xs:string) as map(xs:string, item()*) {
+    wpi:remove-parameter-value($parameter-map, $key, ())
+  };
+  
+  (:~
+    Given a map of parameter keys and the values which apply to some API response, 
+    return a version of the map with a parameter key-value pair removed. If no 
+    parameter value is provided, all values corresponding to the key will be dropped. 
+    The map entry for the parameter key is always retained; if no values correspond 
+    to it, the key will be associated with an empty sequence.
+    
+    This function is useful in tandem with wpi:get-query-url(), for creating links 
+    that remove a single parameter value from an existing request.
+    
+    @param parameter-map key-value pairs to use when constructing a URL
+    @param key the parameter name, or map key, to use for removal
+    @param value the parameter key's value which should be removed (if not provided, 
+      all values matching the key will be removed)
+    @return a version of the input map with the key-value pair removed
+   :)
+  declare function wpi:remove-parameter-value($parameter-map as map(xs:string, item()*), 
+     $key as xs:string, $value as item()?) as map(xs:string, item()*) {
+    (: If the map doesn't contain the key, no work needs to be done. :)
+    if ( not(map:contains($parameter-map, $key)) ) then $parameter-map
+    (: If no value was specified for removal, put an empty sequence into the $key 
+      entry. :)
+    else if ( empty($value) ) then map:put($parameter-map, $key, ())
+    (: If a value was provided, remove that key-value pair from the map. :)
+    else
+      let $mapValueSeq := wpi:get-values-as-sequence($parameter-map, $key)
+      return
+        if ( count($mapValueSeq) eq 1 and $mapValueSeq eq $value ) then
+          map:put($parameter-map, $key, ())
+        else if ( count($mapValueSeq) gt 1 ) then
+          let $index := index-of($mapValueSeq, $value)
+          let $useArray := map:get($parameter-map, $key) instance of array(item()*)
+          return
+            if ( count($index) gt 1 ) then error()
+            else if ( count($index) eq 0 ) then $parameter-map
+            else
+              let $newValueSeq := remove($mapValueSeq, $index)
+              return
+                map:put($parameter-map, $key,
+                  if ( $useArray ) then array { $newValueSeq } else $newValueSeq )
+        else $parameter-map
+  };
+
+
+(:
+  SUPPORT FUNCTIONS
+ :)
+  
+  (:~
+    Given a map with string keys and arbitrary values, get the values for a 
+    particular key as a sequence of items.
+    
+    This function lets projects decide whether to format their parameter maps with 
+    arrays or sequences. This library will quietly convert arrays into sequences for 
+    processing.
+    
+    @param parameter-map key-value pairs
+    @param key the parameter name, or map key
+    @return a sequence of 0 or more items
+   :)
+  declare %private function wpi:get-values-as-sequence($parameter-map as 
+     map(xs:string, item()*), $key as xs:string) as item()* {
+    let $value := map:get($parameter-map, $key)
+    return
+      typeswitch ($value)
+        case array(item()*) return $value?*
+        default return $value
   };
 
