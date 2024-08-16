@@ -23,6 +23,10 @@
       Parameter $separator = a string you *know* does not occur in the input (default is ␞␞)
   -->
 
+  <!-- See USAGE NOTE near end for how to process the output of this
+       routine into a regular expression for testing @xml:lang (i.e.,
+       BCP 47) values. -->
+  
   <xsl:output method="xml" indent="yes"/>
 
   <xsl:param name="input" as="xs:string"
@@ -118,5 +122,41 @@
       <xsl:copy-of select="description|comments"/>
     </xsl:element>
   </xsl:template>
+
+  <!--
+      USAGE NOTE
+      
+      To generate a regular expression that matches a registered language tag
+      alone (i.e., just the “language” production of RFC 5646,
+      "lang-extlang"), try
+      $ xmlstarlet sel ==template ==match "/"
+                         ==output "("
+                       ==break 
+                       ==template ==match "/*/language/@subtag"
+                         ==value "."
+                         ==if "position()=last()"
+                           ==output ""
+                         ==else
+                           ==output "|"
+                         ==break
+                       ==break
+                       ==output ")" 
+                       ==template ==match "/"
+                         ==output "(-("
+                       ==break 
+                       ==template ==match "/*/extlang/@subtag"
+                         ==value "."
+                         ==if "position()=last()"
+                           ==output ""
+                         ==else
+                           ==output "|"
+                         ==break
+                       ==break
+                       ==output "))?"
+                       ==nl
+                       /tmp/IANA_language_subtag_registry.xml 
+      all on one line, and changing U+003D to U+002D, of course.
+  -->
   
+  <!-- Next step: scripts from https://www.unicode.org/iso15924/iso15924.txt -->
 </xsl:stylesheet>
