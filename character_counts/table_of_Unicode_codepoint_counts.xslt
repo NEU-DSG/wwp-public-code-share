@@ -27,7 +27,7 @@
   <xsl:param name="fold" select="0" as="xs:integer"/>
   <xsl:param name="skip" select="3" as="xs:integer"/>
   <xsl:param name="whitespace" select="0" as="xs:integer"/>
-  <xsl:param name="fileName" select="tokenize(document-uri(/), '/')[last()]"/>
+  <xsl:param name="fileName" select="tokenize( base-uri(/), '/')[last()]"/>
   <xd:doc>
     <xd:desc>protect open paren, protect close paren: theses variables should
       each be set to any single character you <xd:b>know</xd:b> will not be in the input
@@ -271,10 +271,11 @@
             </xsl:for-each>
           </tbody>
         </table>
-        <p>Total characters counted: <xsl:sequence select="format-number( count( $seq ),'#,###,###,##0')"/>.</p>
+        <p>Total characters: <xsl:sequence select="format-number( count( $seq ),'#,###,###,##0')"/>.
+	<br/>Distinct characters: <xsl:sequence select="format-number( map:size($count_by_decimal_char_num),'#,###,##0')"/>.</p>
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
         <hr/>
-        <p name="fn1">¹ <xsl:value-of select="document-uri(/)"/></p>
+        <p name="fn1">¹ <xsl:value-of select="$me"/></p>
       </body>
     </html>
   </xsl:template>
