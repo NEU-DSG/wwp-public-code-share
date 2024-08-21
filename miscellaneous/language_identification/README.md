@@ -2,9 +2,21 @@
 
 Programs having to do with “language identification”. This directory is named after [section 2.12](https://www.w3.org/TR/xml/#sec-lang-tag) of the XML Spec.
 
+## IANA language registry to XML
+
+This program reads in the IANA language registry and writes out an XML file representing the same information. (The format of the XML is the same as the “semantic” output of the IANA language registry in XML program, below. See the  semantic.rnc schema.) By default the registry is read from the IANA website, so an internet connection is required. Since the URI of the registry can be set via a parameter, you can avoid this restriction if you happen to have a local copy of the registry (or of whatever subset you desire) lying around.
+
+### parameters
+
+Default is listed in square brackets.
+
++ `input` = The URL of the input document<br/>[`https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry`]
++ `output` = the URL of the output document<br/>[`/tmp/IANA_language_registry.xml`]
++ `separator` = a string you **know** does not occur in the input<br/>[`␞␞`]
+
 ## IANA language registry in XML
 
-The only program herein at the moment is IANA_lang_registry_in_XML.xslt. When run this program writes one or three output files, depending on the supplied `output` parameter. Each output file contains the information from the IANA registry of language subtags re-formatted to XML. The registry is the official list of language codes used as the value of `@xml:lang` (i.e., `en` for English, `de` for German, `url` for Urali).
+The IANA_lang_registry_in_XML.xslt program is the precursor to the above IANA_language_registry_to_XML. When run this program writes one or three output files, depending on the supplied `output` parameter. Each output file contains the information from the IANA registry of language subtags re-formatted to XML. The registry is the official list of language codes used as the value of `@xml:lang` (i.e., `en` for English, `de` for German, `url` for Urali).
 
 If only one of the thrree possible outputs is requested, it is sent to STDOUT, or wherever your XSLT engine puts the main output. If all three of the outputs are requested, the output file names can be modified by a parameter, but by default the outputs are to:
 
@@ -34,7 +46,7 @@ Default is listed in square brackets.
 
 Brought to you by the [Women Writers Project](http://www.wwp.northeastern.edu/), part of the [Digital Scholarship Group](http://www.dsg.northeastern.edu/), [Northeastern University Libraries](http://library.northeastern.edu/).
 
-© 2019 Syd Bauman and the Women Writers Project; available under the terms of the MIT License:
+© 2019–2024 Syd Bauman and the Women Writers Project; available under the terms of the MIT License:
 
 > Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
