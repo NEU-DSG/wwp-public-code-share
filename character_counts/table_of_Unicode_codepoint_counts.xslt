@@ -414,7 +414,6 @@
     <xsl:choose>
       <xsl:when test="not( exists( $thisChar) )">
         <xsl:variable name="msg" select="'Unable to ascertain Unicode name for '||$thisCodePoint"/>
-        <xsl:message select="$msg"/>
         <xsl:value-of select="$msg"/>
       </xsl:when>
       <!-- both @na and @na1 -->
