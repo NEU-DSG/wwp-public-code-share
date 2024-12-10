@@ -414,7 +414,6 @@
     <xsl:choose>
       <xsl:when test="not( exists( $thisChar) )">
         <xsl:variable name="msg" select="'Unable to ascertain Unicode name for '||$thisCodePoint"/>
-        <xsl:message select="$msg"/>
         <xsl:value-of select="$msg"/>
       </xsl:when>
       <!-- both @na and @na1 -->
@@ -530,7 +529,7 @@
               </xsl:otherwise>
             </xsl:choose> [default]
           </li>
-          <li class="{$attrs eq 9}"><span class="val">9</span>: keep <emph>all</emph> attributes</li>
+          <li class="{$attrs eq 9}"><span class="val">9</span>: keep <em>all</em> attributes</li>
         </ul>
       </dd>
       <dt><span class="param">fold</span></dt>
