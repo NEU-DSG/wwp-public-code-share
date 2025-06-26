@@ -6,15 +6,18 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
   declare namespace map="http://www.w3.org/2005/xpath-functions/map";
   declare namespace output="http://www.w3.org/2010/xslt-xquery-serialization";
   declare namespace rest="http://exquery.org/ns/restxq";
+  declare namespace wpierr="http://www.wwp.northeastern.edu/ns/api/err";
 
 (:~
   A library of functions to simplify the development of an XQuery API.
   
   @author Ash Clark, Northeastern University Women Writers Project
-  @version 1.6.0
+  @version 1.6.1
   @see https://github.com/NEU-DSG/wwp-public-code-share/tree/main/miscellaneous/api_library
   
   Changelog:
+    2025-06-26, v1.6.1: Built out the error in wpi:remove-parameter-value#3 to 
+      better describe the problem.
     2023-11-15, v1.6.0: Added wpi:get-values-as-sequence() to simplify functions 
       that take in maps of request/response parameters. Also added two versions of 
       wpi:remove-parameter-value(). These munge a parameter map, scrubbing it of a 
@@ -444,7 +447,10 @@ module namespace wpi="http://www.wwp.northeastern.edu/ns/api/functions";
           let $index := index-of($mapValueSeq, $value)
           let $useArray := map:get($parameter-map, $key) instance of array(item()*)
           return
-            if ( count($index) gt 1 ) then error()
+            if ( count($index) gt 1 ) then
+              error(QName('http://www.wwp.northeastern.edu/ns/api/err', 'RepeatedParamValue'),
+                    "Cannot remove parameter "||$key||"="||$value
+                    ||". The combination appears "||count($index)||" times.")
             else if ( count($index) eq 0 ) then $parameter-map
             else
               let $newValueSeq := remove($mapValueSeq, $index)
