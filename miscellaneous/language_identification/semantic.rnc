@@ -2,12 +2,20 @@
 # Note: very little restriction on the number of or order
 # of occurences of the various fields inside a record. Maybe later.
 
+# Updated 2024-04-24 by Syd to also validate the new
+#   IANA_language_registry_in_XML.xslt format: added @count,
+#   @source, and @sourceDate as optional attributes of
+#   <language-subtag-registry>.
+
 datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
 start = language-subtag-registry
 
 language-subtag-registry = element language-subtag-registry {
    attribute generated { xsd:dateTime },
+   attribute count { xsd:nonNegativeInteger }?,
+   attribute source { xsd:anyURI }?,
+   attribute sourceDate { text }?,
    ( language
     | region
     | extlang
