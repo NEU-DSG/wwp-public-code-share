@@ -1,11 +1,28 @@
-<project xmlns:unless="ant:unless" default="xar" name="${package(abbrev)}">
+<project xmlns:unless="ant:unless"
+   default="xar"
+   name="${package(abbrev)}">
+  
+  <!--
+    Apache Ant buildfile for the Women Writers Project's API library.
+    -->
+  
+<!--
+    PROPERTIES
+  -->
+  
   <xmlproperty file="expath-pkg.xml"/>
   <property name="build.dir" value="build"/>
   <property name="project.app" value="${package(abbrev)}"/>
   <property name="project.version" value="${package(version)}"/>
   
+  
+<!--
+    BUILD TARGETS
+  -->
+  
   <!-- Generate the XAR package. -->
-  <target name="xar">
+  <target name="xar"
+          description="Build the XAR file for installing the EXPath application">
     <mkdir dir="${build.dir}"/>
     <zip destfile="${build.dir}/${project.app}-${project.version}.xar">
       <fileset dir="." excludes="${build.dir}/* build.xml"/>
@@ -15,12 +32,14 @@
   </target>
   
   <!-- Output the current semantic version of the application. -->
-  <target name="version">
+  <target name="version"
+          description="Report the current version of the EXPath app">
     <echo message="Current build version is ${project.version}"/>
   </target>
   
   <!-- Increment the semantic version of the application. -->
-  <target name="increment">
+  <target name="increment"
+          description="Increment the EXPath application's version number">
     <antcall target="version"/>
     <input message="Input the new version number:" addproperty="proposed.version"/>
     <condition property="new.version" value="${proposed.version}">
@@ -32,4 +51,5 @@
     <replace file="expath-pkg.xml" failonnoreplacements="true" summary="true" 
        token='version="${project.version}"' value='version="${new.version}"'/>
   </target>
+  
 </project>

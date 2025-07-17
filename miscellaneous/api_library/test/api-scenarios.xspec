@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    XSpec unit tests for the API library.
+  -->
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+   xmlns:map="http://www.w3.org/2005/xpath-functions/map"
+   xmlns:wpi="http://www.wwp.northeastern.edu/ns/api/functions"
+   query="http://www.wwp.northeastern.edu/ns/api/functions" 
+   query-at="../api.xql">
+  
+  <!--
+      TEST wpi:remove-parameter-value()
+    -->
+  <x:scenario label="When calling wpi:remove-parameter-value()">
+    <x:variable name="param-map"
+      select="map { 'greeting': ['hello', 'hi'], 
+                    'subject': ('you', 'world'),
+                    'punctuation': '!'
+                  }"/>
+    
+    <x:scenario label="on a key (and all its values)">
+      <!-- Function invocation -->
+      <x:call function="wpi:remove-parameter-value">
+        <x:param select="$param-map"/>
+        <x:param select="'greeting'"/>
+      </x:call>
+      <!-- Assertions -->
+      <x:expect label="the result map should include the key" 
+        test="map:contains($x:result, 'greeting')"/>
+      <x:expect label="the result should show an empty sequence as the value of the key" 
+        test="empty($x:result?greeting)"/>
+    </x:scenario>
+    
+    <x:scenario label="on a simple key-value pair (1 key, 1 value)">
+      <!-- Function invocation -->
+      <x:call function="wpi:remove-parameter-value">
+        <x:param select="$param-map"/>
+        <x:param select="'punctuation'"/>
+        <x:param select="'!'"/>
+      </x:call>
+      <!-- Assertions -->
+      <x:expect label="the result map should include the key" 
+        test="map:contains($x:result, 'punctuation')"/>
+      <x:expect label="the result should show an empty sequence as the value of the key" 
+        test="empty($x:result?punctuation)"/>
+    </x:scenario>
+    
+    <x:scenario label="on a key-value pair via a sequence">
+      <!-- Function invocation -->
+      <x:call function="wpi:remove-parameter-value">
+        <x:param select="$param-map"/>
+        <x:param select="'subject'"/>
+        <x:param select="'you'"/>
+      </x:call>
+      <!-- Assertions -->
+      <x:expect label="the result map should include the key" 
+        test="map:contains($x:result, 'subject')"/>
+      <x:expect label="the result should include a keyed array" 
+        test="map:get($x:result, 'subject') instance of item()*"/>
+      <x:expect label="the result should remove the key-value pair" 
+        test="not($x:result?subject = 'you')"/>
+    </x:scenario>
+    
+    <x:scenario label="on a key-value pair via an array">
+      <!-- Function invocation -->
+      <x:call function="wpi:remove-parameter-value">
+        <x:param select="$param-map"/>
+        <x:param select="'greeting'"/>
+        <x:param select="'hi'"/>
+      </x:call>
+      <!-- Assertions -->
+      <x:expect label="the result map should include the key" 
+        test="map:contains($x:result, 'greeting')"/>
+      <x:expect label="the result should include a keyed array" 
+        test="map:get($x:result, 'greeting') instance of array(xs:string*)"/>
+      <x:expect label="the result should remove the key-value pair" 
+        test="not($x:result?('greeting')?* = 'hi')"/>
+    </x:scenario>
+    
+    <x:scenario label="on a non-existent key">
+      <!-- Function invocation -->
+      <x:call function="wpi:remove-parameter-value">
+        <x:param select="$param-map"/>
+        <x:param select="'filter'"/>
+      </x:call>
+      <!-- Assertions -->
+      <x:expect label="the result map should be the same as the input map" 
+        select="$param-map"/>
+      <x:expect label="the result map should not include the key" 
+        test="not(map:contains($x:result, 'filter'))"/>
+    </x:scenario>
+    
+    <x:scenario label="on a key-value pair where the value doesn't appear">
+      <!-- Function invocation -->
+      <x:call function="wpi:remove-parameter-value">
+        <x:param select="$param-map"/>
+        <x:param select="'punctuation'"/>
+        <x:param select="'~'"/>
+      </x:call>
+      <!-- Assertions -->
+      <x:expect label="the result map should be the same as the input map" 
+        select="$param-map"/>
+    </x:scenario>
+  </x:scenario>
+  <!-- END wpi:remove-parameter-value() -->
+  
+</x:description>
