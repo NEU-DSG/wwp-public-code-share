@@ -1,0 +1,7 @@
+,Model,Test Words,Cosine Similarity
+0,Documents\GitHub\wwp-public-code-share\WordVectors\python\models\test.model,"('stir', 'whisk')",0.6772189
+1,Documents\GitHub\wwp-public-code-share\WordVectors\python\models\test.model,"('cream', 'milk')",0.96368146
+2,Documents\GitHub\wwp-public-code-share\WordVectors\python\models\test.model,"('cake', 'muffin')",0.8178702
+3,Documents\GitHub\wwp-public-code-share\WordVectors\python\models\test.model,"('jam', 'jelly')",0.94311136
+4,Documents\GitHub\wwp-public-code-share\WordVectors\python\models\test.model,"('reserve', 'save')",0.969519
+5,Documents\GitHub\wwp-public-code-share\WordVectors\python\models\test.model,"('bake', 'cook')",0.80851364
