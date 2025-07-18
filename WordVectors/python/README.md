@@ -4,7 +4,9 @@
 A formatted version of this README is available in our GitHub repository: https://github.com/NEU-DSG/wwp-public-code-share/tree/main/WordVectors/python#readme
 -->
 
-These walkthroughs provide code and instructions for training and querying models using the Gensim instantiation of Word2Vec. The walkthroughs also cover fundamental concepts in Python.
+These walkthroughs provide code and instructions for training and querying models using the Gensim instantiation of Word2Vec. The walkthroughs also cover fundamental concepts in Python. These walkthroughs were developed in 2023 and updated in 2025. 
+
+The code has been tested as of July 2025, but due to rapid change in the Python libraries at stake, there is a possibility you may run into errors or warnings that we were not able to anticipate. If you encounter any problems, and you're comfortable doing so, please file a [GitHub issue](https://github.com/NEU-DSG/wwp-public-code-share/issues). 
 
 ## Walkthrough Files
 
