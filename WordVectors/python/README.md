@@ -18,9 +18,9 @@ If you are new to Python, we recommend going through the Notebooks in the order 
 * [Introduction to Word Vectors in Python](word2vec-fundamentals.ipynb) provides an introductory framework for importing data, cleaning data, training a Word2Vec model, querying that model, and finally evaluating that model. The notebooks use a sample dataset of nineteenth-century American recipes which has been included with the directory. This sample dataset can be modified.
 * [Exploratory Visualization With Word2Vec](word2vec-visualization.ipynb) provides a framework for exploratory visualization techniques using Word2Vec. The notebook uses a sample model provided with the directory, but this sample model can be swapped out with another.
 * [Further Explorations of Word Vectors in Python](further-explorations.ipynb) elaborates on the Word2Vec notebooks above to provide possibilities for further analysis as well as to discuss the broader world of machine learning that Word2Vec is a part of.
-* * [Evaluation Guide for Word Embedding Models¶](wem-evaluation.ipynb) provides a process for evaluating word embedding models and outlines some of the considersations involved in developing model testing routines.
+* [Evaluation Guide for Word Embedding Models](wem-evaluation.ipynb) provides a process for evaluating word embedding models and outlines some of the considersations involved in developing model testing routines.
 
-The [Exploratory Visualization With Word2Vec](word2vec-visualization.ipynb), [Further Explorations of Word Vectors in Python](further-explorations.ipynb) and [Evaluation Guide for Word Embedding Models¶](wem-evaluation.ipynb) notebooks all assume that you are familiar with the contents in [Introduction to Word Vectors in Python](word2vec-fundamentals.ipynb).
+The [Exploratory Visualization With Word2Vec](word2vec-visualization.ipynb), [Further Explorations of Word Vectors in Python](further-explorations.ipynb) and [Evaluation Guide for Word Embedding Models](wem-evaluation.ipynb) notebooks all assume that you are familiar with the contents in [Introduction to Word Vectors in Python](word2vec-fundamentals.ipynb).
 
 ## Downloading Jupyter Notebooks
 
