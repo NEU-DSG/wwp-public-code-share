@@ -69,17 +69,17 @@ from gensim.models import KeyedVectors
 
 
 # make sure that your model is loaded
-model = Word2Vec.load("./models/test.model")
+model = Word2Vec.load("./models/recipes-demo.model")
 
 # declare a variable to hold the vectors
 word_vectors = model.wv
 
 # save those vectors to a new file so that we can use them later
-word_vectors.save("./models/word2vec.wordvectors")
+word_vectors.save("./models/recipes-demo.wordvectors")
 
 # now load those vectors
 # you can now query the model by using "wv"
-wv = KeyedVectors.load("./models/word2vec.wordvectors", mmap='r')
+wv = KeyedVectors.load("./models/recipes-demo.wordvectors", mmap='r')
 
 
 # You can now just use `wv.` to query the model rather than `model.wv.` `wv` is capable of performing all of the querying functions as `model.wv` can
@@ -119,7 +119,7 @@ import re                          # for regular expressions
 import string                      # for string comprehension
 
 # load our current model
-model = Word2Vec.load(r"./models/test.model")
+model = Word2Vec.load(r"./models/recipes-demo.model")
 
 # declare a variable with our new sentences/words
 # you can use the folder/spreadsheet method from the core notebook if you have more data
@@ -164,7 +164,7 @@ model.train(data_clean, total_examples=model.corpus_count, epochs=model.epochs)
 
 # save the model as a retrained model with the date that it was retrained 
 # you can save your newly trained model under whatever name makes the most sense to you
-model.save("./models/word2vec_retrained_08012022.model")
+model.save("./models/recipes-demo_retrained_08012022.model")
 
 
 # ### Using Pre-Trained Models

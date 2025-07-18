@@ -19,7 +19,7 @@
 
 # We're going to start by importing all of our libraries as well as our model.
 
-# In[ ]:
+# In[4]:
 
 
 import re                                               # for regular expressions
@@ -39,8 +39,9 @@ import numpy as np                                      # to do fancy things wit
 import plotly.graph_objs as go                          # to visualize PCA
 import matplotlib.pyplot as plt                         # to visualize plots
 from mpl_toolkits.mplot3d import Axes3D                 # to visualize 3D plots
+import random                                           # to obtain random numbers
 
-model = Word2Vec.load(r"./models/test.model")
+model = Word2Vec.load(r"./models/recipes-demo.model")
 
 
 # these are the height and width sizing that we will use for our figures
@@ -85,7 +86,7 @@ figure_width = 6
 # 
 # There are a few additional optional parameters, though the two above are the move important. You can read about other parameters in the documentation. 
 
-# In[ ]:
+# In[7]:
 
 
 # vocab will hold our model's vocabulary
@@ -104,7 +105,7 @@ kmeans = cluster.KMeans(n_clusters=num_clusters, max_iter=40).fit(vocab)
 # 
 # Finally, we declare the `clusters_df` dataframe which will be used to store the words within our clusters. Storing these clusters in a dataframe will allow us to preserve distinctions between clusters using columns and rows, and will make saving the results to a `.csv` file easier.
 
-# In[ ]:
+# In[9]:
 
 
 # set the centroids variable to the k-means cluster centers
@@ -122,7 +123,7 @@ clusters_df = pd.DataFrame()
 # 
 # Next, the temporary dataframe is appended to our `clusters_df` dataframe and the cluster ID and list of words are printed to the console.
 
-# In[ ]:
+# In[11]:
 
 
 # iterate through each of the clusters
@@ -145,7 +146,7 @@ for i in range(num_clusters):
 # 
 # The code block below saves the results to your current working directory, but if you want your results saved somewhere more specific, include the filepath with the call to `.to_csv()`
 
-# In[ ]:
+# In[13]:
 
 
 # this will output the clusters into a CSV located in your current directory. 
@@ -174,7 +175,7 @@ clusters_df.to_csv("./data/sample_clusters.csv")
 # 
 # First, we declare the variable `labels` which will hold the vocabulary of our model, formatted as a list. We'll use this variable later when we are labeling the points on our PCA plot.
 
-# In[ ]:
+# In[17]:
 
 
 # declare label list to hold our model vocabulary
@@ -186,7 +187,7 @@ labels = list(model.wv.key_to_index)
 # 
 # Finally, we fit the PCA function to our particular model's vectors and let it start sifting. In this case, **fit** means that we adjust the PCA model so that it more accurately produces the type of results that our word embedding model does. Since we are really working with two distinct models here, our original word embedding model and the PCA model that was trained using the word embedding model, fitting ensures that the models are comparable enough to produce similar results. If our word embedding model is a t-shirt, fitting means that the PCA model fit in that t-shirt. If your model doesn't fit well--if the PCA model can't fit in the word embedding model's t-shirt, then the second model (in this case the PCA model) cannot accurately predict or understand the complex relationships between variables (in this case words).
 
-# In[ ]:
+# In[19]:
 
 
 # define a variable `vectors` which will hold the vectors within our model
@@ -214,9 +215,10 @@ result = pca.fit_transform(vectors)
 # 
 # For now, the figure size is set to a height of 8 and a width of 6. For smaller screens, a smaller figure size may be best.
 
-# In[ ]:
+# In[21]:
 
 
+get_ipython().run_line_magic('matplotlib', 'widget')
 # create a scatter plot of the projection
 
 # set the points for the x_axis by grabbing all the items in column one of the `results` variable
@@ -269,7 +271,7 @@ plt.show()
 # 
 # Before we define our function, we are going to declare the variable `labels`. We declare the `labels` variable outside of the PCA function for two reasons. First, by keeping `labels` outside of the function definition, we don't have to change anything about the PCA function if we want to change what the labels are. Second, it's a good practice to keep variables that aren't directly contributing to functionality of the function outside of its definition. 
 
-# In[ ]:
+# In[23]:
 
 
 labels = list(model.wv.key_to_index)
@@ -288,9 +290,14 @@ def pca(model):
         fontsize = 10, color ="blue")
     axis.set_xlabel('x axis')
     axis.set_ylabel('y axis')
-
     
     plt.show()
+
+
+# In[24]:
+
+
+get_ipython().run_line_magic('matplotlib', 'widget')
 
 # here, we're actually calling the function
 pca(model) 
@@ -307,9 +314,6 @@ pca(model)
 # Finally, we use a `for` loop to iterate through `selected_indices` and assign a label to the points in the corresponding locations. Putting this new code together, it is going to look like the sample code below and will be added to our existing PCA function.
 
 # ```python
-# # import random library
-# import random
-# 
 # # initiate random number generator
 # random.seed(0)
 # 
@@ -317,7 +321,7 @@ pca(model)
 # all_indices = list(range(len(labels)))
 # 
 # # take a random sample of 25 indices
-# selected_indices = random.sample(all_indices, 25) # you can change this
+# selected_indices = random.sample(all_indices, 25) # you'll be able to change this
 # 
 # # iterate through our random sample
 # for i in selected_indices:
@@ -330,7 +334,7 @@ pca(model)
 
 # The entire `pca_2d()` function with a random sample of 25 items labeled is below:
 
-# In[ ]:
+# In[28]:
 
 
 labels = list(model.wv.key_to_index)
@@ -352,9 +356,14 @@ def pca_2d(model):
     for i in selected_indices:
         axis.text(x_axis[i], y_axis[i], labels[i], style ='italic',
         fontsize = 8, color ="black")
-
     
     plt.show()
+
+
+# In[29]:
+
+
+get_ipython().run_line_magic('matplotlib', 'widget')
 
 # call the function
 pca_2d(model)
@@ -396,10 +405,9 @@ pca_2d(model)
 # Next, we're going to label a random sample of 25 points like we did above. This way, it's much easier to read the plot. We're going to use the random generator like in the above section, but we are going to add a Z axis to the label `for` loop. The sample below is an example of what that might look like:
 # 
 # ```python
-# import random
 # random.seed(0)
 # all_indices = list(range(len(labels)))
-# selected_indices = random.sample(all_indices, 25) # you can change this
+# selected_indices = random.sample(all_indices, 25) # you'll be able to change this
 # for i in selected_indices:
 #     axis_3d.text(x_axis[i], y_axis[i], z_axis[i], labels[i], style ='italic', # I added the z_axis here
 #     fontsize = 10, color ="blue")
@@ -417,7 +425,7 @@ pca_2d(model)
 
 # For the sake of having both the 2d and 3d versions of the scatter plot handy, I've renamed the functions above so that `pca_2d(model)` will show you the 2d version of the scatter plot and `pca_3d(model)` will show you the 3d version. The code for these functions are below:
 
-# In[ ]:
+# In[37]:
 
 
 labels = list(model.wv.key_to_index)
@@ -431,26 +439,29 @@ def pca_2d(model):
     figure = plt.figure(figsize=(figure_height, figure_width))
     axis = figure.add_subplot(111)
     axis.scatter(x_axis, y_axis)
-
-    import random
+    
     random.seed(0)
     all_indices = list(range(len(labels)))
     selected_indices = random.sample(all_indices, 25) # you can change this
     for i in selected_indices:
         axis.text(x_axis[i], y_axis[i], labels[i], style ='italic',
         fontsize = 8, color ="black")
-
-    
+        
     plt.show()
 
-# call the function
+
+# In[38]:
+
+
+get_ipython().run_line_magic('matplotlib', 'widget')
+
+# call the function to make a 2D plot
 pca_2d(model)
 
 
-# In[ ]:
+# In[39]:
 
 
-get_ipython().run_line_magic('matplotlib', 'notebook')
 labels = list(model.wv.key_to_index)
 def pca_3d(model):
     vectors = model.wv[model.wv.key_to_index]  #get all the vectors
@@ -463,7 +474,7 @@ def pca_3d(model):
     figure = plt.figure(figsize=(figure_height, figure_width))
     axis_3d = figure.add_subplot(111, projection='3d')
     axis_3d.scatter(x_axis, y_axis, z_axis)
-    import random
+    
     random.seed(0)
     all_indices = list(range(len(labels)))
     selected_indices = random.sample(all_indices, 25) # you can change this
@@ -473,17 +484,22 @@ def pca_3d(model):
     axis_3d.set_xlabel('x axis')
     axis_3d.set_ylabel('y axis')
     axis_3d.set_zlabel('z axis')
-
     
     plt.show()
-    
-# call the function
+
+
+# In[40]:
+
+
+get_ipython().run_line_magic('matplotlib', 'widget')
+
+# call the function to make a 3D plot
 pca_3d(model)
 
 
 # If you want to give running the `pca` in a way that will generate 25 new random points on every run, use the `pca_random(_)` function below. All I have changed is not setting the random seed.
 
-# In[ ]:
+# In[42]:
 
 
 labels = list(model.wv.key_to_index)
@@ -497,17 +513,21 @@ def pca_random(model):
     figure = plt.figure(figsize=(figure_height, figure_width))
     axis = figure.add_subplot(111)
     axis.scatter(x_axis, y_axis)
-
-    import random
+    
     random.seed() # Here I got rid of the 0 that was setting the seed before
     all_indices = list(range(len(labels)))
     selected_indices = random.sample(all_indices, 25) # you can change this
     for i in selected_indices:
         axis.text(x_axis[i], y_axis[i], labels[i], style ='italic',
         fontsize = 8, color ="black")
-
     
     plt.show()
+
+
+# In[43]:
+
+
+get_ipython().run_line_magic('matplotlib', 'widget')
 
 # call the function
 pca_random(model)
@@ -539,7 +559,7 @@ pca_random(model)
 
 # We begin by declaring two lists, `tokens` and `labels`. We'll use these lists to keep track of the vectors and their labels for each item in the model. 
 
-# In[ ]:
+# In[48]:
 
 
 # two empty lists that we will use to hold some data later
@@ -553,7 +573,7 @@ tokens = []
 # 
 # This initial `if` statement allows you to perform tSNE analysis around a particular word or to focus on a particular area of the vector space. As we have walked through, if there is a focus word, then what gets added to the labels and tokens lists are the 50 nearest neighbors to that particular word. This approach limits the tSNE analysis to that particular word. If there is no focus word, then the tSNE analysis is performed on the entire model.
 
-# In[ ]:
+# In[50]:
 
 
 # we'll set focus_word to none for now
@@ -603,18 +623,20 @@ else:
 # 
 # 3. **init** -- This parameter allows you to suggest how the components will be calculated, either 'random' or by 'pca'
 # 
-# 4. **n_iter** -- This parameter represents the number of times the algorithm should traverse through the data before producing the plot
+# 4. **max_iter** -- This parameter represents the number of times the algorithm should traverse through the data before producing the plot
 # 
 # 5. **random_state** -- This parameter helps to prevent different results being produced with different runs of the algorithm
 # 
 # There are a number of additional optional parameters which you can view in [scikit-learn's tSNE documentation](https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html).
 
-# In[ ]:
+# In[52]:
 
 
+# convert the regular Python array to a Numpy one, so the tSNe model will work
+tokens = np.array(tokens)
 
 # declare a variable, tsne_model, to hold the instance of the tSNE algorithm
-tsne_model = TSNE(perplexity=40, n_components=2, init='pca', n_iter=2500, random_state=23)
+tsne_model = TSNE(perplexity=40, n_components=2, init='pca', max_iter=2500, random_state=23)
 
 # declare a variable, new_values, to hold the vectors from the tSNe analysis
 new_values = tsne_model.fit_transform(tokens)
@@ -623,7 +645,6 @@ new_values = tsne_model.fit_transform(tokens)
 # The rest of the code formats the vectors in `new_values` so that they can be plotted on a scatter plot. Then, the labels list is used to label each point. 
 
 # In[ ]:
-
 
 
 # define the x axis
@@ -644,7 +665,7 @@ for i in range(len(x)):
                      textcoords='offset points',
                      ha='right',
                      va='bottom')
-# show the plot        
+# show the plot
 plt.show()
 
 
@@ -676,8 +697,9 @@ def tsne_all_points(model, focus_word = None, n = 50):
         for word in model.wv.key_to_index:
             tokens.append(model.wv[word])
             labels.append(word)
-    
-    tsne_model = TSNE(perplexity=40, n_components=2, init='pca', n_iter=2500, random_state=23)
+
+    tokens = np.array(tokens)
+    tsne_model = TSNE(perplexity=40, n_components=2, init='pca', max_iter=2500, random_state=23)
     new_values = tsne_model.fit_transform(tokens)
 
     x = [value[0] for value in new_values]
@@ -694,7 +716,11 @@ def tsne_all_points(model, focus_word = None, n = 50):
                       va='bottom')
 
     plt.show()
-    
+
+
+# In[ ]:
+
+
 # call the function
 tsne_all_points(model)
 
@@ -703,7 +729,6 @@ tsne_all_points(model)
 # 
 #  ```python
 #     # only label a random set of 25 points
-#     import random
 #     random.seed(0)
 #     all_indices = list(range(len(labels)))
 #     selected_indices = random.sample(all_indices, 25) # you can change this
@@ -735,8 +760,9 @@ def tsne_some_points(model, focus_word = None, n = 50):
         for word in model.wv.key_to_index:
             tokens.append(model.wv[word])
             labels.append(word)
-    
-    tsne_model = TSNE(perplexity=40, n_components=2, init='pca', n_iter=2500, random_state=23)
+
+    tokens = np.array(tokens)
+    tsne_model = TSNE(perplexity=40, n_components=2, init='pca', max_iter=2500, random_state=23)
     new_values = tsne_model.fit_transform(tokens)
 
     x = [value[0] for value in new_values]
@@ -747,7 +773,6 @@ def tsne_some_points(model, focus_word = None, n = 50):
         plt.scatter(x[i],y[i])
         
     # only label a random set of 25 points
-    import random
     random.seed(0) 
     all_indices = list(range(len(labels)))
     selected_indices = random.sample(all_indices, 25) # you can change this
@@ -759,7 +784,11 @@ def tsne_some_points(model, focus_word = None, n = 50):
                       ha='right',
                       va='bottom')
     plt.show()
-    
+
+
+# In[ ]:
+
+
 tsne_some_points(model)
 
 
@@ -784,7 +813,8 @@ def tsne_random(model, focus_word = None, n = 50):
             tokens.append(model.wv[word])
             labels.append(word)
     
-    tsne_model = TSNE(perplexity=40, n_components=2, init='pca', n_iter=2500, random_state=23)
+    tokens = np.array(tokens)
+    tsne_model = TSNE(perplexity=40, n_components=2, init='pca', max_iter=2500, random_state=23)
     new_values = tsne_model.fit_transform(tokens)
 
     x = [value[0] for value in new_values]
@@ -795,7 +825,6 @@ def tsne_random(model, focus_word = None, n = 50):
         plt.scatter(x[i],y[i])
         
     # only label a random set of 25 points
-    import random
     random.seed() 
     all_indices = list(range(len(labels)))
     selected_indices = random.sample(all_indices, 25) # you can change this
@@ -807,7 +836,11 @@ def tsne_random(model, focus_word = None, n = 50):
                       ha='right',
                       va='bottom')
     plt.show()
-    
+
+
+# In[ ]:
+
+
 tsne_random(model)
 
 
