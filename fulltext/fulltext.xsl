@@ -13,10 +13,18 @@
     and any other activity where having access to semi-regularized, complete words 
     might be useful.
     
-    Author: Ashley M. Clark, Northeastern University Women Writers Project
+    Author: Ash Clark, Northeastern University Women Writers Project
     See https://github.com/NEU-DSG/wwp-public-code-share/tree/main/fulltext
     
     Changelog:
+      2025-07-11, v2.14: Added $keep-page-numbers-only, to address a common use case 
+        where we want to see page numbers for reference, but no other metawork. 
+        (When spell-checking a WWO text, for instance.) To simplify matters, 
+        $keep-page-numbers-only only works when $keep-metawork-text is toggled off. 
+        Made sure that both $keep-page-numbers-only and $keep-metawork-text don't 
+        cause text nodes to appear in the middle of a soft-hyphenated word. Refined 
+        the "pbSubsequencer" template, fixing a bug where only the first pbGroup 
+        member would be preserved. Updated my name.
       2022-02-18, v2.13: Changed <xsl:value-of> to <xsl:sequence>.
       2020-10-02, v2.12: Updated GitHub link to use the new default branch "main".
       2019-12-19, v2.11: When $move-notes-to-anchors is turned on, <note>s with
@@ -166,6 +174,12 @@
     content of <mw>. -->
   <xsl:param name="keep-metawork-text"            as="xs:boolean" select="false()"/>
   
+  <!-- Parameter option to keep/remove the page numbers, when the original text had 
+    printed them. If $keep-metawork-text is toggled on, this parameter is ignored. 
+    Like $keep-metawork-text, $keep-page-numbers-only does not show the text when 
+    they'd interrupt a word. -->
+  <xsl:param name="keep-page-numbers-only"        as="xs:boolean" select="false()"/>
+  
   <!-- Parameter option to keep/remove modern era, WWP-authored content within <text>, 
     such as <figDesc> and <note type="WWP">. The default is to keep WWP content. If 
     WWP content is removed, no @read attribute is used to capture deleted content. -->
@@ -183,7 +197,7 @@
   
 <!-- VARIABLES and KEYS -->
   
-  <xsl:variable name="fulltextBotVersion" select="'2.13'"/>
+  <xsl:variable name="fulltextBotVersion" select="'2.14'"/>
   <xsl:variable name="fulltextBot" select="concat('fulltextBot-',$fulltextBotVersion)"/>
   <xsl:variable name="shyDelimiter" select="'­'"/>
   <xsl:variable name="shyEndingPattern" select="concat($shyDelimiter,'\s*$')"/>
@@ -592,17 +606,19 @@
   <xsl:template name="pbSubsequencer">
     <xsl:param name="start-position" as="xs:integer"/>
     <xsl:variable name="max-length" select="14"/>
+    <xsl:variable name="all-siblings-after-position" 
+      select="subsequence(parent::*/node(), $start-position)"/>
     <!-- Continue only if there are text or element siblings after this 
       $start-position. -->
-    <xsl:if test="count(subsequence(parent::*/(* | text()),1,$start-position)) gt 0">
+    <xsl:if test="count($all-siblings-after-position[exists(self::text()) or exists(self::*)]) gt 0">
       <xsl:variable name="groupmates">
         <!-- Get the next $max-length siblings... -->
         <xsl:variable name="siblings-after" as="node()*">
-          <xsl:variable name="all-after" 
-            select="subsequence(parent::*/(* | text()), $start-position, last())"/>
-          <xsl:copy-of select="if ( count($all-after) gt $max-length ) then
-                                 subsequence($all-after, 1, $max-length)
-                               else $all-after"/>
+          <xsl:variable name="siblingSubset" 
+            select="if ( count($all-siblings-after-position) gt $max-length ) then
+                      subsequence($all-siblings-after-position, 1, $max-length)
+                    else $all-siblings-after-position"/>
+          <xsl:sequence select="$siblingSubset"/>
         </xsl:variable>
         <!-- ...and test them to find the first which doesn't qualify as a pbGroup 
           candidate. -->
@@ -861,12 +877,30 @@
   </xsl:template>
   
   <!-- If $keep-metawork-text is toggled on, text nodes should be reconstituted from 
-    @read appearing on the members of a pbGroup. -->
-  <xsl:template match="ab[@type eq 'pbGroup'][$keep-metawork-text]//*[@read]" mode="unifier">
+    @read appearing on the members of a pbGroup. (As long as they aren't 
+    interrupting a word.) -->
+  <xsl:template match="ab[@type eq 'pbGroup'][$keep-metawork-text]
+                        //*[@read][not(wf:is-splitting-a-word(.))]" mode="unifier">
     <xsl:copy>
       <xsl:copy-of select="@* except @read"/>
       <xsl:value-of select="@read"/>
     </xsl:copy>
+  </xsl:template>
+  
+  <!-- If $keep-metawork-text is toggled off, check the $keep-page-numbers-only 
+    parameter to determine if <mw type="pageNum"> should be reconstituted by itself. -->
+  <xsl:template match="mw[@type eq 'pageNum'][not($keep-metawork-text)]" mode="unifier" priority="2">
+    <xsl:choose>
+      <xsl:when test="$keep-page-numbers-only and not(wf:is-splitting-a-word(.))">
+        <xsl:copy>
+          <xsl:copy-of select="@* except @read"/>
+          <xsl:value-of select="@read"/>
+        </xsl:copy>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:next-match/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <!-- If $move-notes-to-anchors is toggled on, elements with @corresp get copies of 
