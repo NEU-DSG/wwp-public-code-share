@@ -49,31 +49,31 @@ Note that the useful output is sent to the message area; the actual output files
 ## [generate_tagsDecl.xslt](./generate_tagsDecl.xslt)
 
 This is an XSLT 1.0 program that reads in a TEI P5 document and writes
-out a complete `&lt;tagsDecl>` element that reflects its encoding.
-(The `&lt;tagUsage>` elements are sorted by each element’s local name.)
+out a complete `<tagsDecl>` element that reflects its encoding.
+(The `<tagUsage>` elements are sorted by each element’s local name.)
 
 While there may still be some uses for this program, it has generally
 been superceded by [replace tagsDecl](#replace_tagsDeclxslt).
 
-This program does NOT add an `&lt;application>` notification in the `&lt;teiHeader>`.
+This program does NOT add an `<application>` notification in the `<teiHeader>`.
 
 ## [replace_tagsDecl.xslt](./replace_tagsDecl.xslt)
 
 This is an XSLT 3.0 program that reads in a TEI P5 document and writes
-out the same document with the entire `&lt;tagsDecl>` overwritten by a
+out the same document with the entire `<tagsDecl>` overwritten by a
 new one.
-(The `&lt;tagUsage>` elements are sorted by number of occurences.)
+(The `<tagUsage>` elements are sorted by number of occurences.)
 
-This means that if the input document does not have a `&lt;tagsDecl>`
+This means that if the input document does not have a `<tagsDecl>`
 at all, this program is little more than a very expensive no-op. (So
-you might want to add an empty `&lt;tagsDecl>` by hand before you run
+you might want to add an empty `<tagsDecl>` by hand before you run
 this for the first time on a particular file.)
 
 Unlike [generate_tagsDecl.xslt](./generate_tagsDecl.xslt) this program
 was _not_ written with speed in mind. Nonetheless, it runs quite
 quickly (3⅔ s on the largest WWP file we have, 3.0 MiB).
 
-This program adds a proper `&lt;application>` notification in the `&lt;teiHeader>`.
+This program adds a proper `<application>` notification in the `<teiHeader>`.
 
 ## [CSS3_selector_regex_generator.perl](./CSS3_selector_regex_generator.perl)
 
