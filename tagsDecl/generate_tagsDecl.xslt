@@ -7,7 +7,7 @@
 <!-- http://wiki.tei-c.org/index.php/Count-Elements.xsl 2009-07-06 -->
 <!-- Updated 2018-12-04 by Syd: improve how we collect <text> elements to
      examine. (We were missing those nested in teiCorpus/teiCorpus.) -->
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="3.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns="http://www.tei-c.org/ns/1.0"
   xmlns:tei="http://www.tei-c.org/ns/1.0">
@@ -48,13 +48,13 @@
           <!-- process each node that has this namespace and is the
 	       first one in the set of nodes with the same local name -->
           <xsl:for-each select="//*[namespace-uri(.)=$ns][generate-id(.)=generate-id(key('gis',local-name(.))[1])]">
-            <!-- sort by the local name -->
-            <xsl:sort select="local-name()"/>
+            <!-- sort by the # occurences -->
+            <xsl:sort select="format-number( count( key('gis', local-name(.) ) ), '000')"/>
             <!-- output a <tagUsage> element that gives counts for the number -->
             <!-- of similarly named descendants of <text> and number of those -->
             <!-- that are identified with xml:id=. -->
             <tagUsage gi="{local-name(.)}"
-              occurs="{count( key('gis', local-name(.) ) )}"
+              occurs="{format-number( count( key('gis', local-name(.) ) ), '000')}"
               withId="{count( key('gis', local-name(.) )[@xml:id] )}"/>
           </xsl:for-each>
         </namespace>

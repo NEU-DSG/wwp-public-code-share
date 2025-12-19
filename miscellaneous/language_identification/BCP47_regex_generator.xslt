@@ -3,6 +3,7 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:fn="http://www.w3.org/2005/xpath-functions"
+  xmlns:wf="http://www.wwp.northeastern.edu/ns/functions"
   exclude-result-prefixes="#all"
   >
 
@@ -57,32 +58,178 @@
   <xsl:param name="output3" as="xs:string" select="'/tmp/BCP47.rng'"/>
   <xsl:param name="output4" as="xs:string" select="'/tmp/BCP47.sch'"/>
   <xsl:param name="separator" as="xs:string" select="'␞␞'"/>
+  
+  <xsl:variable name="pvt_ext_pat" select="'(-x-[A-Za-z0-9-]+)?'"/>
+
+  <xsl:key name="LANGUAGEbySS" match="language" use="@supress-script"/>
 
   <!--
       ********* main initial template *********
   -->
   <xsl:template match="/" name="xsl:initial-template">
 
-    <!-- language subtags -->
+    <!-- Create (and output) XML version of language subtag registry -->
     <xsl:variable name="sem_lang_reg" as="element(language-subtag-registry)">
       <xsl:call-template name="process_lang_reg"/>
     </xsl:variable>
     <xsl:result-document href="{$output1}" method="xml" indent="yes">
       <xsl:sequence select="$sem_lang_reg"/>
     </xsl:result-document>
-
-    <xsl:variable name="sem_scripts" as="element(script_codes)">
-      <xsl:call-template name="process_scripts"/>
-    </xsl:variable>
-    <xsl:result-document href="{$output2}" method="xml" indent="yes">
-      <xsl:sequence select="$sem_scripts"/>
-    </xsl:result-document>
     
-    <xsl:variable name="sem_regions"/>
+    <!-- Assemble a sequence of langauges -->
+    <xsl:variable name="langs" as="xs:string+">
+      <xsl:variable name="lang_subtags" select="$sem_lang_reg/language[ not( @deprecated | @preferred-value ) ]/@subtag"/>
+      <xsl:sequence select="$lang_subtags[ not( contains( ., '..') ) ]"/>
+      <xsl:sequence select="$lang_subtags[ contains( ., '..') ]!wf:alpha_range_to_regex(.)"/>
+    </xsl:variable>
 
-    <xsl:sequence select="'$regularExpressionHere'"/>
+    <!-- Reduce bulk of language subtags to a sequence of langs to 26 regexps -->
+    <xsl:variable name="langs_by_first_letter" as="xs:string+">
+      <xsl:for-each-group select="$langs[fn:string-length(.) = ( 2, 3 ) ]" group-by="substring( ., 1, 1 )">
+        <xsl:variable name="chars2" as="xs:string+">
+          <xsl:for-each select="fn:current-group()">
+            <xsl:sort select="fn:substring( ., 2, 1 )"/>
+            <xsl:sequence select="substring( ., 2, 1 )"/>
+          </xsl:for-each>
+        </xsl:variable>
+        <xsl:variable name="chars3" as="xs:string*">
+          <xsl:for-each select="fn:current-group()">
+            <xsl:sort select="substring( ., 3, 1 )"/>
+            <xsl:sequence select="substring( ., 3, 1 )"/>
+          </xsl:for-each>
+        </xsl:variable>
+        <xsl:variable name="unique_chars2" select="fn:string-join( fn:distinct-values( $chars2 ) )" as="xs:string"/>
+        <xsl:variable name="unique_chars3" select="fn:string-join( fn:distinct-values( $chars3 ) )" as="xs:string"/>
+        <xsl:variable name="use_chars2" select="if ( $unique_chars2 eq 'abcdefghijklmnopqrstuvwxyz' ) then 'a-z' else $unique_chars2"/>
+        <xsl:variable name="use_chars3" select="if ( $unique_chars3 eq 'abcdefghijklmnopqrstuvwxyz' ) then 'a-z' else $unique_chars3"/>
+        <xsl:variable name="match2" select="'['||$use_chars2||']'" as="xs:string"/>
+        <xsl:variable name="match3" select="'['||$use_chars3||']'" as="xs:string"/>
+        <xsl:sequence select="fn:current-grouping-key()||$match2||$match3"/>
+      </xsl:for-each-group>
+    </xsl:variable>
+    <xsl:variable name="langs_other" select="$langs[ not( fn:string-length(.) = ( 2, 3 ) ) ]"/>
+    
+    <!-- Assemble a sequence of scripts -->
+    <xsl:variable name="scripts" as="xs:string+">
+      <xsl:sequence select="$sem_lang_reg/script/@subtag[ fn:string-length(.) eq 4 ]"/>
+      <xsl:sequence select="$sem_lang_reg/script/@subtag[ contains( ., '..') ]!wf:alpha_range_to_regex(.)"/>
+    </xsl:variable>
+    
+    <!-- Reduce the “normal” (4-letter) script subtags to 26 rebexes -->
+    <xsl:variable name="scripts_by_first_letter" as="xs:string+">
+      <xsl:for-each-group select="$scripts[fn:string-length(.) eq 4 ]" group-by="substring( ., 1, 1 )">
+        <xsl:variable name="chars2" as="xs:string+">
+          <xsl:for-each select="fn:current-group()">
+            <xsl:sort select="fn:substring( ., 2, 1 )"/>
+            <xsl:sequence select="substring( ., 2, 1 )"/>
+          </xsl:for-each>
+        </xsl:variable>
+        <xsl:variable name="set2" select="wf:char_seq2re_set($chars2)"/>
+        <xsl:variable name="chars3" as="xs:string*">
+          <xsl:for-each select="fn:current-group()">
+            <xsl:sort select="substring( ., 3, 1 )"/>
+            <xsl:sequence select="substring( ., 3, 1 )"/>
+          </xsl:for-each>
+        </xsl:variable>
+        <xsl:variable name="set3" select="wf:char_seq2re_set($chars3)"/>
+        <xsl:variable name="chars4" as="xs:string+">
+          <xsl:for-each select="fn:current-group()">
+            <xsl:sort select="fn:substring( ., 4, 1 )"/>
+            <xsl:sequence select="substring( ., 4, 1 )"/>
+          </xsl:for-each>
+        </xsl:variable>
+        <xsl:variable name="set4" select="wf:char_seq2re_set($chars4)"/>
+        <xsl:sequence select="fn:current-grouping-key()||$set2||$set3||$set4"/>
+      </xsl:for-each-group>
+    </xsl:variable>
+    <xsl:variable name="scripts_other" select="$scripts[ fn:string-length(.) ne 4 ]"/>
+    
+    <!-- Assemble a sequence of CORs (country or region) -->
+    <xsl:variable name="cors" as="xs:string+">
+      <xsl:sequence select="$sem_lang_reg/region/@subtag[ fn:string-length(.) = ( 2, 3 ) ]"/>
+      <xsl:sequence select="$sem_lang_reg/region/@subtag[ contains( ., '..') ]!wf:alpha_range_to_regex(.)"/>
+    </xsl:variable>
+    
+    <!-- Assemble sequence of language-script -->
+    <xsl:variable name="lang-script" as="xs:string+">
+      <xsl:for-each select="$langs_by_first_letter, $langs_other">
+        <xsl:variable name="lang" select="."/>
+        <xsl:sequence select="$lang||$pvt_ext_pat"/>
+        <xsl:for-each select="$scripts_by_first_letter, $scripts_other">
+          <xsl:variable name="script" select="."/>
+          <xsl:sequence select="$lang||'-'||$script||$pvt_ext_pat"/>
+          <xsl:for-each select="$cors_by_first_char">
+            <xsl:variable name="cor" select="."/>
+            <xsl:sequence select="$lang||'-'||$cor||$pvt_ext_pat"/>
+            <xsl:sequence select="$lang||'-'||$script||'-'||$cor||$pvt_ext_pat"/>
+          </xsl:for-each>
+        </xsl:for-each>
+      </xsl:for-each>
+    </xsl:variable>
+    
+    <xsl:sequence select="string-join($lang-script, '|')||'&#x0A;'"/>
     
   </xsl:template>
+
+  <!-- 
+    ********* functions *********
+  -->
+  <xsl:function name="wf:alpha_range_to_list" as="xs:string+">
+    <!--
+      Currently only intended to handle double-dot ranges of 4-character
+      long alphabetic strings. But not used, as alpha_range_to_regex()
+      produces much shorter output. (At present there are 48 private use
+      scripts, Qaaa–Qabx; if this were expanded to hanlde ranges of 3-
+      and 2-character codes languages have 520 and regions have 40, for
+      a total of 608 which can be expressed in 4 regular expresssions.)
+      Left here for pedagogical reasons.
+    -->
+    <xsl:param name="range" as="xs:string"/>
+    <xsl:variable name="start" select="fn:substring-before( $range, '..') => fn:string-to-codepoints()"/>
+    <xsl:variable name="end"   select="fn:substring-after(  $range, '..') => fn:string-to-codepoints()"/>
+    <xsl:variable name="chars1" select="for $i in $start[1] to $end[1] return $i"/>
+    <xsl:variable name="chars2" select="for $i in $start[2] to $end[2] return $i"/>
+    <xsl:variable name="chars3" select="for $i in $start[3] to $end[3] return $i"/>
+    <xsl:variable name="chars4" select="for $i in $start[4] to $end[4] return $i"/>
+    <xsl:for-each select="$chars1">
+      <xsl:variable name="char1" select="."/>
+      <xsl:for-each select="$chars2">
+        <xsl:variable name="char2" select="."/>
+        <xsl:for-each select="$chars3">
+          <xsl:variable name="char3" select="."/>
+          <xsl:for-each select="$chars4">
+            <xsl:variable name="char4" select="."/>
+            <xsl:sequence select="fn:codepoints-to-string( ( $char1, $char2, $char3, $char4 ) )"/>
+          </xsl:for-each>
+        </xsl:for-each>
+      </xsl:for-each>
+    </xsl:for-each>
+  </xsl:function>
+  <xsl:function name="wf:alpha_range_to_regex" as="xs:string">
+    <xsl:param name="range" as="xs:string"/>
+    <xsl:variable name="start" select="fn:substring-before( $range, '..')"/>
+    <xsl:variable name="end"   select="fn:substring-after(  $range, '..')"/>
+    <xsl:variable name="start1" select="fn:substring( $start, 1, 1 )"/>
+    <xsl:variable name="start2" select="fn:substring( $start, 2, 1 )"/>
+    <xsl:variable name="start3" select="fn:substring( $start, 3, 1 )"/>
+    <xsl:variable name="start4" select="fn:substring( $start, 4, 1 )"/>
+    <xsl:variable name="end1" select="fn:substring( $end, 1, 1 )"/>
+    <xsl:variable name="end2" select="fn:substring( $end, 2, 1 )"/>
+    <xsl:variable name="end3" select="fn:substring( $end, 3, 1 )"/>
+    <xsl:variable name="end4" select="fn:substring( $end, 4, 1 )"/>
+    <xsl:variable name="range1" select="if ( $start1 eq $end1 ) then $end1 else '['||$start1||'-'||$end1||']'"/>
+    <xsl:variable name="range2" select="if ( $start2 eq $end2 ) then $end2 else '['||$start2||'-'||$end2||']'"/>
+    <xsl:variable name="range3" select="if ( $start3 eq $end3 ) then $end3 else '['||$start3||'-'||$end3||']'"/>
+    <xsl:variable name="range4" select="if ( $start4 eq $end4 ) then $end4 else '['||$start4||'-'||$end4||']'"/>
+    <xsl:sequence select="$range1||$range2||$range3||$range4"/>
+  </xsl:function>
+
+  <xsl:function name="wf:char_seq2re_set" as="xs:string">
+    <xsl:param name="chars" as="xs:string+"/>
+    <xsl:variable name="unique_chars" select="fn:string-join( fn:distinct-values( $chars ) )" as="xs:string"/>
+    <xsl:variable name="use_chars" select="if ( $unique_chars eq 'abcdefghijklmnopqrstuvwxyz' ) then 'a-z' else $unique_chars"/>
+    <xsl:sequence select="'['||$use_chars||']'"/>
+  </xsl:function>
 
   <!--
       ********* process language registry *********
@@ -176,38 +323,6 @@
       <xsl:copy-of select="description|comments"/>
     </xsl:element>
   </xsl:template>
-
-  <!--
-      ********* process scripts *********
-  -->
-  <xsl:template name="process_scripts" as="element(script_codes)">
-    
-    <!-- First step: can we read the input? -->
-    <xsl:variable name="idunno" as="xs:boolean">
-      <xsl:try select="unparsed-text-available( $input2 )">
-        <xsl:catch>
-          <xsl:message terminate="yes"
-            select="'ERROR: Cannot read input document ('||$input2||')'"/>
-        </xsl:catch>
-      </xsl:try>
-    </xsl:variable>
-    
-    <!-- Read in language registry as a set of text lines: -->
-    <xsl:variable name="SCR_lines" select="unparsed-text-lines( $input2 )" as="xs:string+"/>
-    
-    <script_codes>
-      <xsl:for-each select="$SCR_lines[ string-length(.) gt 2  and  not( fn:starts-with( .,' ')  or  fn:starts-with( ., '#') ) ]">
-        <xsl:variable name="SCR_line" select="normalize-space(.)"/>
-        <xsl:variable name="SCR_line_parsed" select="fn:tokenize( $SCR_line, ';')"/>
-        <script code="{$SCR_line_parsed[1]}" n="{$SCR_line_parsed[2]}" version="{$SCR_line_parsed[6]}" date="{$SCR_line_parsed[7]}">
-          <name xml:lang="en"><xsl:sequence select="$SCR_line_parsed[3]"/></name>
-          <name xml:lang="fr"><xsl:sequence select="$SCR_line_parsed[4]"/></name>
-        </script>
-      </xsl:for-each>
-    </script_codes>
-    
-  </xsl:template>
-  
 
   <!-- ********* -->
 
@@ -769,5 +884,4 @@
          on 2025-01-24 and hand-editing. -->
   </xsl:variable>
   
-  <!-- Next step: scripts from https://www.unicode.org/iso15924/iso15924.txt -->
 </xsl:stylesheet>
