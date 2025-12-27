@@ -7,7 +7,8 @@ This directory holds routines that operate on or help with the TEI `<tagsDecl>`.
 * [find specific renditional defaults](#find_specific_renditional_defaultsxslt)
 * [generate tagsDecl](#generate_tagsDeclxslt)
 * [replace tagsDecl](#replace_tagsDeclxslt)
-* [generate a regexp to validate `@selector`](#CSS3_selector_regex_generatorperl)
+* [generate a regexp to validate `@selector`](#CSS3_selector_regex_generatorperl) — Perl
+* [generate a regexp to validate `@selector`](#CSS3_selector_regex_generatorxslt) — XSLT
 
 ## [find_specific_renditional_defaults.xslt](./find_specific_renditional_defaults.xslt)
 
@@ -82,3 +83,19 @@ This is a Perl program that generates a regular expression which can be used in 
 It also generates a RELAX NG grammar (or an XSLT program) that can be used to test the regular expression.
 
 Just run the Perl program. It takes no parameters nor input. It writes the regular expression alone to STDERR and as part of a self-testing RELAX NG grammer to STDOUT. Thus a typical invocation might be `CSS3_selector_regex_generator.perl 2> ~/Documents/selector_regex.txt > /tmp/test_selector_regex.rng`.
+
+## [CSS3_selector_regex_generator.xslt](./CSS3_selector_regex_generator.xslt)
+
+This is an XSLT 3.0 program that generates a regular expression which can be used in your ODD file to validate that the value of an attribute (in particular, the `@selector` attribute of `<rendition>`) is proper CSS3.
+
+Its output is one of:
+* a small XML file with 1 element (the outermost “root” element) whose content (a string) is the regular expression;
+* a RELAX NG grammar that can be used to test the regular expression by validating itself (i.e., a test suite is included); or
+* an XSLT program that can be used to test the regular expression by transforming itself (i.e., a test suite is included). 
+
+Just run the XSLT program on any input — the input is ignored, so I usually just run it on itself. It takes one parameter, `$output`, which is an xs:anyURI. If its value is one of:
+* `rng`,`rnc`,`RNG`,`RNC`,`RELAXNG`,`RELAX NG`,**`RelaxNG`**,`Relax NG`, or `http://relaxng.org/ns/structure/1.0`;
+* `xsl`,`xslt`,`XSL`,`XSLT`, or `http://www.w3.org/1999/XSL/Transform`;
+* `txt`,`text`,`TXT`,`TEXT`,`regex`,`regexp`,`debug`,`Debug`, or `DEBUG`;
+
+then the out is of that type. If its value is anything else, a fatal error occurs.
