@@ -4,8 +4,8 @@
 <!-- <tagsDecl> elements replaced by ones that reflect the current  -->
 <!-- encoding.                                                      -->
 <!-- Copyleft 2025 by Syd Bauman and the Women Writers Project. -->
-<!-- Based very heavily on generate_tagsDecl.xslt (itself based -->
-<!-- heavily on James Cummings’ Count-Elements.xsl at           -->
+<!-- Based very heavily on generate_tagsDecl.xslt (itself       -->
+<!-- based heavily on James Cummings’ Count-Elements.xsl at     -->
 <!-- http://wiki.tei-c.org/index.php/Count-Elements.xsl,        -->
 <!-- 2009-07-06.                                                -->
 <xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -29,7 +29,7 @@
   <xsl:template match="/">
     <xsl:apply-templates select="child::node()" mode="topmost"/>
   </xsl:template>
-  <!-- The templates above & below, combined, just try to make file prettier. -->
+  <!-- The templates above & below, combined, just try to make output prettier for humans. -->
   <xsl:template match="/node()" mode="topmost">
     <xsl:apply-templates select="." mode="#default"/>
     <xsl:text>&#x0A;</xsl:text>
@@ -39,7 +39,9 @@
   <xsl:template match="encodingDesc[ not( appInfo )]">
     <xsl:copy>
       <xsl:apply-templates select="@*"/>
+      <xsl:text>&#x0A;</xsl:text>
       <appInfo>
+        <xsl:text>&#x0A;</xsl:text>
         <xsl:call-template name="generate_application_information"/>
       </appInfo>
       <xsl:apply-templates select="node()"/>
@@ -48,19 +50,29 @@
 
   <!-- If we hit the first <appInfo>, add our <application> at the top -->
   <xsl:template match="appInfo[ not( preceding-sibling::appIfno ) ]">
+    <!-- copy over the <appInfo>:  -->
     <xsl:copy>
+      <!-- get its attributes: -->
       <xsl:apply-templates select="@*"/>
+      <!-- get any nodes *before* the 1st <application>: -->
       <xsl:apply-templates select="node()[ not( self::application | preceding-sibling::application ) ]"/>
+      <!-- generate our <appliation>: -->
       <xsl:call-template name="generate_application_information"/>
+      <!-- get any existing <application> elements and other nodes that occur *after* last <application>:  -->
       <xsl:apply-templates select="node()[      self::application | preceding-sibling::application   ]"/>
     </xsl:copy>
   </xsl:template>
 
   <xsl:template name="generate_application_information">
-    <xsl:text>&#x0A;</xsl:text>
+    <!-- get current timestamp in UTC: -->
     <xsl:variable name="dT"  select="format-dateTime( current-dateTime(), '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01][Z00:00t]')"/>
     <xsl:variable name="dTz" select="adjust-dateTime-to-timezone( $dT cast as xs:dateTime, xs:dayTimeDuration('-PT0H') )"/>
+    <!-- insert <application>: -->
     <application ident="replace_tagsDecl" version="{$version}" when="{$dTz}" source="{static-base-uri()}">
+      <!-- if the surrounding language is not English, flag this
+           element as English because its content is in English. (As I
+           do not speak any other languages well enough to write an
+           application description.) -->
       <xsl:if test="not( lang('en') )">
         <xsl:attribute name="xml:lang" select="'en'"/>
       </xsl:if>
@@ -88,9 +100,9 @@
 
   <!-- From each associated input <text> arises a <tagsDecl> -->
   <xsl:template match="text" mode="createTagsDecl">
-    <xsl:variable name="this_text" select="."/>
+    <xsl:variable name="me" select="."/>
     <tagsDecl partial="false">
-      <!-- Use @n to say from which <text> this <tagsDecl> was generated. -->
+      <!-- Use @n to indicate from which <text> this <tagsDecl> was generated. -->
       <xsl:attribute name="n">
         <xsl:choose>
           <xsl:when test="@xml:id"><xsl:sequence select="'for_'||@xml:id"/></xsl:when>
@@ -102,7 +114,7 @@
         </xsl:choose>
       </xsl:attribute>
       <!-- Get list of namespaces used by my descendant elements. -->
-      <xsl:variable name="namespaces" select="distinct-values( $this_text//*!namespace-uri() )" as="xs:anyURI+"/>
+      <xsl:variable name="namespaces" select="distinct-values( $me//*!namespace-uri() )" as="xs:anyURI+"/>
       <!-- For each of those namespace URIs (in sorted order), … -->
       <xsl:for-each select="$namespaces">
         <xsl:sort/>
@@ -112,16 +124,16 @@
         <xsl:text>&#x0A;</xsl:text>
         <namespace name="{$ns}">
           <!-- Get list of the local names of my descendant elements. -->
-          <xsl:variable name="gis" select="distinct-values( $this_text//*[ namespace-uri(.) eq $ns ]!local-name() )" as="xs:string+"/>
+          <xsl:variable name="gis" select="distinct-values( $me//*[ namespace-uri(.) eq $ns ]!local-name() )" as="xs:string+"/>
           <!-- For each of those local names (sorted by count) … -->
           <xsl:for-each select="$gis">
-            <xsl:sort order="descending" select="count( $this_text//*[ namespace-uri(.) eq $ns  and  local-name(.) eq current() ] )"/>
+            <xsl:sort order="descending" select="count( $me//*[ namespace-uri(.) eq $ns  and  local-name(.) eq current() ] )"/>
             <!-- … remember it for easy reference … -->
             <xsl:variable name="gi" select="."/>
             <!-- … and output a <tagUsage> element with appropriate attributes. -->
             <tagUsage gi="{.}"
-                      occurs="{format-integer( count( $this_text//*[ namespace-uri(.) eq $ns  and  local-name(.) eq $gi ] ),            '000')}"
-                      withId="{format-integer( count( $this_text//*[ namespace-uri(.) eq $ns  and  local-name(.) eq $gi ][ @xml:id ] ), '000')}"/>
+                      occurs="{format-integer( count( $me//*[ namespace-uri(.) eq $ns  and  local-name(.) eq $gi ] ),            '000')}"
+                      withId="{format-integer( count( $me//*[ namespace-uri(.) eq $ns  and  local-name(.) eq $gi ][ @xml:id ] ), '000')}"/>
           </xsl:for-each>
           <xsl:text>&#x0A;</xsl:text>
         </namespace>
