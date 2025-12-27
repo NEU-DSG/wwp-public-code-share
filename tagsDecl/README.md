@@ -97,4 +97,5 @@ Just run the XSLT program on any input — the input is ignored, so I usually ju
 * `rng`,`rnc`,`RNG`,`RNC`,`RELAXNG`,`RELAX NG`,**`RelaxNG`**,`Relax NG`, or `http://relaxng.org/ns/structure/1.0`;
 * `xsl`,`xslt`,`XSL`,`XSLT`, or `http://www.w3.org/1999/XSL/Transform`;
 * `txt`,`text`,`TXT`,`TEXT`,`regex`,`regexp`,`debug`,`Debug`, or `DEBUG`;
+
 then the out is of that type. If its value is anything else, a fatal error occurs.
