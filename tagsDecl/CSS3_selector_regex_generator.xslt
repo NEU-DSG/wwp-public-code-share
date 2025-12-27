@@ -14,7 +14,7 @@
   xmlns:wo="http://wwo.wwp-test.northeastern.edu/WWO/css/wwo/wwo.css"
   xmlns:pt="https://github.com/benfrain/css-performance-tests" >
   <xd:doc scope="component">
-    <xd:desc>Yes, that's a whole lot of namespaces. The majority
+    <xd:desc>Yes, that’s a whole lot of namespaces. The majority
     are merely used to differentiate from where a given test case
     comes. The only ones actually used by the program are a:, rng:,
     out:, and (of course) xsl:.</xd:desc>
@@ -31,9 +31,22 @@
       the XSLT output on itself.)</xd:p>
       <xd:p>OUTPUT is to STDOUT, and is based on the <xd:pre>$output</xd:pre> parameter (which must be set):
       <xd:ul>
-        <xd:li><xd:i>rng:</xd:i> a RELAX NG schema</xd:li>
-        <xd:li><xd:i>xslt:</xd:i> an XSLT stylesheet</xd:li>
-        <xd:li><xd:i>txt:</xd:i> a one-element </xd:li>
+        <xd:li>
+          <xd:i>rng:</xd:i>
+          a RELAX NG schema which contains both a definition of an
+          attribute that uses this regular expression and a sequence
+          of elements that can be used as a test suite.
+        </xd:li>
+        <xd:li><xd:i>xslt:</xd:i>
+          an XSLT stylesheet which contains a test suite, and
+          templates such that if it is run against itself the test
+          suite is tested.
+        </xd:li>
+        <xd:li><xd:i>txt:</xd:i> (default)
+          a one-element XML file whose content
+          (<xd:pre>/*/text()!normalize-space()</xd:pre>) is the
+          regular expression.
+        </xd:li>
       </xd:ul></xd:p>
     </xd:desc>
   </xd:doc>
@@ -56,18 +69,19 @@
   <xsl:output method="xml" indent="yes"/>
   
   <xd:doc>
-    <xd:desc>The $output parameter is defined as a URI, because sometimes
-      it is, and even when it isn't a namespace URI (but rather just a token),
-      it meets the syntactic constraints of a URI. I have to admit, I did not
-      expect "Relax NG" to work as an xsd:anyURI (that is, to be castable as
-      xs:anyURI), but it did. In any case, the point is that the user can
-      specify whether to generate RELAX NG output (the default), XSLT output,
-      or (primarily for initial debugging) just plain text output by
-      specifying any one of a number of tokens, including the namespace URI
-      for the language.
-    </xd:desc>
+    <xd:desc>The $output parameter is defined as a URI, because
+      sometimes it is, and even when it isn't a namespace URI (but
+      rather just a token), it meets the syntactic constraints of a
+      URI. I have to admit, I did not expect "Relax NG" to work as an
+      xsd:anyURI (that is, to be castable as xs:anyURI), but it did. In
+      any case, the point is that the user can specify whether to
+      generate RELAX NG output (the default), XSLT output, or almost
+      plain text output by specifying any one of a number of tokens,
+      including the namespace URI for the language. Since I primarily
+      use the almost plain text output for debugging, “debug” is a
+      synonym for “text”.</xd:desc>
   </xd:doc>
-  <xsl:param name="output" as="xs:anyURI" select="'Debug' cast as xs:anyURI"/>
+  <xsl:param name="output" as="xs:anyURI" select="'RelaxNG' cast as xs:anyURI"/>
   <xsl:variable name="outLang">
     <xsl:choose>
       <xsl:when test="$output = ('rng','rnc','RNG','RNC','RELAXNG','RELAX NG','RelaxNG','Relax NG','http://relaxng.org/ns/structure/1.0')">RNG</xsl:when>
@@ -240,7 +254,7 @@
           <out:variable name="apos" select='"&apos;"'/> <!-- not used at the moment -->
           <out:variable name="quot" select="'&quot;'"/> <!-- not used at the moment -->
           <out:variable name="selector_regex">
-            <out:text><xsl:value-of select="$regexp"/></out:text>
+            <out:text><xsl:value-of select="$regexp" disable-output-escaping="yes"/></out:text>
           </out:variable>
           <out:variable name="anchored_selector_regex" select="'^'||$selector_regex"/>
           
