@@ -1,0 +1,5297 @@
+default namespace =
+  "http://www.wwp.northeastern.edu/ns/internal_documentation/1.0"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace ns1 = "http://www.w3.org/1999/xhtml"
+namespace rng = "http://relaxng.org/ns/structure/1.0"
+namespace sch = "http://purl.oclc.org/dsdl/schematron"
+namespace tei = "http://www.tei-c.org/ns/1.0"
+namespace teix = "http://www.tei-c.org/ns/Examples"
+namespace xi = "http://www.w3.org/2001/XInclude"
+namespace xlink = "http://www.w3.org/1999/xlink"
+
+# Schema generated from ODD source 2025-12-26T01:00:08Z. . 
+# TEI Edition: P5 Version 4.11.0a. Last updated on 29th October 2025, revision a7aee80b5 
+# TEI Edition Location: https://www.tei-c.org/Vault/P5/4.11.0a/ 
+#  Schema specificly for my dates_and_times_in_DH.tei document. 
+
+#
+dat_macro.abContent = (text | dat_model.paraPart | dat_ab)*
+dat_macro.paraContent = (text | dat_model.paraPart)*
+dat_macro.limitedContent =
+  (text | dat_model.limitedPhrase | dat_model.inter)*
+dat_macro.phraseSeq =
+  (text
+   | dat_model.gLike
+   | dat_model.attributable
+   | dat_model.phrase
+   | dat_model.global)*
+dat_macro.phraseSeq.limited =
+  (text | dat_model.limitedPhrase | dat_model.global)*
+dat_macro.specialPara =
+  (text
+   | dat_model.gLike
+   | dat_model.phrase
+   | dat_model.inter
+   | dat_model.divPart
+   | dat_model.global)*
+anyElement_xenoData_1 =
+  element * - (tei:* | teix:egXML) {
+    attribute * { text }*,
+    (text | anyElement_xenoData_1)*
+  }
+anyElement_egXML_2 =
+  element * - (tei:* | teix:egXML) {
+    attribute * { text }*,
+    (text | anyElement_egXML_2)*
+  }
+dat_att.anchoring.attributes =
+  dat_att.anchoring.attribute.anchored,
+  dat_att.anchoring.attribute.targetEnd
+dat_att.anchoring.attribute.anchored =
+  ## (anchored) indicates whether the copy text shows the exact place of reference for the note.
+  [ a:defaultValue = "true" ] attribute anchored { xsd:boolean }?
+dat_att.anchoring.attribute.targetEnd =
+  ## (target end) points to the end of the span to which the note is attached, if the note is not embedded in the text at that point.
+  attribute targetEnd {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.ascribed.attributes = dat_att.ascribed.attribute.who
+dat_att.ascribed.attribute.who =
+  ## indicates the person, or group of people, to whom the element content is ascribed.
+  attribute who {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.breaking.attributes = dat_att.breaking.attribute.break
+dat_att.breaking.attribute.break =
+  ## indicates whether or not the element bearing this attribute should be considered to mark the end of an orthographic token in the same way as whitespace.
+  attribute break {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.cReferencing.attributes = dat_att.cReferencing.attribute.cRef
+dat_att.cReferencing.attribute.cRef =
+  [
+    a:documentation [
+      "(canonical reference) specifies the destination of the pointer by supplying a canonical reference expressed using the scheme defined in a "
+      ns1:code [ "<refsDecl>" ]
+      " element in the TEI header."
+    ]
+  ]
+  attribute cRef { xsd:string }?
+dat_att.canonical.attributes =
+  dat_att.canonical.attribute.key, dat_att.canonical.attribute.ref
+dat_att.canonical.attribute.key =
+  ## provides an externally-defined means of identifying the entity (or entities) being named, using a coded value of some kind.
+  attribute key { xsd:string }?
+dat_att.canonical.attribute.ref =
+  ## (reference) provides an explicit means of locating a full definition or identity for the entity being named by means of one or more URIs.
+  attribute ref {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.citing.attributes =
+  dat_att.citing.attribute.unit,
+  dat_att.citing.attribute.from,
+  dat_att.citing.attribute.to
+dat_att.citing.attribute.unit =
+  ## identifies the unit of information conveyed by the element.
+  ## Suggested values include: 1] volume (volume); 2] issue; 3] page (page); 4] line; 5] chapter (chapter); 6] part; 7] column; 8] entry
+  attribute unit {
+    ## (volume) the element contains a volume number.
+    "volume" | ## the element contains an issue number, or volume and issue numbers.
+      "issue" | ## (page) the element contains a page number or page range.
+      "page" | ## the element contains a line number or line range.
+      "line" | ## (chapter) the element contains a chapter indication (number and/or title)
+      "chapter" | ## the element identifies a part of a book or collection.
+      "part" | ## the element identifies a column.
+      "column" | ## the element identifies an entry number or label in a list of entries.
+      "entry"
+    | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.citing.attribute.from =
+  [
+    a:documentation [
+      "specifies the starting point of the range of units indicated by the "
+      ns1:code [ "@unit" ]
+      " attribute."
+    ]
+  ]
+  attribute from {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.citing.attribute.to =
+  [
+    a:documentation [
+      "specifies the end-point of the range of units indicated by the "
+      ns1:code [ "@unit" ]
+      " attribute."
+    ]
+  ]
+  attribute to {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.cmc.attributes = dat_att.cmc.attribute.generatedBy
+dat_att.cmc.attribute.generatedBy =
+  ## (generated by) categorizes how the content of an element was generated in a CMC environment.
+  ## Suggested values include: 1] human; 2] template; 3] system; 4] bot; 5] unspecified
+  attribute generatedBy {
+    ## the content was naturally typed or spoken by a human user
+    "human" | ## the content was generated after a human user activated a template for its insertion
+      "template" | ## the content was generated by the system, i.e. the CMC environment
+      "system" | ## the content was generated by a bot, i.e. a non-human agent, typically one that is not part of the CMC environment itself
+      "bot" | ## the content was generated by an unknown or unspecified process
+      "unspecified"
+    | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.cmc-generatedBy-CMC_generatedBy_within_post-constraint-rule-1"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@generatedBy]"
+    "\x{a}" ~
+    "         "
+    sch:assert [
+      test = "ancestor-or-self::tei:post"
+      "The @generatedBy attribute is for use within a <post> element."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+dat_att.datable.w3c.attributes =
+  dat_att.datable.w3c.attribute.when,
+  dat_att.datable.w3c.attribute.notBefore,
+  dat_att.datable.w3c.attribute.notAfter,
+  dat_att.datable.w3c.attribute.from,
+  dat_att.datable.w3c.attribute.to
+dat_att.datable.w3c.attribute.when =
+  ## supplies the value of the date or time in a standard form, e.g. yyyy-mm-dd.
+  attribute when {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+dat_att.datable.w3c.attribute.notBefore =
+  ## specifies the earliest possible date for the event in standard form, e.g. yyyy-mm-dd.
+  attribute notBefore {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+dat_att.datable.w3c.attribute.notAfter =
+  ## specifies the latest possible date for the event in standard form, e.g. yyyy-mm-dd.
+  attribute notAfter {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+dat_att.datable.w3c.attribute.from =
+  ## indicates the starting point of the period in standard form, e.g. yyyy-mm-dd.
+  attribute from {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+dat_att.datable.w3c.attribute.to =
+  ## indicates the ending point of the period in standard form, e.g. yyyy-mm-dd.
+  attribute to {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.datable.w3c-att-datable-w3c-when-constraint-rule-2"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@when]"
+    "\x{a}" ~
+    "         "
+    sch:report [
+      test = "@notBefore|@notAfter|@from|@to"
+      role = "nonfatal"
+      "The @when attribute cannot be used with any other att.datable.w3c attributes."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.datable.w3c-att-datable-w3c-from-constraint-rule-3"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@from]"
+    "\x{a}" ~
+    "         "
+    sch:report [
+      test = "@notBefore"
+      role = "nonfatal"
+      "The @from and @notBefore attributes cannot be used together."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.datable.w3c-att-datable-w3c-to-constraint-rule-4"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@to]"
+    "\x{a}" ~
+    "         "
+    sch:report [
+      test = "@notAfter"
+      role = "nonfatal"
+      "The @to and @notAfter attributes cannot be used together."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+dat_att.datcat.attributes =
+  dat_att.datcat.attribute.datcat,
+  dat_att.datcat.attribute.valueDatcat,
+  dat_att.datcat.attribute.targetDatcat
+dat_att.datcat.attribute.datcat =
+  [
+    a:documentation [
+      "provides a pointer to a definition of, and/or general information about, (a) an information container (element or attribute) or (b) a value of an information container (element content or attribute value), by referencing an external taxonomy or ontology. If "
+      ns1:code [ "@valueDatcat" ]
+      " is present in the immediate context, this attribute takes on role (a), while "
+      ns1:code [ "@valueDatcat" ]
+      " performs role (b)."
+    ]
+  ]
+  attribute datcat {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.datcat.attribute.valueDatcat =
+  [
+    a:documentation [
+      "provides a definition of, and/or general information about a value of an information container (element content or attribute value), by reference to an external taxonomy or ontology. Used especially where a contrast with "
+      ns1:code [ "@datcat" ]
+      " is needed."
+    ]
+  ]
+  attribute valueDatcat {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.datcat.attribute.targetDatcat =
+  [
+    a:documentation [
+      "provides a definition of, and/or general information about, information structure of an object referenced or modeled by the containing element, by reference to an external taxonomy or ontology. This attribute has the characteristics of the "
+      ns1:code [ "@datcat" ]
+      " attribute, except that it addresses not its containing element, but an object that is being referenced or modeled by its containing element."
+    ]
+  ]
+  attribute targetDatcat {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.declarable.attributes = dat_att.declarable.attribute.default
+dat_att.declarable.attribute.default =
+  ## indicates whether or not this element is selected by default when its parent is selected.
+  [ a:defaultValue = "false" ]
+  attribute default {
+    ## This element is selected if its parent is selected
+    "true" | ## This element can only be selected explicitly, unless it is the only one of its kind, in which case it is selected if its parent is selected.
+      "false"
+  }?
+dat_att.declaring.attributes = dat_att.declaring.attribute.decls
+dat_att.declaring.attribute.decls =
+  ## (declarations) identifies one or more declarable elements within the header, which are understood to apply to the element bearing this attribute and its content.
+  attribute decls {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.docStatus.attributes = dat_att.docStatus.attribute.status
+dat_att.docStatus.attribute.status =
+  ## describes the status of a document either currently or, when associated with a dated element, at the time indicated.
+  ## Sample values include: 1] approved; 2] candidate; 3] cleared; 4] deprecated; 5] draft; 6] embargoed; 7] expired; 8] frozen; 9] galley; 10] proposed; 11] published; 12] recommendation; 13] submitted; 14] unfinished; 15] withdrawn
+  [ a:defaultValue = "draft" ]
+  attribute status {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.editLike.attributes =
+  dat_att.editLike.attribute.evidence,
+  dat_att.editLike.attribute.instant
+dat_att.editLike.attribute.evidence =
+  ## indicates the nature of the evidence supporting the reliability or accuracy of the intervention or interpretation.
+  ## Suggested values include: 1] internal; 2] external; 3] conjecture
+  attribute evidence {
+    list {
+      (
+       ## there is internal evidence to support the intervention.
+       "internal" | ## there is external evidence to support the intervention.
+         "external" | ## the intervention or interpretation has been made by the editor, cataloguer, or scholar on the basis of their expertise.
+         "conjecture"
+       | xsd:token { pattern = "[^\p{C}\p{Z}]+" })+
+    }
+  }?
+dat_att.editLike.attribute.instant =
+  ## indicates whether this is an instant revision or not.
+  [ a:defaultValue = "false" ]
+  attribute instant {
+    xsd:boolean
+    | (
+       "unknown" | "inapplicable")
+  }?
+dat_att.edition.attributes =
+  dat_att.edition.attribute.ed, dat_att.edition.attribute.edRef
+dat_att.edition.attribute.ed =
+  ## (edition) supplies a sigil or other arbitrary identifier for the source edition in which the associated feature (for example, a page, column, or line beginning) occurs at this point in the text.
+  attribute ed {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.edition.attribute.edRef =
+  ## (edition reference) provides a pointer to the source edition in which the associated feature (for example, a page, column, or line beginning) occurs at this point in the text.
+  attribute edRef {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.fragmentable.attributes = dat_att.fragmentable.attribute.part
+dat_att.fragmentable.attribute.part =
+  ## specifies whether or not its parent element is fragmented in some way, typically by some other overlapping structure: for example a speech which is divided between two or more verse stanzas, a paragraph which is split across a page division, a verse line which is divided between two speakers.
+  [ a:defaultValue = "N" ]
+  attribute part {
+    ## (yes) the element is fragmented in some (unspecified) respect
+    "Y" | ## (no) the element is not fragmented, or no claim is made as to its completeness
+      "N" | ## (initial) this is the initial part of a fragmented element
+      "I" | ## (medial) this is a medial part of a fragmented element
+      "M" | ## (final) this is the final part of a fragmented element
+      "F"
+  }?
+dat_att.global.rendition.attributes =
+  dat_att.global.rendition.attribute.rend,
+  dat_att.global.rendition.attribute.style,
+  dat_att.global.rendition.attribute.rendition
+dat_att.global.rendition.attribute.rend =
+  ## (rendition) indicates how the element in question was rendered or presented in the source text.
+  attribute rend {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.global.rendition.attribute.style =
+  ## contains an expression in some formal style definition language which defines the rendering or presentation used for this element in the source text.
+  attribute style { xsd:string }?
+dat_att.global.rendition.attribute.rendition =
+  ## points to a description of the rendering or presentation used for this element in the source text.
+  attribute rendition {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.global.responsibility.attributes =
+  dat_att.global.responsibility.attribute.cert,
+  dat_att.global.responsibility.attribute.resp
+dat_att.global.responsibility.attribute.cert =
+  ## (certainty) signifies the degree of certainty associated with the intervention or interpretation.
+  attribute cert {
+    xsd:double { minInclusive = "0" maxInclusive = "1" }
+    | (
+       "high" | "medium" | "low" | "unknown")
+  }?
+dat_att.global.responsibility.attribute.resp =
+  ## (responsible party) indicates the agency responsible for the intervention or interpretation, for example an editor or transcriber.
+  attribute resp {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.global.source.attributes =
+  dat_att.global.source.attribute.source
+dat_att.global.source.attribute.source =
+  ## specifies the source from which some aspect of this element is drawn.
+  attribute source {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.global.source-source-only_1_ODD_source-constraint-rule-5"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@source]"
+    "\x{a}" ~
+    "         "
+    sch:let [
+      name = "srcs"
+      value = "tokenize( normalize-space(@source),' ')"
+    ]
+    "\x{a}" ~
+    "         "
+    sch:report [
+      test =
+        "(   self::tei:classRef                                 | self::tei:dataRef                                 | self::tei:elementRef                                 | self::tei:macroRef                                 | self::tei:moduleRef                                 | self::tei:schemaSpec )                                   and                                   $srcs[2]"
+      "\x{a}" ~
+      "              When used on a schema description element (like\x{a}" ~
+      "              "
+      sch:value-of [ select = "name(.)" ]
+      "), the @source attribute\x{a}" ~
+      "              should have only 1 value. (This one has "
+      sch:value-of [ select = "count($srcs)" ]
+      ".)\x{a}" ~
+      "            "
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+dat_att.internetMedia.attributes =
+  dat_att.internetMedia.attribute.mimeType
+dat_att.internetMedia.attribute.mimeType =
+  ## (MIME media type) specifies the applicable multimedia internet mail extension (MIME) media type.
+  attribute mimeType {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.measurement.attributes =
+  dat_att.measurement.attribute.unit,
+  dat_att.measurement.attribute.unitRef,
+  dat_att.measurement.attribute.quantity,
+  dat_att.measurement.attribute.commodity
+dat_att.measurement.attribute.unit =
+  ## (unit) indicates the units used for the measurement, usually using the standard symbol for the desired units.
+  ## Suggested values include: 1] m (metre); 2] kg (kilogram); 3] s (second); 4] Hz (hertz); 5] Pa (pascal); 6] Ω (ohm); 7] L (litre); 8] t (tonne); 9] ha (hectare); 10] Å (ångström); 11] mL (millilitre); 12] cm (centimetre); 13] dB (decibel); 14] kbit (kilobit); 15] Kibit (kibibit); 16] kB (kilobyte); 17] KiB (kibibyte); 18] MB (megabyte); 19] MiB (mebibyte)
+  attribute unit {
+    ## (metre) SI base unit of length
+    "m" | ## (kilogram) SI base unit of mass
+      "kg" | ## (second) SI base unit of time
+      "s" | ## (hertz) SI unit of frequency
+      "Hz" | ## (pascal) SI unit of pressure or stress
+      "Pa" | ## (ohm) SI unit of electric resistance
+      "Ω" | ## (litre) 1 dm³
+      "L" | ## (tonne) 10³ kg
+      "t" | ## (hectare) 1 hm²
+      "ha" | ## (ångström) 10⁻¹⁰ m
+      "Å" | ## (millilitre) 
+      "mL" | ## (centimetre) 
+      "cm" | ## (decibel) see remarks, below
+      "dB" | ## (kilobit) 10³ or 1000 bits
+      "kbit" | ## (kibibit) 2¹⁰ or 1024 bits
+      "Kibit" | ## (kilobyte) 10³ or 1000 bytes
+      "kB" | ## (kibibyte) 2¹⁰ or 1024 bytes
+      "KiB" | ## (megabyte) 10⁶ or 1 000 000 bytes
+      "MB" | ## (mebibyte) 2²⁰ or 1 048 576 bytes
+      "MiB"
+    | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.measurement.attribute.unitRef =
+  [
+    a:documentation [
+      "points to a unique identifier stored in the "
+      ns1:code [ "@xml:id" ]
+      " of a "
+      ns1:code [ "<unitDef>" ]
+      " element that defines a unit of measure."
+    ]
+  ]
+  attribute unitRef {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_att.measurement.attribute.quantity =
+  ## (quantity) specifies the number of the specified units that comprise the measurement
+  attribute quantity {
+    xsd:double
+    | xsd:token { pattern = "(\-?[\d]+/\-?[\d]+)" }
+    | xsd:decimal
+  }?
+dat_att.measurement.attribute.commodity =
+  ## (commodity) indicates the substance that is being measured
+  attribute commodity {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.measurement-att-measurement-unitRef-constraint-rule-6"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@unitRef]"
+    "\x{a}" ~
+    "         "
+    sch:report [
+      test = "@unit"
+      role = "info"
+      "The @unit attribute may be unnecessary when @unitRef is present."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+dat_att.notated.attributes = dat_att.notated.attribute.notation
+dat_att.notated.attribute.notation =
+  ## names the notation used for the content of the element.
+  attribute notation {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.placement.attributes = dat_att.placement.attribute.place
+dat_att.placement.attribute.place =
+  ## specifies where this item is placed.
+  ## Suggested values include: 1] top; 2] bottom; 3] margin; 4] opposite; 5] overleaf; 6] above; 7] right; 8] below; 9] left; 10] end; 11] inline; 12] inspace
+  attribute place {
+    list {
+      (
+       ## at the top of the page
+       "top" | ## at the foot of the page
+         "bottom" | ## in the margin (left, right, or both)
+         "margin" | ## on the opposite, i.e. facing, page
+         "opposite" | ## on the other side of the leaf
+         "overleaf" | ## above the line
+         "above" | ## to the right, e.g. to the right of a vertical line of text, or to the right of a figure
+         "right" | ## below the line
+         "below" | ## to the left, e.g. to the left of a vertical line of text, or to the left of a figure
+         "left" | ## at the end of e.g. chapter or volume.
+         "end" | ## within the body of the text.
+         "inline" | ## in a predefined space, for example left by an earlier scribe.
+         "inspace"
+       | xsd:token { pattern = "[^\p{C}\p{Z}]+" })+
+    }
+  }?
+dat_att.pointing.attributes =
+  dat_att.pointing.attribute.targetLang,
+  dat_att.pointing.attribute.target,
+  dat_att.pointing.attribute.evaluate
+dat_att.pointing.attribute.targetLang =
+  [
+    a:documentation [
+      "specifies the language of the content to be found at the destination referenced by "
+      ns1:code [ "@target" ]
+      ", using a language tag generated according to "
+      ns1:a [
+        href = "http://www.rfc-editor.org/rfc/bcp/bcp47.txt"
+        "BCP 47"
+      ]
+      "."
+    ]
+  ]
+  attribute targetLang {
+    xsd:language
+    | (
+       "")
+  }?
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.pointing-targetLang-targetLang-constraint-rule-7"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[not(self::tei:schemaSpec)][@targetLang]"
+    "\x{a}" ~
+    "         "
+    sch:assert [
+      test = "@target"
+      "@targetLang should only be used on "
+      sch:name [ ]
+      " if @target is specified."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+dat_att.pointing.attribute.target =
+  ## specifies the destination of the reference by supplying one or more URI References.
+  attribute target {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.pointing.attribute.evaluate =
+  ## (evaluate) specifies the intended meaning when the target of a pointer is itself a pointer.
+  attribute evaluate {
+    ## if the element pointed to is itself a pointer, then the target of that pointer will be taken, and so on, until an element is found which is not a pointer.
+    "all" | ## if the element pointed to is itself a pointer, then its target (whether a pointer or not) is taken as the target of this pointer.
+      "one" | ## no further evaluation of targets is carried out beyond that needed to find the element specified in the pointer's target.
+      "none"
+  }?
+dat_att.ranging.attributes =
+  dat_att.ranging.attribute.atLeast,
+  dat_att.ranging.attribute.atMost,
+  dat_att.ranging.attribute.min,
+  dat_att.ranging.attribute.max,
+  dat_att.ranging.attribute.confidence
+dat_att.ranging.attribute.atLeast =
+  ## gives a minimum estimated value for the approximate measurement.
+  attribute atLeast {
+    xsd:double
+    | xsd:token { pattern = "(\-?[\d]+/\-?[\d]+)" }
+    | xsd:decimal
+  }?
+dat_att.ranging.attribute.atMost =
+  ## gives a maximum estimated value for the approximate measurement.
+  attribute atMost {
+    xsd:double
+    | xsd:token { pattern = "(\-?[\d]+/\-?[\d]+)" }
+    | xsd:decimal
+  }?
+dat_att.ranging.attribute.min =
+  ## where the measurement summarizes more than one observation or a range, supplies the minimum value observed.
+  attribute min {
+    xsd:double
+    | xsd:token { pattern = "(\-?[\d]+/\-?[\d]+)" }
+    | xsd:decimal
+  }?
+dat_att.ranging.attribute.max =
+  ## where the measurement summarizes more than one observation or a range, supplies the maximum value observed.
+  attribute max {
+    xsd:double
+    | xsd:token { pattern = "(\-?[\d]+/\-?[\d]+)" }
+    | xsd:decimal
+  }?
+dat_att.ranging.attribute.confidence =
+  [
+    a:documentation [
+      "specifies the degree of statistical confidence (between zero and one) that a value falls within the range specified by "
+      ns1:code [ "@min" ]
+      " and "
+      ns1:code [ "@max" ]
+      ", or the proportion of observed values that fall within that range."
+    ]
+  ]
+  attribute confidence {
+    xsd:double { minInclusive = "0" maxInclusive = "1" }
+  }?
+dat_att.resourced.attributes = dat_att.resourced.attribute.url
+dat_att.resourced.attribute.url =
+  ## (uniform resource locator) specifies the URL from which the media concerned may be obtained.
+  attribute url {
+    xsd:anyURI { pattern = "\S+" }
+  }
+dat_att.scope.attributes = dat_att.scope.attribute.scope
+dat_att.scope.attribute.scope =
+  ## indicates the scope of application of the element
+  ## Suggested values include: 1] sole; 2] major; 3] minor
+  attribute scope {
+    ## only this particular feature is used throughout the document
+    "sole" | ## this feature is used through most of the document
+      "major" | ## this feature is used occasionally through the document
+      "minor"
+    | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.sortable.attributes = dat_att.sortable.attribute.sortKey
+dat_att.sortable.attribute.sortKey =
+  ## supplies the sort key for this element in an index, list or group which contains it.
+  attribute sortKey {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.spanning.attributes = dat_att.spanning.attribute.spanTo
+dat_att.spanning.attribute.spanTo =
+  ## indicates the end of a span initiated by the element bearing this attribute.
+  attribute spanTo {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.spanning-spanTo-spanTo-points-to-following-constraint-rule-8"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[ starts-with( @spanTo, '#') ]"
+    "\x{a}" ~
+    "         "
+    sch:assert [
+      test = "id( substring( @spanTo, 2 ) ) >> ."
+      "\x{a}" ~
+      "	      The element indicated by @spanTo ("
+      sch:value-of [ select = "@spanTo" ]
+      ") must follow the current "
+      sch:name [ ]
+      " element \x{a}" ~
+      "            "
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+dat_att.styleDef.attributes =
+  dat_att.styleDef.attribute.scheme,
+  dat_att.styleDef.attribute.schemeVersion
+dat_att.styleDef.attribute.scheme =
+  ## identifies the language used to describe the rendition.
+  attribute scheme {
+    ## Cascading Stylesheet Language
+    "css" | ## Extensible Stylesheet Language Formatting Objects
+      "xslfo" | ## Informal free text description
+      "free" | ## A user-defined rendition description language
+      "other"
+  }?
+dat_att.styleDef.attribute.schemeVersion =
+  [
+    a:documentation [
+      "supplies a version number for the style language provided in "
+      ns1:code [ "@scheme" ]
+      "."
+    ]
+  ]
+  attribute schemeVersion {
+    xsd:token { pattern = "[\d]+[a-z]*[\d]*(\.[\d]+[a-z]*[\d]*){0,3}" }
+  }?
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.styleDef-schemeVersion-schemeVersionRequiresScheme-constraint-rule-9"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@schemeVersion]"
+    "\x{a}" ~
+    "         "
+    sch:assert [
+      test = "@scheme and not(@scheme = 'free')"
+      "\x{a}" ~
+      "              @schemeVersion can only be used if @scheme is specified.\x{a}" ~
+      "            "
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+dat_att.typed.attributes =
+  dat_att.typed.attribute.type, dat_att.typed.attribute.subtype
+dat_att.typed.attribute.type =
+  ## characterizes the element in some sense, using any convenient classification scheme or typology.
+  attribute type {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.typed.attribute.subtype =
+  ## (subtype) provides a sub-categorization of the element, if needed.
+  attribute subtype {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+sch:pattern [
+  id = "dates_and_times_in_DH-att.typed-subtypeTyped-constraint-rule-10"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@subtype]"
+    "\x{a}" ~
+    "         "
+    sch:assert [
+      test = "@type"
+      "The "
+      sch:name [ ]
+      " element should not be categorized in detail with @subtype unless also categorized in general with @type"
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+dat_att.written.attributes = dat_att.written.attribute.hand
+dat_att.written.attribute.hand =
+  [
+    a:documentation [
+      "points to a "
+      ns1:code [ "<handNote>" ]
+      " element describing the hand considered responsible for the content of the element concerned."
+    ]
+  ]
+  attribute hand {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_att.ascribed.directed.attributes =
+  dat_att.ascribed.attributes,
+  dat_att.ascribed.directed.attribute.toWhom
+dat_att.ascribed.directed.attribute.toWhom =
+  ## indicates the person, or group of people, to whom a speech act or action is directed.
+  attribute toWhom {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.datable.attributes =
+  dat_att.datable.custom.attributes,
+  dat_att.datable.iso.attributes,
+  dat_att.datable.w3c.attributes,
+  dat_att.datable.attribute.period
+dat_att.datable.attribute.period =
+  [
+    a:documentation [
+      "supplies pointers to one or more definitions of named periods of time (typically "
+      ns1:code [ "<category>" ]
+      "s, "
+      ns1:code [ "<date>" ]
+      "s, or "
+      ns1:code [ "<event>" ]
+      "s) within which the datable item is understood to have occurred."
+    ]
+  ]
+  attribute period {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.dimensions.attributes =
+  dat_att.ranging.attributes,
+  dat_att.dimensions.attribute.unit,
+  dat_att.dimensions.attribute.quantity,
+  dat_att.dimensions.attribute.extent,
+  dat_att.dimensions.attribute.precision,
+  dat_att.dimensions.attribute.scope
+dat_att.dimensions.attribute.unit =
+  ## names the unit used for the measurement
+  ## Suggested values include: 1] cm (centimetres); 2] mm (millimetres); 3] in (inches); 4] line; 5] char (characters)
+  attribute unit {
+    ## (centimetres) 
+    "cm" | ## (millimetres) 
+      "mm" | ## (inches) 
+      "in" | ## lines of text
+      "line" | ## (characters) characters of text
+      "char"
+    | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.dimensions.attribute.quantity =
+  ## specifies the length in the units specified
+  attribute quantity {
+    xsd:double
+    | xsd:token { pattern = "(\-?[\d]+/\-?[\d]+)" }
+    | xsd:decimal
+  }?
+dat_att.dimensions.attribute.extent =
+  ## indicates the size of the object concerned using a project-specific vocabulary combining quantity and units in a single string of words.
+  attribute extent { xsd:string }?
+dat_att.dimensions.attribute.precision =
+  ## characterizes the precision of the values specified by the other attributes.
+  attribute precision {
+    "high" | "medium" | "low" | "unknown"
+  }?
+dat_att.dimensions.attribute.scope =
+  ## where the measurement summarizes more than one observation, specifies the applicability of this measurement.
+  ## Sample values include: 1] all; 2] most; 3] range
+  attribute scope {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.divLike.attributes =
+  dat_att.fragmentable.attributes,
+  dat_att.divLike.attribute.org,
+  dat_att.divLike.attribute.sample
+dat_att.divLike.attribute.org =
+  ## (organization) specifies how the content of the division is organized.
+  [ a:defaultValue = "uniform" ]
+  attribute org {
+    ## no claim is made about the sequence in which the immediate contents of this division are to be processed, or their inter-relationships.
+    "composite" | ## the immediate contents of this element are regarded as forming a logical unit, to be processed in sequence.
+      "uniform"
+  }?
+dat_att.divLike.attribute.sample =
+  ## indicates whether this division is a sample of the original source and if so, from which part.
+  [ a:defaultValue = "complete" ]
+  attribute sample {
+    ## division lacks material present at end in source.
+    "initial" | ## division lacks material at start and end.
+      "medial" | ## division lacks material at start.
+      "final" | ## position of sampled material within original unknown.
+      "unknown" | ## division is not a sample.
+      "complete"
+  }?
+dat_att.global.attributes =
+  dat_att.global.linking.attributes,
+  dat_att.global.rendition.attributes,
+  dat_att.global.responsibility.attributes,
+  dat_att.global.source.attributes,
+  dat_att.global.attribute.xmlid,
+  dat_att.global.attribute.n,
+  dat_att.global.attribute.xmllang,
+  dat_att.global.attribute.xmlbase,
+  dat_att.global.attribute.xmlspace
+dat_att.global.attribute.xmlid =
+  ## (identifier) provides a unique identifier for the element bearing the attribute.
+  attribute xml:id { xsd:ID }?
+dat_att.global.attribute.n =
+  ## (number) gives a number (or other label) for an element, which is not necessarily unique within the document.
+  attribute n { xsd:string }?
+dat_att.global.attribute.xmllang =
+  [
+    a:documentation [
+      "(language) indicates the language of the element content using a tag generated according to "
+      ns1:a [
+        href = "http://www.rfc-editor.org/rfc/bcp/bcp47.txt"
+        "BCP 47"
+      ]
+      "."
+    ]
+  ]
+  attribute xml:lang {
+    xsd:language
+    | (
+       "")
+  }?
+dat_att.global.attribute.xmlbase =
+  ## provides a base URI reference with which applications can resolve relative URI references into absolute URI references.
+  attribute xml:base {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_att.global.attribute.xmlspace =
+  ## signals an intention about how white space should be managed by applications.
+  attribute xml:space {
+    ## signals that the application's default white-space processing modes are acceptable
+    "default" | ## indicates the intent that applications preserve all white space
+      "preserve"
+  }?
+dat_att.handFeatures.attribute.scribe =
+  ## gives a name or other identifier for the scribe believed to be responsible for this hand.
+  attribute scribe { xsd:Name }?
+dat_att.handFeatures.attribute.scribeRef =
+  [
+    a:documentation [
+      "points to a full description of the scribe concerned, typically supplied by a "
+      ns1:code [ "<person>" ]
+      " element elsewhere in the description."
+    ]
+  ]
+  attribute scribeRef {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.handFeatures.attribute.script =
+  ## characterizes the particular script or writing style used by this hand, for example secretary, copperplate, Chancery, Italian, etc.
+  attribute script {
+    list { xsd:Name+ }
+  }?
+dat_att.handFeatures.attribute.scriptRef =
+  [
+    a:documentation [
+      "points to a full description of the script or writing style used by this hand, typically supplied by a "
+      ns1:code [ "<scriptNote>" ]
+      " element elsewhere in the description."
+    ]
+  ]
+  attribute scriptRef {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.handFeatures.attribute.medium =
+  ## describes the tint or type of ink, e.g. brown, or other writing medium, e.g. pencil.
+  attribute medium {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.media.attributes =
+  dat_att.internetMedia.attributes,
+  dat_att.media.attribute.width,
+  dat_att.media.attribute.height,
+  dat_att.media.attribute.scale
+dat_att.media.attribute.width =
+  ## Where the media are displayed, indicates the display width.
+  attribute width {
+    xsd:token {
+      pattern =
+        "[\-+]?\d+(\.\d+)?(%|cm|mm|in|pt|pc|px|em|ex|ch|rem|vw|vh|vmin|vmax)"
+    }
+  }?
+dat_att.media.attribute.height =
+  ## Where the media are displayed, indicates the display height.
+  attribute height {
+    xsd:token {
+      pattern =
+        "[\-+]?\d+(\.\d+)?(%|cm|mm|in|pt|pc|px|em|ex|ch|rem|vw|vh|vmin|vmax)"
+    }
+  }?
+dat_att.media.attribute.scale =
+  ## Where the media are displayed, indicates a scale factor to be applied when generating the desired display size.
+  attribute scale {
+    xsd:double
+    | xsd:token { pattern = "(\-?[\d]+/\-?[\d]+)" }
+    | xsd:decimal
+  }?
+dat_att.naming.attributes =
+  dat_att.canonical.attributes,
+  dat_att.naming.attribute.role,
+  dat_att.naming.attribute.nymRef
+dat_att.naming.attribute.role =
+  ## may be used to specify further information about the entity referenced by this name in the form of a set of whitespace-separated values, for example the occupation of a person, or the status of a place.
+  attribute role {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.naming.attribute.nymRef =
+  ## (reference to the canonical name) provides a means of locating the canonical form (nym) of the names associated with the object named by the element bearing it.
+  attribute nymRef {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.transcriptional.attributes =
+  dat_att.editLike.attributes,
+  dat_att.placement.attributes,
+  dat_att.written.attributes,
+  dat_att.transcriptional.attribute.status,
+  dat_att.transcriptional.attribute.cause,
+  dat_att.transcriptional.attribute.seq
+dat_att.transcriptional.attribute.status =
+  ## indicates the effect of the intervention, for example in the case of a deletion, strikeouts which include too much or too little text, or in the case of an addition, an insertion which duplicates some of the text already present.
+  ## Sample values include: 1] duplicate; 2] duplicate-partial; 3] excessStart; 4] excessEnd; 5] shortStart; 6] shortEnd; 7] partial; 8] unremarkable
+  [ a:defaultValue = "unremarkable" ]
+  attribute status {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.transcriptional.attribute.cause =
+  ## documents the presumed cause for the intervention.
+  attribute cause {
+    xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }?
+dat_att.transcriptional.attribute.seq =
+  ## (sequence) assigns a sequence number related to the order in which the encoded features carrying this attribute are believed to have occurred.
+  attribute seq { xsd:nonNegativeInteger }?
+dat_att.timed.attributes =
+  dat_att.timed.attribute.start, dat_att.timed.attribute.end
+dat_att.timed.attribute.start =
+  ## indicates the location within a temporal alignment at which this element begins.
+  attribute start {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_att.timed.attribute.end =
+  ## indicates the location within a temporal alignment at which this element ends.
+  attribute end {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_model.nameLike.agent = dat_name | dat_persName
+dat_model.nameLike.agent_alternation = dat_name | dat_persName
+dat_model.nameLike.agent_sequence = dat_name, dat_persName
+dat_model.nameLike.agent_sequenceOptional = dat_name?, dat_persName?
+dat_model.nameLike.agent_sequenceOptionalRepeatable =
+  dat_name*, dat_persName*
+dat_model.nameLike.agent_sequenceRepeatable = dat_name+, dat_persName+
+dat_model.segLike = notAllowed
+dat_model.segLike_alternation = notAllowed
+dat_model.segLike_sequence = empty
+dat_model.segLike_sequenceOptional = empty
+dat_model.segLike_sequenceOptionalRepeatable = empty
+dat_model.segLike_sequenceRepeatable = notAllowed
+dat_model.hiLike = dat_hi | dat_q
+dat_model.hiLike_alternation = dat_hi | dat_q
+dat_model.hiLike_sequence = dat_hi, dat_q
+dat_model.hiLike_sequenceOptional = dat_hi?, dat_q?
+dat_model.hiLike_sequenceOptionalRepeatable = dat_hi*, dat_q*
+dat_model.hiLike_sequenceRepeatable = dat_hi+, dat_q+
+dat_model.emphLike =
+  dat_foreign
+  | dat_emph
+  | dat_distinct
+  | dat_mentioned
+  | dat_soCalled
+  | dat_gloss
+  | dat_term
+  | dat_title
+  | dat_code
+  | dat_fix
+  | dat_var
+dat_model.emphLike_alternation =
+  dat_foreign
+  | dat_emph
+  | dat_distinct
+  | dat_mentioned
+  | dat_soCalled
+  | dat_gloss
+  | dat_term
+  | dat_title
+  | dat_code
+  | dat_fix
+  | dat_var
+dat_model.emphLike_sequence =
+  dat_foreign,
+  dat_emph,
+  dat_distinct,
+  dat_mentioned,
+  dat_soCalled,
+  dat_gloss,
+  dat_term,
+  dat_title,
+  dat_code,
+  dat_fix,
+  dat_var
+dat_model.emphLike_sequenceOptional =
+  dat_foreign?,
+  dat_emph?,
+  dat_distinct?,
+  dat_mentioned?,
+  dat_soCalled?,
+  dat_gloss?,
+  dat_term?,
+  dat_title?,
+  dat_code?,
+  dat_fix?,
+  dat_var?
+dat_model.emphLike_sequenceOptionalRepeatable =
+  dat_foreign*,
+  dat_emph*,
+  dat_distinct*,
+  dat_mentioned*,
+  dat_soCalled*,
+  dat_gloss*,
+  dat_term*,
+  dat_title*,
+  dat_code*,
+  dat_fix*,
+  dat_var*
+dat_model.emphLike_sequenceRepeatable =
+  dat_foreign+,
+  dat_emph+,
+  dat_distinct+,
+  dat_mentioned+,
+  dat_soCalled+,
+  dat_gloss+,
+  dat_term+,
+  dat_title+,
+  dat_code+,
+  dat_fix+,
+  dat_var+
+dat_model.highlighted = dat_model.hiLike | dat_model.emphLike
+dat_model.highlighted_alternation =
+  dat_model.hiLike_alternation | dat_model.emphLike_alternation
+dat_model.highlighted_sequence =
+  dat_model.hiLike_sequence, dat_model.emphLike_sequence
+dat_model.highlighted_sequenceOptional =
+  dat_model.hiLike_sequenceOptional?,
+  dat_model.emphLike_sequenceOptional?
+dat_model.highlighted_sequenceOptionalRepeatable =
+  dat_model.hiLike_sequenceOptionalRepeatable*,
+  dat_model.emphLike_sequenceOptionalRepeatable*
+dat_model.highlighted_sequenceRepeatable =
+  dat_model.hiLike_sequenceRepeatable+,
+  dat_model.emphLike_sequenceRepeatable+
+dat_model.dateLike = dat_date | dat_time
+dat_model.dateLike_alternation = dat_date | dat_time
+dat_model.dateLike_sequence = dat_date, dat_time
+dat_model.dateLike_sequenceOptional = dat_date?, dat_time?
+dat_model.dateLike_sequenceOptionalRepeatable = dat_date*, dat_time*
+dat_model.dateLike_sequenceRepeatable = dat_date+, dat_time+
+dat_model.measureLike =
+  dat_num | dat_measure | dat_measureGrp | dat_unit
+dat_model.measureLike_alternation =
+  dat_num | dat_measure | dat_measureGrp | dat_unit
+dat_model.measureLike_sequence =
+  dat_num, dat_measure, dat_measureGrp, dat_unit
+dat_model.measureLike_sequenceOptional =
+  dat_num?, dat_measure?, dat_measureGrp?, dat_unit?
+dat_model.measureLike_sequenceOptionalRepeatable =
+  dat_num*, dat_measure*, dat_measureGrp*, dat_unit*
+dat_model.measureLike_sequenceRepeatable =
+  dat_num+, dat_measure+, dat_measureGrp+, dat_unit+
+dat_model.egLike = dat_egXML
+dat_model.egLike_alternation = dat_egXML
+dat_model.egLike_sequence = dat_egXML
+dat_model.egLike_sequenceOptional = dat_egXML?
+dat_model.egLike_sequenceOptionalRepeatable = dat_egXML*
+dat_model.egLike_sequenceRepeatable = dat_egXML+
+dat_model.graphicLike = dat_media | dat_graphic | dat_binaryObject
+dat_model.graphicLike_alternation =
+  dat_media | dat_graphic | dat_binaryObject
+dat_model.graphicLike_sequence =
+  dat_media, dat_graphic, dat_binaryObject
+dat_model.graphicLike_sequenceOptional =
+  dat_media?, dat_graphic?, dat_binaryObject?
+dat_model.graphicLike_sequenceOptionalRepeatable =
+  dat_media*, dat_graphic*, dat_binaryObject*
+dat_model.graphicLike_sequenceRepeatable =
+  dat_media+, dat_graphic+, dat_binaryObject+
+dat_model.offsetLike = notAllowed
+dat_model.offsetLike_alternation = notAllowed
+dat_model.offsetLike_sequence = empty
+dat_model.offsetLike_sequenceOptional = empty
+dat_model.offsetLike_sequenceOptionalRepeatable = empty
+dat_model.offsetLike_sequenceRepeatable = notAllowed
+dat_model.pPart.msdesc = notAllowed
+dat_model.pPart.msdesc_alternation = notAllowed
+dat_model.pPart.msdesc_sequence = empty
+dat_model.pPart.msdesc_sequenceOptional = empty
+dat_model.pPart.msdesc_sequenceOptionalRepeatable = empty
+dat_model.pPart.msdesc_sequenceRepeatable = notAllowed
+dat_model.pPart.editorial = dat_choice | dat_abbr | dat_expan
+dat_model.pPart.editorial_alternation =
+  dat_choice | dat_abbr | dat_expan
+dat_model.pPart.editorial_sequence = dat_choice, dat_abbr, dat_expan
+dat_model.pPart.editorial_sequenceOptional =
+  dat_choice?, dat_abbr?, dat_expan?
+dat_model.pPart.editorial_sequenceOptionalRepeatable =
+  dat_choice*, dat_abbr*, dat_expan*
+dat_model.pPart.editorial_sequenceRepeatable =
+  dat_choice+, dat_abbr+, dat_expan+
+dat_model.pPart.transcriptional =
+  dat_sic
+  | dat_corr
+  | dat_reg
+  | dat_orig
+  | dat_add
+  | dat_del
+  | dat_unclear
+dat_model.pPart.transcriptional_alternation =
+  dat_sic
+  | dat_corr
+  | dat_reg
+  | dat_orig
+  | dat_add
+  | dat_del
+  | dat_unclear
+dat_model.pPart.transcriptional_sequence =
+  dat_sic, dat_corr, dat_reg, dat_orig, dat_add, dat_del, dat_unclear
+dat_model.pPart.transcriptional_sequenceOptional =
+  dat_sic?,
+  dat_corr?,
+  dat_reg?,
+  dat_orig?,
+  dat_add?,
+  dat_del?,
+  dat_unclear?
+dat_model.pPart.transcriptional_sequenceOptionalRepeatable =
+  dat_sic*,
+  dat_corr*,
+  dat_reg*,
+  dat_orig*,
+  dat_add*,
+  dat_del*,
+  dat_unclear*
+dat_model.pPart.transcriptional_sequenceRepeatable =
+  dat_sic+,
+  dat_corr+,
+  dat_reg+,
+  dat_orig+,
+  dat_add+,
+  dat_del+,
+  dat_unclear+
+dat_model.pPart.edit =
+  dat_model.pPart.editorial | dat_model.pPart.transcriptional
+dat_model.pPart.edit_alternation =
+  dat_model.pPart.editorial_alternation
+  | dat_model.pPart.transcriptional_alternation
+dat_model.pPart.edit_sequence =
+  dat_model.pPart.editorial_sequence,
+  dat_model.pPart.transcriptional_sequence
+dat_model.pPart.edit_sequenceOptional =
+  dat_model.pPart.editorial_sequenceOptional?,
+  dat_model.pPart.transcriptional_sequenceOptional?
+dat_model.pPart.edit_sequenceOptionalRepeatable =
+  dat_model.pPart.editorial_sequenceOptionalRepeatable*,
+  dat_model.pPart.transcriptional_sequenceOptionalRepeatable*
+dat_model.pPart.edit_sequenceRepeatable =
+  dat_model.pPart.editorial_sequenceRepeatable+,
+  dat_model.pPart.transcriptional_sequenceRepeatable+
+dat_model.ptrLike = dat_ptr | dat_ref
+dat_model.ptrLike_alternation = dat_ptr | dat_ref
+dat_model.ptrLike_sequence = dat_ptr, dat_ref
+dat_model.ptrLike_sequenceOptional = dat_ptr?, dat_ref?
+dat_model.ptrLike_sequenceOptionalRepeatable = dat_ptr*, dat_ref*
+dat_model.ptrLike_sequenceRepeatable = dat_ptr+, dat_ref+
+dat_model.lPart = notAllowed
+dat_model.lPart_alternation = notAllowed
+dat_model.lPart_sequence = empty
+dat_model.lPart_sequenceOptional = empty
+dat_model.lPart_sequenceOptionalRepeatable = empty
+dat_model.lPart_sequenceRepeatable = notAllowed
+dat_model.global.meta = dat_index
+dat_model.global.meta_alternation = dat_index
+dat_model.global.meta_sequence = dat_index
+dat_model.global.meta_sequenceOptional = dat_index?
+dat_model.global.meta_sequenceOptionalRepeatable = dat_index*
+dat_model.global.meta_sequenceRepeatable = dat_index+
+dat_model.milestoneLike =
+  dat_milestone | dat_gb | dat_pb | dat_lb | dat_cb
+dat_model.milestoneLike_alternation =
+  dat_milestone | dat_gb | dat_pb | dat_lb | dat_cb
+dat_model.milestoneLike_sequence =
+  dat_milestone, dat_gb, dat_pb, dat_lb, dat_cb
+dat_model.milestoneLike_sequenceOptional =
+  dat_milestone?, dat_gb?, dat_pb?, dat_lb?, dat_cb?
+dat_model.milestoneLike_sequenceOptionalRepeatable =
+  dat_milestone*, dat_gb*, dat_pb*, dat_lb*, dat_cb*
+dat_model.milestoneLike_sequenceRepeatable =
+  dat_milestone+, dat_gb+, dat_pb+, dat_lb+, dat_cb+
+dat_model.gLike = notAllowed
+dat_model.oddDecl = notAllowed
+dat_model.oddDecl_alternation = notAllowed
+dat_model.oddDecl_sequence = empty
+dat_model.oddDecl_sequenceOptional = empty
+dat_model.oddDecl_sequenceOptionalRepeatable = empty
+dat_model.oddDecl_sequenceRepeatable = notAllowed
+dat_model.phrase.xml = dat_att | dat_gi | dat_tag | dat_val
+dat_model.phrase.xml_alternation = dat_att | dat_gi | dat_tag | dat_val
+dat_model.phrase.xml_sequence = dat_att, dat_gi, dat_tag, dat_val
+dat_model.phrase.xml_sequenceOptional =
+  dat_att?, dat_gi?, dat_tag?, dat_val?
+dat_model.phrase.xml_sequenceOptionalRepeatable =
+  dat_att*, dat_gi*, dat_tag*, dat_val*
+dat_model.phrase.xml_sequenceRepeatable =
+  dat_att+, dat_gi+, dat_tag+, dat_val+
+dat_model.specDescLike = notAllowed
+dat_model.specDescLike_alternation = notAllowed
+dat_model.specDescLike_sequence = empty
+dat_model.specDescLike_sequenceOptional = empty
+dat_model.specDescLike_sequenceOptionalRepeatable = empty
+dat_model.specDescLike_sequenceRepeatable = notAllowed
+dat_model.biblLike =
+  dat_bibl | dat_biblStruct | dat_listBibl | dat_biblFull
+dat_model.biblLike_alternation =
+  dat_bibl | dat_biblStruct | dat_listBibl | dat_biblFull
+dat_model.biblLike_sequence =
+  dat_bibl, dat_biblStruct, dat_listBibl, dat_biblFull
+dat_model.biblLike_sequenceOptional =
+  dat_bibl?, dat_biblStruct?, dat_listBibl?, dat_biblFull?
+dat_model.biblLike_sequenceOptionalRepeatable =
+  dat_bibl*, dat_biblStruct*, dat_listBibl*, dat_biblFull*
+dat_model.biblLike_sequenceRepeatable =
+  dat_bibl+, dat_biblStruct+, dat_listBibl+, dat_biblFull+
+dat_model.headLike = dat_head
+dat_model.headLike_alternation = dat_head
+dat_model.headLike_sequence = dat_head
+dat_model.headLike_sequenceOptional = dat_head?
+dat_model.headLike_sequenceOptionalRepeatable = dat_head*
+dat_model.headLike_sequenceRepeatable = dat_head+
+dat_model.labelLike = dat_desc | dat_label
+dat_model.labelLike_alternation = dat_desc | dat_label
+dat_model.labelLike_sequence = dat_desc, dat_label
+dat_model.labelLike_sequenceOptional = dat_desc?, dat_label?
+dat_model.labelLike_sequenceOptionalRepeatable = dat_desc*, dat_label*
+dat_model.labelLike_sequenceRepeatable = dat_desc+, dat_label+
+dat_model.listLike = dat_list
+dat_model.listLike_alternation = dat_list
+dat_model.listLike_sequence = dat_list
+dat_model.listLike_sequenceOptional = dat_list?
+dat_model.listLike_sequenceOptionalRepeatable = dat_list*
+dat_model.listLike_sequenceRepeatable = dat_list+
+dat_model.noteLike = dat_note | dat_noteGrp
+dat_model.noteLike_alternation = dat_note | dat_noteGrp
+dat_model.noteLike_sequence = dat_note, dat_noteGrp
+dat_model.noteLike_sequenceOptional = dat_note?, dat_noteGrp?
+dat_model.noteLike_sequenceOptionalRepeatable = dat_note*, dat_noteGrp*
+dat_model.noteLike_sequenceRepeatable = dat_note+, dat_noteGrp+
+dat_model.lLike = dat_l
+dat_model.lLike_alternation = dat_l
+dat_model.lLike_sequence = dat_l
+dat_model.lLike_sequenceOptional = dat_l?
+dat_model.lLike_sequenceOptionalRepeatable = dat_l*
+dat_model.lLike_sequenceRepeatable = dat_l+
+dat_model.pLike = dat_p | dat_ab
+dat_model.pLike_alternation = dat_p | dat_ab
+dat_model.pLike_sequence = dat_p, dat_ab
+dat_model.pLike_sequenceOptional = dat_p?, dat_ab?
+dat_model.pLike_sequenceOptionalRepeatable = dat_p*, dat_ab*
+dat_model.pLike_sequenceRepeatable = dat_p+, dat_ab+
+dat_model.stageLike = dat_stage
+dat_model.stageLike_alternation = dat_stage
+dat_model.stageLike_sequence = dat_stage
+dat_model.stageLike_sequenceOptional = dat_stage?
+dat_model.stageLike_sequenceOptionalRepeatable = dat_stage*
+dat_model.stageLike_sequenceRepeatable = dat_stage+
+dat_model.entryPart = notAllowed
+dat_model.global.edit = dat_gap | dat_ellipsis
+dat_model.global.edit_alternation = dat_gap | dat_ellipsis
+dat_model.global.edit_sequence = dat_gap, dat_ellipsis
+dat_model.global.edit_sequenceOptional = dat_gap?, dat_ellipsis?
+dat_model.global.edit_sequenceOptionalRepeatable =
+  dat_gap*, dat_ellipsis*
+dat_model.global.edit_sequenceRepeatable = dat_gap+, dat_ellipsis+
+dat_model.divPart = dat_model.lLike | dat_model.pLike | dat_lg | dat_sp
+dat_model.placeNamePart = notAllowed
+dat_model.placeNamePart_alternation = notAllowed
+dat_model.placeNamePart_sequence = empty
+dat_model.placeNamePart_sequenceOptional = empty
+dat_model.placeNamePart_sequenceOptionalRepeatable = empty
+dat_model.placeNamePart_sequenceRepeatable = notAllowed
+dat_model.placeStateLike = dat_model.placeNamePart
+dat_model.placeStateLike_alternation =
+  dat_model.placeNamePart_alternation
+dat_model.placeStateLike_sequence = dat_model.placeNamePart_sequence
+dat_model.placeStateLike_sequenceOptional =
+  dat_model.placeNamePart_sequenceOptional?
+dat_model.placeStateLike_sequenceOptionalRepeatable =
+  dat_model.placeNamePart_sequenceOptionalRepeatable*
+dat_model.placeStateLike_sequenceRepeatable =
+  dat_model.placeNamePart_sequenceRepeatable+
+dat_model.publicationStmtPart.agency =
+  dat_publisher | dat_distributor | dat_authority
+dat_model.publicationStmtPart.detail =
+  dat_model.ptrLike
+  | dat_address
+  | dat_date
+  | dat_pubPlace
+  | dat_idno
+  | dat_availability
+dat_model.availabilityPart = dat_licence
+dat_model.certLike = notAllowed
+dat_model.descLike = dat_desc
+dat_model.quoteLike = dat_quote | dat_cit
+dat_model.quoteLike_alternation = dat_quote | dat_cit
+dat_model.quoteLike_sequence = dat_quote, dat_cit
+dat_model.quoteLike_sequenceOptional = dat_quote?, dat_cit?
+dat_model.quoteLike_sequenceOptionalRepeatable = dat_quote*, dat_cit*
+dat_model.quoteLike_sequenceRepeatable = dat_quote+, dat_cit+
+dat_model.attributable =
+  dat_model.quoteLike | dat_said | dat_floatingText
+dat_model.attributable_alternation =
+  dat_model.quoteLike_alternation | dat_said | dat_floatingText
+dat_model.attributable_sequence =
+  dat_model.quoteLike_sequence, dat_said, dat_floatingText
+dat_model.attributable_sequenceOptional =
+  dat_model.quoteLike_sequenceOptional?, dat_said?, dat_floatingText?
+dat_model.attributable_sequenceOptionalRepeatable =
+  dat_model.quoteLike_sequenceOptionalRepeatable*,
+  dat_said*,
+  dat_floatingText*
+dat_model.attributable_sequenceRepeatable =
+  dat_model.quoteLike_sequenceRepeatable+, dat_said+, dat_floatingText+
+dat_model.respLike =
+  dat_author
+  | dat_editor
+  | dat_respStmt
+  | dat_meeting
+  | dat_sponsor
+  | dat_funder
+  | dat_principal
+dat_model.divWrapper =
+  dat_meeting
+  | dat_byline
+  | dat_dateline
+  | dat_argument
+  | dat_epigraph
+  | dat_salute
+  | dat_docAuthor
+  | dat_docDate
+dat_model.divTopPart =
+  dat_model.headLike | dat_address | dat_opener | dat_signed
+dat_model.divTop = dat_model.divWrapper | dat_model.divTopPart
+dat_model.frontPart.drama = notAllowed
+dat_model.pLike.front =
+  dat_head
+  | dat_byline
+  | dat_dateline
+  | dat_argument
+  | dat_epigraph
+  | dat_docTitle
+  | dat_titlePart
+  | dat_docAuthor
+  | dat_docEdition
+  | dat_docImprint
+  | dat_docDate
+dat_model.divBottomPart =
+  dat_address | dat_trailer | dat_closer | dat_signed | dat_postscript
+dat_model.divBottom = dat_model.divWrapper | dat_model.divBottomPart
+dat_model.titlepagePart =
+  dat_graphic
+  | dat_binaryObject
+  | dat_byline
+  | dat_argument
+  | dat_epigraph
+  | dat_docTitle
+  | dat_titlePart
+  | dat_docAuthor
+  | dat_imprimatur
+  | dat_docEdition
+  | dat_docImprint
+  | dat_docDate
+dat_model.choicePart =
+  dat_sic
+  | dat_corr
+  | dat_reg
+  | dat_orig
+  | dat_unclear
+  | dat_abbr
+  | dat_expan
+dat_model.imprintPart =
+  dat_publisher | dat_biblScope | dat_pubPlace | dat_distributor
+dat_model.catDescPart = notAllowed
+dat_model.addressLike = dat_email | dat_address
+dat_model.addressLike_alternation = dat_email | dat_address
+dat_model.addressLike_sequence = dat_email, dat_address
+dat_model.addressLike_sequenceOptional = dat_email?, dat_address?
+dat_model.addressLike_sequenceOptionalRepeatable =
+  dat_email*, dat_address*
+dat_model.addressLike_sequenceRepeatable = dat_email+, dat_address+
+dat_model.nameLike =
+  dat_model.nameLike.agent
+  | dat_model.offsetLike
+  | dat_model.placeStateLike
+  | dat_rs
+  | dat_idno
+  | dat_model.persNamePart
+dat_model.nameLike_alternation =
+  dat_model.nameLike.agent_alternation
+  | dat_model.offsetLike_alternation
+  | dat_model.placeStateLike_alternation
+  | dat_rs
+  | dat_idno
+  | dat_model.persNamePart_alternation
+dat_model.nameLike_sequence =
+  dat_model.nameLike.agent_sequence,
+  dat_model.offsetLike_sequence,
+  dat_model.placeStateLike_sequence,
+  dat_rs,
+  dat_idno,
+  dat_model.persNamePart_sequence
+dat_model.nameLike_sequenceOptional =
+  dat_model.nameLike.agent_sequenceOptional?,
+  dat_model.offsetLike_sequenceOptional?,
+  dat_model.placeStateLike_sequenceOptional?,
+  dat_rs?,
+  dat_idno?,
+  dat_model.persNamePart_sequenceOptional?
+dat_model.nameLike_sequenceOptionalRepeatable =
+  dat_model.nameLike.agent_sequenceOptionalRepeatable*,
+  dat_model.offsetLike_sequenceOptionalRepeatable*,
+  dat_model.placeStateLike_sequenceOptionalRepeatable*,
+  dat_rs*,
+  dat_idno*,
+  dat_model.persNamePart_sequenceOptionalRepeatable*
+dat_model.nameLike_sequenceRepeatable =
+  dat_model.nameLike.agent_sequenceRepeatable+,
+  dat_model.offsetLike_sequenceRepeatable+,
+  dat_model.placeStateLike_sequenceRepeatable+,
+  dat_rs+,
+  dat_idno+,
+  dat_model.persNamePart_sequenceRepeatable+
+dat_model.global =
+  dat_model.global.meta
+  | dat_model.milestoneLike
+  | dat_model.noteLike
+  | dat_model.global.edit
+  | dat_figure
+dat_model.biblPart =
+  dat_model.respLike
+  | dat_model.imprintPart
+  | dat_quote
+  | dat_series
+  | dat_citedRange
+  | dat_bibl
+  | dat_relatedItem
+  | dat_textLang
+  | dat_edition
+  | dat_extent
+  | dat_availability
+dat_model.frontPart =
+  dat_model.frontPart.drama | dat_listBibl | dat_divGen | dat_titlePage
+dat_model.addrPart =
+  dat_model.nameLike
+  | dat_addrLine
+  | dat_street
+  | dat_postCode
+  | dat_postBox
+dat_model.pPart.data =
+  dat_model.dateLike
+  | dat_model.measureLike
+  | dat_model.addressLike
+  | dat_model.nameLike
+dat_model.pPart.data_alternation =
+  dat_model.dateLike_alternation
+  | dat_model.measureLike_alternation
+  | dat_model.addressLike_alternation
+  | dat_model.nameLike_alternation
+dat_model.pPart.data_sequence =
+  dat_model.dateLike_sequence,
+  dat_model.measureLike_sequence,
+  dat_model.addressLike_sequence,
+  dat_model.nameLike_sequence
+dat_model.pPart.data_sequenceOptional =
+  dat_model.dateLike_sequenceOptional?,
+  dat_model.measureLike_sequenceOptional?,
+  dat_model.addressLike_sequenceOptional?,
+  dat_model.nameLike_sequenceOptional?
+dat_model.pPart.data_sequenceOptionalRepeatable =
+  dat_model.dateLike_sequenceOptionalRepeatable*,
+  dat_model.measureLike_sequenceOptionalRepeatable*,
+  dat_model.addressLike_sequenceOptionalRepeatable*,
+  dat_model.nameLike_sequenceOptionalRepeatable*
+dat_model.pPart.data_sequenceRepeatable =
+  dat_model.dateLike_sequenceRepeatable+,
+  dat_model.measureLike_sequenceRepeatable+,
+  dat_model.addressLike_sequenceRepeatable+,
+  dat_model.nameLike_sequenceRepeatable+
+dat_model.inter =
+  dat_model.egLike
+  | dat_model.oddDecl
+  | dat_model.biblLike
+  | dat_model.labelLike
+  | dat_model.listLike
+  | dat_model.stageLike
+  | dat_model.attributable
+dat_model.cmc = notAllowed
+dat_model.common =
+  dat_model.divPart | dat_model.inter | dat_model.cmc | dat_q
+dat_model.phrase =
+  dat_model.segLike
+  | dat_model.highlighted
+  | dat_model.graphicLike
+  | dat_model.pPart.msdesc
+  | dat_model.pPart.edit
+  | dat_model.ptrLike
+  | dat_model.lPart
+  | dat_model.phrase.xml
+  | dat_model.specDescLike
+  | dat_model.pPart.data
+  | dat_ruby
+dat_model.paraPart =
+  dat_model.gLike
+  | dat_model.lLike
+  | dat_model.global
+  | dat_model.inter
+  | dat_model.phrase
+  | dat_lg
+dat_model.limitedPhrase =
+  dat_model.hiLike
+  | dat_model.emphLike
+  | dat_model.pPart.msdesc
+  | dat_model.pPart.editorial
+  | dat_model.ptrLike
+  | dat_model.phrase.xml
+  | dat_model.pPart.data
+dat_model.divLike = dat_div
+dat_model.divGenLike = dat_divGen
+dat_model.div1Like = notAllowed
+dat_model.applicationLike = dat_application
+dat_model.teiHeaderPart =
+  dat_encodingDesc | dat_profileDesc | dat_xenoData
+dat_model.sourceDescPart = notAllowed
+dat_model.encodingDescPart =
+  dat_schemaRef
+  | dat_projectDesc
+  | dat_samplingDecl
+  | dat_editorialDecl
+  | dat_tagsDecl
+  | dat_styleDefDecl
+  | dat_refsDecl
+  | dat_listPrefixDef
+  | dat_classDecl
+  | dat_geoDecl
+  | dat_unitDecl
+  | dat_appInfo
+dat_model.editorialDeclPart =
+  dat_correction
+  | dat_normalization
+  | dat_quotation
+  | dat_hyphenation
+  | dat_segmentation
+  | dat_stdVals
+  | dat_interpretation
+  | dat_punctuation
+dat_model.profileDescPart =
+  dat_abstract
+  | dat_creation
+  | dat_langUsage
+  | dat_textClass
+  | dat_calendarDesc
+  | dat_correspDesc
+dat_att.formula.attributes = dat_att.formula.attribute.formula
+dat_att.formula.attribute.formula =
+  [
+    a:documentation [
+      "A "
+      ns1:code [ "@formula" ]
+      " is provided to describe a mathematical calculation such as a conversion between measurement systems."
+    ]
+  ]
+  attribute formula { text }?
+dat_att.locatable.attributes = dat_att.locatable.attribute.where
+dat_att.locatable.attribute.where =
+  [
+    a:documentation [
+      "indicates one or more locations by pointing to a "
+      ns1:code [ "<place>" ]
+      " element or other canonical description."
+    ]
+  ]
+  attribute where {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_model.correspActionPart =
+  dat_model.dateLike
+  | dat_model.addressLike
+  | dat_model.nameLike
+  | dat_note
+  | dat_noteGrp
+dat_model.correspContextPart =
+  dat_model.ptrLike | dat_model.pLike | dat_note | dat_noteGrp
+dat_model.correspDescPart =
+  dat_note | dat_noteGrp | dat_correspAction | dat_correspContext
+dat_model.resource = dat_text
+dat_model.describedResource = dat_teiCorpus | dat_TEI
+dat_att.personal.attributes =
+  dat_att.naming.attributes,
+  dat_att.personal.attribute.full,
+  dat_att.personal.attribute.sort
+dat_att.personal.attribute.full =
+  ## indicates whether the name component is given in full, as an abbreviation or simply as an initial.
+  [ a:defaultValue = "yes" ]
+  attribute full {
+    ## (yes) the name component is spelled out in full.
+    "yes" | ## (abbreviated) the name component is given in an abbreviated form.
+      "abb" | ## (initial letter) the name component is indicated only by one initial.
+      "init"
+  }?
+dat_att.personal.attribute.sort =
+  ## (sort) specifies the sort order of the name component in relation to others within the name.
+  attribute sort { xsd:nonNegativeInteger }?
+dat_att.calendarSystem.attributes =
+  dat_att.calendarSystem.attribute.calendar
+dat_att.calendarSystem.attribute.calendar =
+  ## indicates one or more systems or calendars to which the date represented by the content of this element belongs.
+  attribute calendar {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+sch:pattern [
+  id =
+    "dates_and_times_in_DH-att.calendarSystem-calendar-calendar_attr_on_empty_element-constraint-rule-11"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@calendar]"
+    "\x{a}" ~
+    "         "
+    sch:assert [
+      test = "string-length( normalize-space(.) ) gt 0"
+      " @calendar indicates one or more\x{a}" ~
+      "              systems or calendars to which the date represented by the content of this element belongs,\x{a}" ~
+      "              but this "
+      sch:name [ ]
+      " element has no textual content."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+dat_att.milestoneUnit.attributes = dat_att.milestoneUnit.attribute.unit
+dat_att.milestoneUnit.attribute.unit =
+  ## provides a conventional name for the kind of section changing at this milestone.
+  ## Suggested values include: 1] page; 2] column; 3] line; 4] book; 5] poem; 6] canto; 7] speaker; 8] stanza; 9] act; 10] scene; 11] section; 12] absent; 13] unnumbered
+  attribute unit {
+    [
+      a:documentation [
+        "physical page beginnings (synonymous with the "
+        ns1:code [ "<pb>" ]
+        " element)."
+      ]
+    ]
+    "page" | ## column beginnings.
+      "column"
+    | [
+        a:documentation [
+          "line beginnings (synonymous with the "
+          ns1:code [ "<lb>" ]
+          " element)."
+        ]
+      ]
+      "line" | ## any units termed book, liber, etc.
+      "book" | ## individual poems in a collection.
+      "poem" | ## cantos or other major sections of a poem.
+      "canto" | ## changes of speaker or narrator.
+      "speaker" | ## stanzas within a poem, book, or canto.
+      "stanza" | ## acts within a play.
+      "act" | ## scenes within a play or act.
+      "scene" | ## sections of any kind.
+      "section" | ## passages not present in the reference edition.
+      "absent" | ## passages present in the text, but not to be included as part of the reference.
+      "unnumbered"
+    | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+  }
+
+dat_p =
+  ## (paragraph) marks paragraphs in prose. [3.1. Paragraphs 7.2.5. Speech Contents]
+  element tei:p {
+    dat_macro.paraContent
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-p-abstractModel-structure-p-in-ab-or-p-constraint-rule-12"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:p"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test =
+               "(ancestor::tei:ab or ancestor::tei:p) and                        not( ancestor::tei:floatingText                           | parent::tei:exemplum                           | parent::tei:item                           | parent::tei:note                           | parent::tei:q                           | parent::tei:quote                           | parent::tei:remarks                           | parent::tei:said                           | parent::tei:sp                           | parent::tei:stage                           | parent::tei:cell                           | parent::tei:figure )"
+             "\x{a}" ~
+             "          Abstract model violation: Paragraphs may not occur inside other paragraphs or ab elements.\x{a}" ~
+             "        "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-p-abstractModel-structure-p-in-l-constraint-rule-13"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:l//tei:p"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test =
+               "ancestor::tei:floatingText | parent::tei:figure | parent::tei:note"
+             "\x{a}" ~
+             "          Abstract model violation: Metrical lines may not contain higher-level structural elements such as div, p, or ab, unless p is a child of figure or note, or is a descendant of floatingText.\x{a}" ~
+             "        "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.fragmentable.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_foreign =
+  ## (foreign) identifies a word or phrase as belonging to some language other than that of the surrounding text. [3.3.2.1. Foreign Words or Expressions]
+  element tei:foreign {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_emph =
+  ## (emphasized) marks words or phrases which are stressed or emphasized for linguistic or rhetorical effect. [3.3.2.2. Emphatic Words and Phrases 3.3.2. Emphasis, Foreign Words, and Unusual Language]
+  element tei:emph {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_hi =
+  ## (highlighted) marks a word or phrase as graphically distinct from the surrounding text, for reasons concerning which no claim is made. [3.3.2.2. Emphatic Words and Phrases 3.3.2. Emphasis, Foreign Words, and Unusual Language]
+  element tei:hi {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_distinct =
+  ## identifies any word or phrase which is regarded as linguistically distinct, for example as archaic, technical, dialectal, non-preferred, etc., or as forming part of a sublanguage. [3.3.2.3. Other Linguistically Distinct Material]
+  element tei:distinct {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.typed.attribute.subtype,
+    ## specifies the sublanguage or register to which the word or phrase is being assigned.
+    attribute type {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    ## specifies how the phrase is distinct diachronically.
+    attribute time { xsd:string }?,
+    ## specifies how the phrase is distinct diatopically.
+    attribute space { xsd:string }?,
+    ## specifies how the phrase is distinct diastratically.
+    attribute social { xsd:string }?,
+    empty
+  }
+
+dat_said =
+  ## (speech or thought) indicates passages thought or spoken aloud, whether explicitly indicated in the source or not, whether directly or indirectly reported, whether by real people or fictional characters. [3.3.3. Quotation]
+  element tei:said {
+    dat_macro.specialPara,
+    dat_att.global.attributes,
+    dat_att.ascribed.directed.attributes,
+    dat_att.cmc.attributes,
+    ## may be used to indicate whether the quoted matter is regarded as having been vocalized or signed.
+    attribute aloud {
+      xsd:boolean
+      | (
+         "unknown" | "inapplicable")
+    }?,
+    ## may be used to indicate whether the quoted matter is regarded as direct or indirect speech.
+    [ a:defaultValue = "true" ]
+    attribute direct {
+      xsd:boolean
+      | (
+         "unknown" | "inapplicable")
+    }?,
+    empty
+  }
+
+dat_quote =
+  ## (quotation) contains a phrase or passage attributed by the narrator or author to some agency external to the text. [3.3.3. Quotation 4.3.1. Grouped Texts]
+  element tei:quote {
+    dat_macro.specialPara,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.notated.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_q =
+  ## (quoted) contains material which is distinguished from the surrounding text using quotation marks or a similar method, for any one of a variety of reasons including, but not limited to: direct speech or thought, technical terms or jargon, authorial distance, quotations from elsewhere, and passages that are mentioned but not used. [3.3.3. Quotation]
+  element tei:q {
+    dat_macro.specialPara,
+    dat_att.global.attributes,
+    dat_att.ascribed.directed.attributes,
+    dat_att.cmc.attributes,
+    ## (type) may be used to indicate whether the offset passage is spoken or thought, or to characterize it more finely.
+    ## Suggested values include: 1] spoken (spoken); 2] thought (thought); 3] written (written); 4] soCalled (so called); 5] foreign (foreign); 6] distinct (distinct); 7] term; 8] emph (emph); 9] mentioned (mentioned)
+    attribute type {
+      ## (spoken) representation of speech
+      "spoken" | ## (thought) representation of thought, e.g. internal monologue
+        "thought" | ## (written) quotation from a written source
+        "written" | ## (so called) authorial distance
+        "soCalled" | ## (foreign) foreign words
+        "foreign" | ## (distinct) linguistically distinct
+        "distinct" | ## technical term
+        "term" | ## (emph) rhetorically emphasized
+        "emph" | ## (mentioned) refering to itself, not its normal referent
+        "mentioned"
+      | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_cit =
+  ## (cited quotation) contains a quotation from some other document, together with a bibliographic reference to its source. In a dictionary it may contain an example text with at least one occurrence of the word form, used in the sense being described, or a translation of the headword, or an example. [3.3.3. Quotation 4.3.1. Grouped Texts 10.3.5.1. Examples]
+  element tei:cit {
+    (dat_model.biblLike
+     | dat_model.egLike
+     | dat_model.entryPart
+     | dat_model.global
+     | dat_model.graphicLike
+     | dat_model.ptrLike
+     | dat_model.attributable
+     | dat_q)+,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_mentioned =
+  ## marks words or phrases mentioned, not used. [3.3.3. Quotation]
+  element tei:mentioned {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_soCalled =
+  ## (so called) contains a word or phrase for which the author or narrator indicates a disclaiming of responsibility, for example by the use of scare quotes or italics. [3.3.3. Quotation]
+  element tei:soCalled {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_desc =
+  ## (description) contains a short description of the purpose, function, or use of its parent element, or when the parent is a documentation element, describes or defines the object being documented.  [23.4.1. Description of Components]
+  element tei:desc {
+    dat_macro.limitedContent
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-desc-deprecationInfo-only-in-deprecated-constraint-rule-14"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:desc[ @type eq 'deprecationInfo']"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test = "../@validUntil"
+             "Information about a\x{a}" ~
+             "        deprecation should only be present in a specification element\x{a}" ~
+             "        that is being deprecated: that is, only an element that has a\x{a}" ~
+             "        @validUntil attribute should have a child <desc\x{a}" ~
+             '        type="deprecationInfo">.'
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.translatable.attributes,
+    dat_att.typed.attribute.subtype,
+    ## characterizes the element in some sense, using any convenient classification scheme or typology.
+    ## Suggested values include: 1] deprecationInfo (deprecation information)
+    attribute type {
+      ## (deprecation information) This element describes why or how its parent element is being deprecated, typically including recommendations for alternate encoding.
+      "deprecationInfo"
+      | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_gloss =
+  ## (gloss) identifies a phrase or word used to provide a gloss or definition for some other word or phrase. [3.4.1. Terms and Glosses 23.4.1. Description of Components]
+  element tei:gloss {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cReferencing.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.pointing.attributes,
+    dat_att.translatable.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_term =
+  ## (term) contains a single-word, multi-word, or symbolic designation which is regarded as a technical term. [3.4.1. Terms and Glosses]
+  element tei:term {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cReferencing.attributes,
+    dat_att.canonical.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.pointing.attributes,
+    dat_att.sortable.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_ruby =
+  ## (ruby container) contains a passage of base text along with its associated ruby gloss(es). [3.4.2. Ruby Annotations]
+  element tei:ruby {
+    (dat_rb, dat_rt+),
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_rb =
+  ## (ruby base) contains the base text annotated by a ruby gloss. [3.4.2. Ruby Annotations]
+  element tei:rb {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_rt =
+  ## (ruby text) contains a ruby text, an annotation closely associated with a passage of the main text. [3.4.2. Ruby Annotations]
+  element tei:rt {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.transcriptional.attributes,
+    dat_att.typed.attributes,
+    (
+     ## supplies a pointer to the base being glossed by this ruby text.
+     attribute target {
+       xsd:anyURI { pattern = "\S+" }
+     }?)
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-rt-target-rt-target-not-span-constraint-rule-15"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:rt/@target"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "../@from | ../@to"
+             "When target= is present, neither from= nor to= should be."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    (
+     ## points to the starting point of the span of text being glossed by this ruby text.
+     attribute from {
+       xsd:anyURI { pattern = "\S+" }
+     }?)
+    >> sch:pattern [
+         id = "dates_and_times_in_DH-rt-from-rt-from-constraint-rule-16"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:rt/@from"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test = "../@to"
+             "When from= is present, the to= attribute of "
+             sch:name [ ]
+             " is required."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    (
+     ## points to the ending point of the span of text being glossed.
+     attribute to {
+       xsd:anyURI { pattern = "\S+" }
+     }?)
+    >> sch:pattern [
+         id = "dates_and_times_in_DH-rt-to-rt-to-constraint-rule-17"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:rt/@to"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test = "../@from"
+             "When to= is present, the from= attribute of "
+             sch:name [ ]
+             " is required."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    empty
+  }
+
+dat_sic =
+  ## (Latin for thus or so) contains text reproduced although apparently incorrect or inaccurate. [3.5.1. Apparent Errors]
+  element tei:sic {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_corr =
+  ## (correction) contains the correct form of a passage apparently erroneous in the copy text. [3.5.1. Apparent Errors]
+  element tei:corr {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.editLike.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_choice =
+  ## (choice) groups a number of alternative encodings for the same point in a text. [3.5. Simple Editorial Changes]
+  element tei:choice {
+    (dat_model.choicePart | dat_choice),
+    (dat_model.choicePart | dat_choice),
+    (dat_model.choicePart | dat_choice)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_reg =
+  ## (regularization) contains a reading which has been regularized or normalized in some sense. [3.5.2. Regularization and
+  ## Normalization 13. Critical Apparatus]
+  element tei:reg {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.editLike.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_orig =
+  ## (original form) contains a reading which is marked as following the original, rather than being normalized or corrected. [3.5.2. Regularization and
+  ## Normalization 13. Critical Apparatus]
+  element tei:orig {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_gap =
+  ## (gap) indicates a point where material has been omitted in a transcription, whether for editorial reasons described in the TEI header, as part of sampling practice, or because the material is illegible, invisible, or inaudible. [3.5.3. Additions, Deletions, and Omissions]
+  element tei:gap {
+    (dat_model.descLike | dat_model.certLike)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.dimensions.attributes,
+    dat_att.editLike.attributes,
+    dat_att.timed.attributes,
+    ## (reason) gives the reason for omission.
+    ## Suggested values include: 1] cancelled (cancelled); 2] deleted (deleted); 3] editorial (editorial); 4] illegible (illegible); 5] inaudible (inaudible); 6] irrelevant (irrelevant); 7] sampling (sampling)
+    attribute reason {
+      list {
+        (
+         ## (cancelled) 
+         "cancelled" | ## (deleted) 
+           "deleted" | ## (editorial) for features omitted from transcription due to editorial policy
+           "editorial" | ## (illegible) 
+           "illegible" | ## (inaudible) 
+           "inaudible" | ## (irrelevant) 
+           "irrelevant" | ## (sampling) 
+           "sampling"
+         | xsd:token { pattern = "[^\p{C}\p{Z}]+" })+
+      }
+    }?,
+    ## (agent) in the case of text omitted because of damage, categorizes the cause of the damage, if it can be identified.
+    ## Sample values include: 1] rubbing (rubbing); 2] mildew (mildew); 3] smoke (smoke)
+    attribute agent {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_ellipsis =
+  ## (deliberately marked omission) indicates a purposeful marking in the source document signalling that content has been omitted, and may also supply or describe the omitted content. [3.5.3. Additions, Deletions, and Omissions]
+  element tei:ellipsis {
+    dat_model.descLike?,
+    dat_att.global.attributes,
+    dat_att.dimensions.attributes,
+    dat_att.timed.attributes,
+    empty
+  }
+
+dat_add =
+  ## (addition) contains letters, words, or phrases inserted in the source text by an author, scribe, or a previous annotator or corrector. [3.5.3. Additions, Deletions, and Omissions]
+  element tei:add {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.dimensions.attributes,
+    dat_att.transcriptional.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_del =
+  ## (deletion) contains a letter, word, or passage deleted, marked as deleted, or otherwise indicated as superfluous or spurious in the copy text by an author, scribe, or a previous annotator or corrector. [3.5.3. Additions, Deletions, and Omissions]
+  element tei:del {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.dimensions.attributes,
+    dat_att.transcriptional.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_unclear =
+  ## (unclear) contains a word, phrase, or passage which cannot be transcribed with certainty because it is illegible or inaudible in the source. [12.3.3.1. Damage, Illegibility, and Supplied Text 3.5.3. Additions, Deletions, and Omissions]
+  element tei:unclear {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.dimensions.attributes,
+    dat_att.editLike.attributes,
+    ## indicates why the material is hard to transcribe.
+    ## Suggested values include: 1] illegible (illegible); 2] inaudible (inaudible); 3] faded (faded); 4] background_noise (background noise); 5] eccentric_ductus (eccentric ductus)
+    attribute reason {
+      list {
+        (
+         ## (illegible) 
+         "illegible" | ## (inaudible) 
+           "inaudible" | ## (faded) 
+           "faded" | ## (background noise) 
+           "background_noise" | ## (eccentric ductus) indicates illegibility due to an unusual, awkward, or incompetent execution of a glyph or glyphs 
+           "eccentric_ductus"
+         | xsd:token { pattern = "[^\p{C}\p{Z}]+" })+
+      }
+    }?,
+    ## Where the difficulty in transcription arises from damage, categorizes the cause of the damage, if it can be identified.
+    ## Sample values include: 1] rubbing; 2] mildew; 3] smoke
+    attribute agent {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_name =
+  ## (name, proper noun) contains a proper noun or noun phrase. [3.6.1. Referring Strings]
+  element tei:name {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.datable.attributes,
+    dat_att.editLike.attributes,
+    dat_att.personal.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_rs =
+  ## (referencing string) contains a general purpose name or referring string. [14.2.1. Personal Names 3.6.1. Referring Strings]
+  element tei:rs {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.naming.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_email =
+  ## (electronic mail address) contains an email address identifying a location to which email messages can be delivered. [3.6.2. Addresses]
+  element tei:email {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_address =
+  ## (address) contains a postal address, for example of a publisher, an organization, or an individual. [3.6.2. Addresses 2.2.4. Publication, Distribution, Licensing, etc. 3.12.2.4. Imprint, Size of a Document, and Reprint Information]
+  element tei:address {
+    (dat_model.global*, (dat_model.addrPart, dat_model.global*)+),
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_addrLine =
+  ## (address line) contains one line of a postal address. [3.6.2. Addresses 2.2.4. Publication, Distribution, Licensing, etc. 3.12.2.4. Imprint, Size of a Document, and Reprint Information]
+  element tei:addrLine {
+    dat_macro.phraseSeq, dat_att.global.attributes, empty
+  }
+
+dat_street =
+  ## contains a full street address including any name or number identifying a building as well as the name of the street or route on which it is located. [3.6.2. Addresses]
+  element tei:street {
+    dat_macro.phraseSeq, dat_att.global.attributes, empty
+  }
+
+dat_postCode =
+  ## (postal code) contains a numerical or alphanumeric code used as part of a postal address to simplify sorting or delivery of mail. [3.6.2. Addresses]
+  element tei:postCode { text, dat_att.global.attributes, empty }
+
+dat_postBox =
+  ## (postal box or post office box) contains a number or other identifier for some postal delivery point other than a street address. [3.6.2. Addresses]
+  element tei:postBox { text, dat_att.global.attributes, empty }
+
+dat_num =
+  ## (number) contains a number, written in any form. [3.6.3. Numbers and
+  ## Measures]
+  element tei:num {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.ranging.attributes,
+    dat_att.typed.attribute.subtype,
+    ## indicates the type of numeric value.
+    ## Suggested values include: 1] cardinal; 2] ordinal; 3] fraction; 4] percentage
+    attribute type {
+      ## absolute number, e.g. 21, 21.5
+      "cardinal" | ## ordinal number, e.g. 21st
+        "ordinal" | ## fraction, e.g. one half or three-quarters
+        "fraction" | ## a percentage
+        "percentage"
+      | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    ## supplies the value of the number in standard form.
+    attribute value {
+      xsd:double
+      | xsd:token { pattern = "(\-?[\d]+/\-?[\d]+)" }
+      | xsd:decimal
+    }?,
+    empty
+  }
+
+dat_measure =
+  ## (measure) contains a word or phrase referring to some quantity of an object or commodity, usually comprising a number, a unit, and a commodity name. [3.6.3. Numbers and
+  ## Measures]
+  element tei:measure {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.measurement.attributes,
+    dat_att.ranging.attributes,
+    dat_att.typed.attribute.subtype,
+    ## specifies the type of measurement in any convenient typology.
+    attribute type {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_measureGrp =
+  ## (measure group) contains a group of dimensional specifications which relate to the same object, for example the height and width of a manuscript page. [11.3.4. Dimensions]
+  element tei:measureGrp {
+    (text | dat_model.gLike | dat_model.measureLike)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.measurement.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_unit =
+  ## contains a symbol, a word or a phrase referring to a unit of measurement in any kind of formal or informal system. [3.6.3. Numbers and
+  ## Measures]
+  element tei:unit {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.measurement.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_date =
+  ## (date) contains a date in any format. [3.6.4. Dates and Times 2.2.4. Publication, Distribution, Licensing, etc. 2.6. The Revision Description 3.12.2.4. Imprint, Size of a Document, and Reprint Information 16.2.3. The Setting Description 14.4. Dates]
+  element tei:date {
+    (text | dat_model.gLike | dat_model.phrase | dat_model.global)*,
+    dat_att.global.attributes,
+    dat_att.calendarSystem.attributes,
+    dat_att.canonical.attributes,
+    dat_att.cmc.attributes,
+    dat_att.datable.attributes,
+    dat_att.dimensions.attributes,
+    dat_att.editLike.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_time =
+  ## (time) contains a phrase defining a time of day in any format. [3.6.4. Dates and Times]
+  element tei:time {
+    (text | dat_model.gLike | dat_model.phrase | dat_model.global)*,
+    dat_att.global.attributes,
+    dat_att.calendarSystem.attributes,
+    dat_att.canonical.attributes,
+    dat_att.cmc.attributes,
+    dat_att.datable.attributes,
+    dat_att.dimensions.attributes,
+    dat_att.editLike.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_abbr =
+  ## (abbreviation) contains an abbreviation of any sort. [3.6.5. Abbreviations and Their Expansions]
+  element tei:abbr {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.typed.attribute.subtype,
+    ## (type) allows the encoder to classify the abbreviation according to some convenient typology.
+    ## Sample values include: 1] suspension (suspension); 2] contraction (contraction); 3] brevigraph; 4] superscription (superscription); 5] acronym (acronym); 6] title (title); 7] organization (organization); 8] geographic (geographic)
+    attribute type {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_expan =
+  ## (expansion) contains the expansion of an abbreviation. [3.6.5. Abbreviations and Their Expansions]
+  element tei:expan {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.editLike.attributes,
+    empty
+  }
+
+dat_ptr =
+  ## (pointer) defines a pointer to another location. [3.7. Simple Links and Cross-References 17.1. Links]
+  element tei:ptr {
+    empty
+    >> sch:pattern [
+         id = "dates_and_times_in_DH-ptr-ptrAtts-constraint-rule-18"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:ptr"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "@target and @cRef"
+             "Only one of the attributes @target and @cRef may be supplied on "
+             sch:name [ ]
+             "."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.cReferencing.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.internetMedia.attributes,
+    dat_att.pointing.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_ref =
+  ## (reference) defines a reference to another location, possibly modified by additional text or comment. [3.7. Simple Links and Cross-References 17.1. Links]
+  element tei:ref {
+    dat_macro.paraContent
+    >> sch:pattern [
+         id = "dates_and_times_in_DH-ref-refAtts-constraint-rule-19"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:ref"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "@target and @cRef"
+             "Only one of the attributes @target and @cRef may be supplied on "
+             sch:name [ ]
+             "."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.cReferencing.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.internetMedia.attributes,
+    dat_att.pointing.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_list =
+  ## (list) contains any sequence of items organized as a list. [3.8. Lists]
+  element tei:list {
+    ((dat_model.divTop | dat_model.global | dat_desc*)*,
+     ((dat_item, dat_model.global*)+
+      | (dat_headLabel?,
+         dat_headItem?,
+         (dat_label, dat_model.global*, dat_item, dat_model.global*)+)),
+     (dat_model.divBottom, dat_model.global*)*)
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-list-gloss-list-must-have-labels-constraint-rule-20"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:list[@type='gloss']"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test = "tei:label"
+             'The content of a "gloss" list should include a sequence of one or more pairs of a label element followed by an item element'
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.sortable.attributes,
+    dat_att.typed.attribute.subtype,
+    ## (type) describes the nature of the items in the list.
+    ## Suggested values include: 1] gloss (gloss); 2] index (index); 3] instructions (instructions); 4] litany (litany); 5] syllogism (syllogism)
+    attribute type {
+      [
+        a:documentation [
+          "(gloss) each list item glosses some term or concept, which is given by a "
+          ns1:code [ "<label>" ]
+          " element preceding the list item."
+        ]
+      ]
+      "gloss" | ## (index) each list item is an entry in an index such as the alphabetical topical index at the back of a print volume.
+        "index" | ## (instructions) each list item is a step in a sequence of instructions, as in a recipe.
+        "instructions" | ## (litany) each list item is one of a sequence of petitions, supplications or invocations, typically in a religious ritual.
+        "litany" | ## (syllogism) each list item is part of an argument consisting of two or more propositions and a final conclusion derived from them.
+        "syllogism"
+      | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_item =
+  ## (item) contains one component of a list. [3.8. Lists 2.6. The Revision Description]
+  element tei:item {
+    dat_macro.specialPara,
+    dat_att.global.attributes,
+    dat_att.sortable.attributes,
+    empty
+  }
+
+dat_label =
+  ## (label) contains any label or heading used to identify part of a text, typically but not exclusively in a list or glossary. [3.8. Lists]
+  element tei:label {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.placement.attributes,
+    dat_att.typed.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_head =
+  ## (heading) contains any type of heading, for example the title of a section, or the heading of a list, glossary, manuscript description, etc. [4.2.1. Headings and Trailers]
+  element tei:head {
+    (text
+     | dat_lg
+     | dat_model.gLike
+     | dat_model.phrase
+     | dat_model.inter
+     | dat_model.lLike
+     | dat_model.global)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.placement.attributes,
+    dat_att.typed.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_headLabel =
+  ## (heading for list labels) contains the heading for the label or term column in a glossary list or similar structured list. [3.8. Lists]
+  element tei:headLabel {
+    dat_macro.phraseSeq, dat_att.global.attributes, empty
+  }
+
+dat_headItem =
+  ## (heading for list items) contains the heading for the item or gloss column in a glossary list or similar structured list. [3.8. Lists]
+  element tei:headItem {
+    dat_macro.phraseSeq, dat_att.global.attributes, empty
+  }
+
+dat_note =
+  ## (note) contains a note or annotation. [3.9.1. Notes and Simple Annotation 2.2.6. The Notes Statement 3.12.2.8. Notes and Statement of Language 10.3.5.4. Notes within Entries]
+  element tei:note {
+    dat_macro.specialPara,
+    dat_att.global.attributes,
+    dat_att.anchoring.attributes,
+    dat_att.cmc.attributes,
+    dat_att.placement.attributes,
+    dat_att.pointing.attributes,
+    dat_att.typed.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_noteGrp =
+  ## (note group) contains a group of notes. [3.9.1.1. Encoding Grouped Notes]
+  element tei:noteGrp {
+    (dat_desc*, (dat_note | dat_noteGrp)+),
+    dat_att.global.attributes,
+    dat_att.anchoring.attributes,
+    dat_att.cmc.attributes,
+    dat_att.placement.attributes,
+    dat_att.pointing.attributes,
+    dat_att.typed.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_index =
+  ## (index entry) marks a location to be indexed for whatever purpose. [3.9.2. Index Entries]
+  element tei:index {
+    (dat_term, dat_index?)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.spanning.attributes,
+    ## a single word which follows the rules defining a legal XML name (see ), supplying a name to specify which index (of several) the index entry belongs to.
+    attribute indexName { xsd:Name }?,
+    empty
+  }
+
+dat_media =
+  ## indicates the location of any form of external media such as an audio or video clip etc. [3.10. Graphics and Other Non-textual Components]
+  element tei:media {
+    dat_model.descLike*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.media.attribute.width,
+    dat_att.media.attribute.height,
+    dat_att.media.attribute.scale,
+    dat_att.resourced.attributes,
+    dat_att.timed.attributes,
+    dat_att.typed.attributes,
+    ## (MIME media type) specifies the applicable multimedia internet mail extension (MIME) media type.
+    attribute mimeType {
+      list {
+        xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+      }
+    },
+    empty
+  }
+
+dat_graphic =
+  ## (graphic) indicates the location of a graphic or illustration, either forming part of a text, or providing an image of it. [3.10. Graphics and Other Non-textual Components 12.1. Digital Facsimiles]
+  element tei:graphic {
+    dat_model.descLike*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.media.attributes,
+    dat_att.resourced.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_binaryObject =
+  ## provides encoded binary data representing an inline graphic, audio, video or other object. [3.10. Graphics and Other Non-textual Components]
+  element tei:binaryObject {
+    text,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.media.attributes,
+    dat_att.timed.attributes,
+    dat_att.typed.attributes,
+    [
+      a:documentation [
+        "The encoding used to encode the binary data. If not specified, this is assumed to be "
+        ns1:a [ href = "http://en.wikipedia.org/wiki/Base64" "Base64" ]
+        "."
+      ]
+    ]
+    attribute encoding {
+      list {
+        xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+      }
+    }?,
+    empty
+  }
+
+dat_milestone =
+  ## (milestone) marks a boundary point separating any kind of section of a text, typically but not necessarily indicating a point at which some part of a standard reference system changes, where the change is not represented by a structural element. [3.11.3. Milestone
+  ## Elements]
+  element tei:milestone {
+    empty,
+    dat_att.global.attributes,
+    dat_att.breaking.attributes,
+    dat_att.cmc.attributes,
+    dat_att.edition.attributes,
+    dat_att.milestoneUnit.attributes,
+    dat_att.spanning.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_gb =
+  ## (gathering beginning) marks the beginning of a new gathering or quire in a transcribed codex. [3.11.3. Milestone
+  ## Elements]
+  element tei:gb {
+    empty,
+    dat_att.global.attributes,
+    dat_att.breaking.attributes,
+    dat_att.cmc.attributes,
+    dat_att.edition.attributes,
+    dat_att.spanning.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_pb =
+  ## (page beginning) marks the beginning of a new page in a paginated document. [3.11.3. Milestone
+  ## Elements]
+  element tei:pb {
+    empty,
+    dat_att.global.attributes,
+    dat_att.breaking.attributes,
+    dat_att.cmc.attributes,
+    dat_att.edition.attributes,
+    dat_att.spanning.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_lb =
+  ## (line beginning) marks the beginning of a topographic line in some edition or version of a text. [3.11.3. Milestone
+  ## Elements 7.2.5. Speech Contents]
+  element tei:lb {
+    empty,
+    dat_att.global.attributes,
+    dat_att.breaking.attributes,
+    dat_att.cmc.attributes,
+    dat_att.edition.attributes,
+    dat_att.spanning.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_cb =
+  ## (column beginning) marks the beginning of a new column of a text on a multi-column page. [3.11.3. Milestone
+  ## Elements]
+  element tei:cb {
+    empty,
+    dat_att.global.attributes,
+    dat_att.breaking.attributes,
+    dat_att.cmc.attributes,
+    dat_att.edition.attributes,
+    dat_att.spanning.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_analytic =
+  ## (analytic level) contains bibliographic elements describing an item (e.g. an article or poem) published within a monograph or journal and not as an independent publication. [3.12.2.1. Analytic, Monographic, and Series Levels]
+  element tei:analytic {
+    (dat_author
+     | dat_editor
+     | dat_respStmt
+     | dat_title
+     | dat_model.ptrLike
+     | dat_date
+     | dat_textLang
+     | dat_idno
+     | dat_availability)*,
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_monogr =
+  ## (monographic level) contains bibliographic elements describing an item (e.g. a book or journal) published as an independent item (i.e. as a separate physical object). [3.12.2.1. Analytic, Monographic, and Series Levels]
+  element tei:monogr {
+    ((((dat_author | dat_editor | dat_meeting | dat_respStmt),
+       (dat_author | dat_editor | dat_meeting | dat_respStmt)*,
+       dat_title+,
+       (dat_model.ptrLike
+        | dat_idno
+        | dat_textLang
+        | dat_editor
+        | dat_respStmt)*)
+      | ((dat_title | dat_model.ptrLike | dat_idno)+,
+         (dat_textLang
+          | dat_author
+          | dat_editor
+          | dat_meeting
+          | dat_respStmt)*)
+      | (dat_authority, dat_idno))?,
+     dat_availability*,
+     dat_model.noteLike*,
+     (dat_edition,
+      (dat_idno
+       | dat_model.ptrLike
+       | dat_editor
+       | dat_sponsor
+       | dat_funder
+       | dat_respStmt)*)*,
+     dat_imprint,
+     (dat_imprint | dat_extent | dat_biblScope)*),
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_series =
+  ## (series information) contains information about the series in which a book or other bibliographic item has appeared. [3.12.2.1. Analytic, Monographic, and Series Levels]
+  element tei:series {
+    (text
+     | dat_model.gLike
+     | dat_title
+     | dat_model.ptrLike
+     | dat_editor
+     | dat_respStmt
+     | dat_biblScope
+     | dat_idno
+     | dat_textLang
+     | dat_model.global
+     | dat_availability)*,
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_author =
+  ## (author) in a bibliographic reference, contains the name(s) of an author, personal or corporate, of a work; for example in the same form as that provided by a recognized bibliographic name authority. [3.12.2.2. Titles, Authors, and Editors 2.2.1. The Title Statement]
+  element tei:author {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.datable.attributes,
+    dat_att.naming.attributes,
+    empty
+  }
+
+dat_editor =
+  ## contains a secondary statement of responsibility for a bibliographic item, for example the name of an individual, institution or organization, (or of several such) acting as editor, compiler, translator, etc. [3.12.2.2. Titles, Authors, and Editors]
+  element tei:editor {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.datable.attributes,
+    dat_att.naming.attributes,
+    empty
+  }
+
+dat_respStmt =
+  ## (statement of responsibility) supplies a statement of responsibility for the intellectual content of a text, edition, recording, or series, where the specialized elements for authors, editors, etc. do not suffice or do not apply. May also be used to encode information about individuals or organizations which have played a role in the production or distribution of a bibliographic work. [3.12.2.2. Titles, Authors, and Editors 2.2.1. The Title Statement 2.2.2. The Edition Statement 2.2.5. The Series Statement]
+  element tei:respStmt {
+    (((dat_resp+, dat_model.nameLike.agent+)
+      | (dat_model.nameLike.agent+, dat_resp+)),
+     dat_note*),
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    empty
+  }
+
+dat_resp =
+  ## (responsibility) contains a phrase describing the nature of a person's intellectual responsibility, or an organization's role in the production or distribution of a work. [3.12.2.2. Titles, Authors, and Editors 2.2.1. The Title Statement 2.2.2. The Edition Statement 2.2.5. The Series Statement]
+  element tei:resp {
+    dat_macro.phraseSeq.limited,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.datable.attributes,
+    empty
+  }
+
+dat_title =
+  ## (title) contains a title for any kind of work. [3.12.2.2. Titles, Authors, and Editors 2.2.1. The Title Statement 2.2.5. The Series Statement]
+  element tei:title {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.cmc.attributes,
+    dat_att.datable.attributes,
+    dat_att.typed.attribute.subtype,
+    ## classifies the title according to some convenient typology.
+    ## Sample values include: 1] main; 2] sub (subordinate); 3] alt (alternate); 4] short; 5] desc (descriptive)
+    attribute type {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    ## indicates the bibliographic level for a title, that is, whether it identifies an article, book, journal, series, or unpublished material.
+    attribute level {
+      ## (analytic) the title applies to an analytic item, such as an article, poem, or other work published as part of a larger item.
+      "a" | ## (monographic) the title applies to a monograph such as a book or other item considered to be a distinct publication, including single volumes of multi-volume works
+        "m" | ## (journal) the title applies to any serial or periodical publication such as a journal, magazine, or newspaper
+        "j" | ## (series) the title applies to a series of otherwise distinct publications such as a collection
+        "s" | ## (unpublished) the title applies to any unpublished material (including theses and dissertations unless published by a commercial press)
+        "u"
+    }?,
+    empty
+  }
+
+dat_meeting =
+  ## contains the formalized descriptive title for a meeting or conference, for use in a bibliographic description for an item derived from such a meeting, or as a heading or preamble to publications emanating from it. [3.12.2.2. Titles, Authors, and Editors]
+  element tei:meeting {
+    dat_macro.limitedContent,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.cmc.attributes,
+    dat_att.datable.attributes,
+    empty
+  }
+
+dat_imprint =
+  ## groups information relating to the publication or distribution of a bibliographic item. [3.12.2.4. Imprint, Size of a Document, and Reprint Information]
+  element tei:imprint {
+    ((dat_classCode | dat_catRef)*,
+     ((dat_model.imprintPart | dat_model.dateLike),
+      dat_respStmt*,
+      dat_model.global*)+),
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_publisher =
+  ## (publisher) provides the name of the organization responsible for the publication or distribution of a bibliographic item. [3.12.2.4. Imprint, Size of a Document, and Reprint Information 2.2.4. Publication, Distribution, Licensing, etc.]
+  element tei:publisher {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    empty
+  }
+
+dat_biblScope =
+  ## (scope of bibliographic reference) defines the scope of a bibliographic reference, for example as a list of page numbers, or a named subdivision of a larger work. [3.12.2.5. Scopes and Ranges in Bibliographic Citations]
+  element tei:biblScope {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.citing.attributes,
+    empty
+  }
+
+dat_citedRange =
+  ## (cited range) defines the range of cited content, often represented by pages or other units. [3.12.2.5. Scopes and Ranges in Bibliographic Citations]
+  element tei:citedRange {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.citing.attributes,
+    dat_att.pointing.attributes,
+    empty
+  }
+
+dat_pubPlace =
+  ## (publication place) contains the name of the place where a bibliographic item was published. [3.12.2.4. Imprint, Size of a Document, and Reprint Information]
+  element tei:pubPlace {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.naming.attributes,
+    empty
+  }
+
+dat_bibl =
+  ## (bibliographic citation) contains a loosely-structured bibliographic citation of which the sub-components may or may not be explicitly tagged. [3.12.1. Methods of Encoding Bibliographic References and Lists of References 2.2.7. The Source Description 16.3.2. Declarable Elements]
+  element tei:bibl {
+    (text
+     | dat_model.gLike
+     | dat_model.highlighted
+     | dat_model.pPart.data
+     | dat_model.pPart.edit
+     | dat_model.segLike
+     | dat_model.ptrLike
+     | dat_model.biblPart
+     | dat_model.global)*,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declarable.attributes,
+    dat_att.docStatus.attributes,
+    dat_att.sortable.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_biblStruct =
+  ## (structured bibliographic citation) contains a structured bibliographic citation, in which only bibliographic sub-elements appear and in a specified order. [3.12.1. Methods of Encoding Bibliographic References and Lists of References 2.2.7. The Source Description 16.3.2. Declarable Elements]
+  element tei:biblStruct {
+    (dat_analytic*,
+     (dat_monogr, dat_series*)+,
+     (dat_model.noteLike
+      | dat_model.ptrLike
+      | dat_relatedItem
+      | dat_citedRange)*),
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declarable.attributes,
+    dat_att.docStatus.attributes,
+    dat_att.sortable.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_listBibl =
+  ## (citation list) contains a list of bibliographic citations of any kind. [3.12.1. Methods of Encoding Bibliographic References and Lists of References 2.2.7. The Source Description 16.3.2. Declarable Elements]
+  element tei:listBibl {
+    (dat_model.headLike*,
+     dat_desc*,
+     (dat_model.milestoneLike)*,
+     (dat_model.biblLike+, (dat_model.milestoneLike)*)+),
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declarable.attributes,
+    dat_att.sortable.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_relatedItem =
+  ## contains or references some other bibliographic item which is related to the present one in some specified manner, for example as a constituent or alternative version of it. [3.12.2.7. Related Items]
+  element tei:relatedItem {
+    ((dat_model.biblLike | dat_model.ptrLike)?)
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-relatedItem-targetorcontent1-constraint-rule-21"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:relatedItem"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "@target and count( child::* ) > 0"
+             "If the @target attribute on "
+             sch:name [ ]
+             " is used, the relatedItem element must be empty"
+           ]
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test = "@target or child::*"
+             "A relatedItem element should have either a @target attribute or a child element to indicate the related bibliographic item"
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.typed.attributes,
+    ## points to the related bibliographic element by means of an absolute or relative URI reference.
+    attribute target {
+      xsd:anyURI { pattern = "\S+" }
+    }?,
+    empty
+  }
+
+dat_l =
+  ## (verse line) contains a single, possibly incomplete, line of verse. [3.13.1. Core Tags for Verse 3.13. Passages of Verse or Drama 7.2.5. Speech Contents]
+  element tei:l {
+    ((text
+      | dat_model.gLike
+      | dat_model.phrase
+      | dat_model.inter
+      | dat_model.global)*)
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-l-abstractModel-structure-l-in-l-constraint-rule-22"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:l"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test =
+               "ancestor::tei:l[not(.//tei:note//tei:l[. = current()])]"
+             "Abstract model violation: Lines may not contain lines or lg elements."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.fragmentable.attributes,
+    empty
+  }
+
+dat_lg =
+  ## (line group) contains one or more verse lines functioning as a formal unit, e.g. a stanza, refrain, verse paragraph, etc. [3.13.1. Core Tags for Verse 3.13. Passages of Verse or Drama 7.2.5. Speech Contents]
+  element tei:lg {
+    ((dat_model.divTop | dat_model.global)*,
+     (dat_model.lLike
+      | dat_model.stageLike
+      | dat_model.labelLike
+      | dat_model.pPart.transcriptional
+      | dat_lg),
+     (dat_model.lLike
+      | dat_model.stageLike
+      | dat_model.labelLike
+      | dat_model.pPart.transcriptional
+      | dat_model.global
+      | dat_lg)*,
+     (dat_model.divBottom, dat_model.global*)*)
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-lg-atleast1oflggapl-constraint-rule-23"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:lg"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test =
+               "count(descendant::tei:lg|descendant::tei:l|descendant::tei:gap) > 0"
+             "An lg element must contain at least one child l, lg, or gap element."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-lg-abstractModel-structure-lg-in-l-constraint-rule-24"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:lg"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test =
+               "ancestor::tei:l[not(.//tei:note//tei:lg[. = current()])]"
+             "Abstract model violation: Lines may not contain line groups."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.divLike.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_sp =
+  ## (speech) contains an individual speech in a performance text, or a passage presented as such in a prose or verse text. [3.13.2. Core Tags for Drama 3.13. Passages of Verse or Drama 7.2.2. Speeches and Speakers]
+  element tei:sp {
+    (dat_model.global*,
+     (dat_model.stageLike, dat_model.global*)*,
+     (((dat_speaker, dat_model.global*),
+       ((dat_lg
+         | dat_model.lLike
+         | dat_model.pLike
+         | dat_model.listLike
+         | dat_model.attributable
+         | dat_q
+         | dat_model.stageLike),
+        dat_model.global*))
+      | ((dat_lg
+          | dat_model.lLike
+          | dat_model.pLike
+          | dat_model.listLike
+          | dat_model.attributable
+          | dat_q),
+         dat_model.global*)),
+     ((dat_lg
+       | dat_model.lLike
+       | dat_model.pLike
+       | dat_model.listLike
+       | dat_model.attributable
+       | dat_q
+       | dat_model.stageLike),
+      dat_model.global*)*),
+    dat_att.global.attributes,
+    dat_att.ascribed.directed.attributes,
+    dat_att.placement.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_speaker =
+  ## contains a specialized form of heading or label, giving the name of one or more speakers in a dramatic text or fragment. [3.13.2. Core Tags for Drama]
+  element tei:speaker {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.placement.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_stage =
+  ## (stage direction) contains any kind of stage direction within a dramatic text or fragment. [3.13.2. Core Tags for Drama 3.13. Passages of Verse or Drama 7.2.4. Stage Directions]
+  element tei:stage {
+    dat_macro.specialPara,
+    dat_att.global.attributes,
+    dat_att.ascribed.directed.attributes,
+    dat_att.cmc.attributes,
+    dat_att.placement.attributes,
+    dat_att.written.attributes,
+    ## indicates the kind of stage direction.
+    ## Suggested values include: 1] setting; 2] entrance; 3] exit; 4] business; 5] novelistic; 6] delivery; 7] modifier; 8] location; 9] mixed
+    attribute type {
+      list {
+        (
+         ## describes a setting.
+         "setting" | ## describes an entrance.
+           "entrance" | ## describes an exit.
+           "exit" | ## describes stage business.
+           "business" | ## is a narrative, motivating stage direction.
+           "novelistic" | ## describes how a character speaks.
+           "delivery" | ## gives some detail about a character.
+           "modifier" | ## describes a location.
+           "location" | ## more than one of the above
+           "mixed"
+         | xsd:token { pattern = "[^\p{C}\p{Z}]+" })*
+      }
+    }?,
+    empty
+  }
+dat_teiCorpus =
+  [
+    a:documentation [
+      "(TEI corpus) contains the whole of a TEI encoded corpus, comprising a single corpus header and one or more "
+      ns1:code [ "<TEI>" ]
+      " elements, each containing a single text header and a text. [4. Default Text Structure 16.1. Varieties of Composite Text]"
+    ]
+  ]
+  element tei:teiCorpus {
+    (dat_teiHeader, dat_model.resource*, dat_model.describedResource+),
+    dat_att.global.attributes,
+    dat_att.typed.attributes,
+    ## (version) specifies the version number of the TEI Guidelines against which this document is valid.
+    attribute version {
+      xsd:token { pattern = "[\d]+(\.[\d]+){0,2}" }
+    }?,
+    empty
+  }
+
+dat_divGen =
+  ## (automatically generated text division) indicates the location at which a textual division generated automatically by a text-processing application is to appear. [3.9.2. Index Entries]
+  element tei:divGen {
+    dat_model.headLike*,
+    dat_att.global.attributes,
+    dat_att.typed.attribute.subtype,
+    ## specifies what type of generated text division (e.g. index, table of contents, etc.) is to appear.
+    ## Sample values include: 1] index; 2] toc; 3] figlist; 4] tablist
+    attribute type {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_textLang =
+  ## (text language) describes the languages and writing systems identified within the bibliographic work being described, rather than its description. [3.12.2.4. Imprint, Size of a Document, and Reprint Information 11.6.6. Languages and Writing Systems]
+  element tei:textLang {
+    dat_macro.specialPara,
+    dat_att.global.attributes,
+    ## (main language) supplies a code which identifies the chief language used in the bibliographic work.
+    attribute mainLang {
+      xsd:language
+      | (
+         "")
+    }?,
+    ## (other languages) one or more codes identifying any other languages used in the bibliographic work.
+    attribute otherLangs {
+      list {
+        (xsd:language
+         | (
+            ""))*
+      }
+    }?,
+    empty
+  }
+dat_att.citeStructurePart.attributes =
+  dat_att.citeStructurePart.attribute.use
+dat_att.citeStructurePart.attribute.use =
+  [
+    a:documentation [
+      "(use) supplies an XPath selection pattern using the syntax defined in . The XPath pattern is relative to the context given in "
+      ns1:code [ "@match" ]
+      ", which will either be a sibling attribute in the case of `<citeStructure>` or on the parent `<citeStructure>` in the case of `<citeData>`."
+    ]
+  ]
+  attribute use { text }
+dat_att.patternReplacement.attributes =
+  dat_att.patternReplacement.attribute.matchPattern,
+  dat_att.patternReplacement.attribute.replacementPattern
+dat_att.patternReplacement.attribute.matchPattern =
+  ## specifies a regular expression against which the values of other attributes can be matched.
+  attribute matchPattern { xsd:token }
+dat_att.patternReplacement.attribute.replacementPattern =
+  [
+    a:documentation [
+      "specifies a replacement pattern, that is, the skeleton of a relative or absolute URI containing references to groups in the "
+      ns1:code [ "@matchPattern" ]
+      " which, once subpattern substitution has been performed, complete the URI."
+    ]
+  ]
+  attribute replacementPattern { text }
+
+dat_teiHeader =
+  ## (TEI header) supplies descriptive and declarative metadata associated with a digital resource or set of resources. [2.1.1. The TEI Header and Its Components 16.1. Varieties of Composite Text]
+  element tei:teiHeader {
+    (dat_fileDesc, dat_model.teiHeaderPart*, dat_revisionDesc?),
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_fileDesc =
+  ## (file description) contains a full bibliographic description of an electronic file. [2.2. The File Description 2.1.1. The TEI Header and Its Components]
+  element tei:fileDesc {
+    ((dat_titleStmt,
+      dat_editionStmt?,
+      dat_extent?,
+      dat_publicationStmt,
+      dat_seriesStmt*,
+      dat_notesStmt?),
+     dat_sourceDesc+),
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_titleStmt =
+  ## (title statement) groups information about the title of a work and those responsible for its content. [2.2.1. The Title Statement 2.2. The File Description]
+  element tei:titleStmt {
+    (dat_title+, dat_model.respLike*), dat_att.global.attributes, empty
+  }
+
+dat_sponsor =
+  ## (sponsor) specifies the name of a sponsoring organization or institution. [2.2.1. The Title Statement]
+  element tei:sponsor {
+    dat_macro.phraseSeq.limited,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.datable.attributes,
+    empty
+  }
+
+dat_funder =
+  ## (funding body) specifies the name of an individual, institution, or organization responsible for the funding of a project or text. [2.2.1. The Title Statement]
+  element tei:funder {
+    dat_macro.phraseSeq.limited,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.datable.attributes,
+    empty
+  }
+
+dat_principal =
+  ## (principal researcher) supplies the name of the principal researcher responsible for the creation of an electronic text. [2.2.1. The Title Statement]
+  element tei:principal {
+    dat_macro.phraseSeq.limited,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.datable.attributes,
+    empty
+  }
+
+dat_editionStmt =
+  ## (edition statement) groups information relating to one edition of a text. [2.2.2. The Edition Statement 2.2. The File Description]
+  element tei:editionStmt {
+    (dat_model.pLike+ | (dat_edition, dat_model.respLike*)),
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_edition =
+  ## (edition) describes the particularities of one edition of a text. [2.2.2. The Edition Statement]
+  element tei:edition {
+    dat_macro.phraseSeq, dat_att.global.attributes, empty
+  }
+
+dat_extent =
+  ## (extent) describes the approximate size of a text stored on some carrier medium or of some other object, digital or non-digital, specified in any convenient units. [2.2.3. Type and Extent of File 2.2. The File Description 3.12.2.4. Imprint, Size of a Document, and Reprint Information 11.7.1. Object Description]
+  element tei:extent {
+    dat_macro.phraseSeq, dat_att.global.attributes, empty
+  }
+
+dat_publicationStmt =
+  ## (publication statement) groups information concerning the publication or distribution of an electronic or other text. [2.2.4. Publication, Distribution, Licensing, etc. 2.2. The File Description]
+  element tei:publicationStmt {
+    ((dat_model.publicationStmtPart.agency,
+      dat_model.publicationStmtPart.detail*)+
+     | dat_model.pLike+),
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_distributor =
+  ## (distributor) supplies the name of a person or other agency responsible for the distribution of a text. [2.2.4. Publication, Distribution, Licensing, etc.]
+  element tei:distributor {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    empty
+  }
+
+dat_authority =
+  ## (release authority) supplies the name of a person or other agency responsible for making a work available, other than a publisher or distributor. [2.2.4. Publication, Distribution, Licensing, etc.]
+  element tei:authority {
+    dat_macro.phraseSeq.limited,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    empty
+  }
+
+dat_idno =
+  ## (identifier) supplies any form of identifier used to identify some object, such as a bibliographic item, a person, a title, an organization, etc. in a standardized way. [14.3.1. Basic Principles 2.2.4. Publication, Distribution, Licensing, etc. 2.2.5. The Series Statement 3.12.2.4. Imprint, Size of a Document, and Reprint Information]
+  element tei:idno {
+    (text | dat_model.gLike | dat_idno)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.datable.attributes,
+    dat_att.sortable.attributes,
+    dat_att.typed.attribute.subtype,
+    ## categorizes the identifier, for example as an ISBN, Social Security number, etc.
+    ## Suggested values include: 1] ISBN; 2] ISSN; 3] DOI; 4] URI; 5] VIAF; 6] ESTC; 7] OCLC
+    attribute type {
+      [
+        a:documentation [
+          "International Standard Book Number: a 13- or (if assigned prior to 2007) 10-digit identifying number assigned by the publishing industry to a published book or similar item, registered with the "
+          ns1:a [
+            href = "https://www.isbn-international.org"
+            " International ISBN Agency."
+          ]
+          "\x{a}" ~
+          "                  "
+        ]
+      ]
+      "ISBN" | ## International Standard Serial Number: an eight-digit number to uniquely identify a serial publication.
+        "ISSN" | ## Digital Object Identifier: a unique string of letters and numbers assigned to an electronic document.
+        "DOI"
+      | [
+          a:documentation [
+            "Uniform Resource Identifier: a string of characters to uniquely identify a resource, following the syntax of "
+            ns1:a [
+              href = "https://datatracker.ietf.org/doc/html/rfc3986"
+              "RFC 3986"
+            ]
+            "."
+          ]
+        ]
+        "URI" | ## A data number in the Virtual Internet Authority File assigned to link different names in catalogs around the world for the same entity.
+        "VIAF" | ## English Short-Title Catalogue number: an identifying number assigned to a document in English printed in the British Isles or North America before 1801.
+        "ESTC" | ## OCLC control number (record number) for the union catalog record in WorldCat, a union catalog for member libraries in the Online Computer Library Center global cooperative.
+        "OCLC"
+      | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_availability =
+  ## (availability) supplies information about the availability of a text, for example any restrictions on its use or distribution, its copyright status, any licence applying to it, etc. [2.2.4. Publication, Distribution, Licensing, etc.]
+  element tei:availability {
+    (dat_model.availabilityPart | dat_model.pLike)+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    ## (status) supplies a code identifying the current availability of the text.
+    attribute status {
+      ## (free) the text is freely available.
+      "free" | ## (unknown) the status of the text is unknown.
+        "unknown" | ## (restricted) the text is not freely available.
+        "restricted"
+    }?,
+    empty
+  }
+
+dat_licence =
+  ## contains information about a licence or other legal agreement applicable to the text. [2.2.4. Publication, Distribution, Licensing, etc.]
+  element tei:licence {
+    dat_macro.specialPara,
+    dat_att.global.attributes,
+    dat_att.datable.attributes,
+    dat_att.pointing.attributes,
+    empty
+  }
+
+dat_seriesStmt =
+  ## (series statement) groups information about the series, if any, to which a publication belongs. [2.2.5. The Series Statement 2.2. The File Description]
+  element tei:seriesStmt {
+    (dat_model.pLike+
+     | (dat_title+,
+        (dat_editor | dat_respStmt)*,
+        (dat_idno | dat_biblScope)*)),
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_notesStmt =
+  ## (notes statement) collects together any notes providing information about a text additional to that recorded in other parts of the bibliographic description. [2.2.6. The Notes Statement 2.2. The File Description]
+  element tei:notesStmt {
+    (dat_model.noteLike | dat_relatedItem)+,
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_sourceDesc =
+  ## (source description) describes the source(s) from which an electronic text was derived or generated, typically a bibliographic description in the case of a digitized text, or a phrase such as born digital for a text which has no previous existence. [2.2.7. The Source Description]
+  element tei:sourceDesc {
+    (dat_model.pLike+
+     | (dat_model.biblLike
+        | dat_model.sourceDescPart
+        | dat_model.listLike)+),
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_biblFull =
+  ## (fully-structured bibliographic citation) contains a fully-structured bibliographic citation, in which all components of the TEI file description are present. [3.12.1. Methods of Encoding Bibliographic References and Lists of References 2.2. The File Description 2.2.7. The Source Description 16.3.2. Declarable Elements]
+  element tei:biblFull {
+    (((dat_titleStmt,
+       dat_editionStmt?,
+       dat_extent?,
+       dat_publicationStmt,
+       dat_seriesStmt*,
+       dat_notesStmt?),
+      dat_sourceDesc*)
+     | (dat_fileDesc, dat_profileDesc)),
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declarable.attributes,
+    dat_att.docStatus.attributes,
+    dat_att.sortable.attributes,
+    empty
+  }
+
+dat_encodingDesc =
+  ## (encoding description) documents the relationship between an electronic text and the source or sources from which it was derived. [2.3. The Encoding Description 2.1.1. The TEI Header and Its Components]
+  element tei:encodingDesc {
+    (dat_model.encodingDescPart | dat_model.pLike)+,
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_schemaRef =
+  ## (schema reference) describes or points to a related customization or schema file. [2.3.10. The Schema Specification]
+  element tei:schemaRef {
+    dat_model.descLike?,
+    dat_att.global.attributes,
+    dat_att.resourced.attributes,
+    dat_att.typed.attributes,
+    ## the identifier used for the customization or schema.
+    attribute key { xsd:NCName }?,
+    empty
+  }
+
+dat_projectDesc =
+  ## (project description) describes in detail the aim or purpose for which an electronic file was encoded, together with any other relevant information concerning the process by which it was assembled or collected. [2.3.1. The Project Description 2.3. The Encoding Description 16.3.2. Declarable Elements]
+  element tei:projectDesc {
+    dat_model.pLike+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_samplingDecl =
+  ## (sampling declaration) contains a prose description of the rationale and methods used in selecting texts, or parts of a text, for inclusion in the resource. [2.3.2. The Sampling Declaration 2.3. The Encoding Description 16.3.2. Declarable Elements]
+  element tei:samplingDecl {
+    dat_model.pLike+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_editorialDecl =
+  ## (editorial practice declaration) provides details of editorial principles and practices applied during the encoding of a text. [2.3.3. The Editorial Practices Declaration 2.3. The Encoding Description 16.3.2. Declarable Elements]
+  element tei:editorialDecl {
+    (dat_model.pLike | dat_model.editorialDeclPart)+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_correction =
+  ## (correction principles) states how and under what circumstances corrections have been made in the text. [2.3.3. The Editorial Practices Declaration 16.3.2. Declarable Elements]
+  element tei:correction {
+    dat_model.pLike+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    ## indicates the degree of correction applied to the text.
+    attribute status {
+      ## the text has been thoroughly checked and proofread.
+      "high" | ## the text has been checked at least once.
+        "medium" | ## the text has not been checked.
+        "low" | ## the correction status of the text is unknown.
+        "unknown"
+    }?,
+    ## indicates the method adopted to indicate corrections within the text.
+    [ a:defaultValue = "silent" ]
+    attribute method {
+      ## corrections have been made silently
+      "silent" | ## corrections have been represented using markup
+        "markup"
+    }?,
+    empty
+  }
+
+dat_normalization =
+  ## (normalization) indicates the extent of normalization or regularization of the original source carried out in converting it to electronic form. [2.3.3. The Editorial Practices Declaration 16.3.2. Declarable Elements]
+  element tei:normalization {
+    dat_model.pLike+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    ## indicates the method adopted to indicate normalizations within the text.
+    [ a:defaultValue = "silent" ]
+    attribute method {
+      ## normalization made silently
+      "silent" | ## normalization represented using markup
+        "markup"
+    }?,
+    empty
+  }
+
+dat_quotation =
+  ## (quotation) specifies editorial practice adopted with respect to quotation marks in the original. [2.3.3. The Editorial Practices Declaration 16.3.2. Declarable Elements]
+  element tei:quotation {
+    (dat_model.pLike*)
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-quotation-quotationContents-constraint-rule-25"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:quotation"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "not( @marks )  and  not( tei:p )"
+             "\x{a}" ~
+             "          On "
+             sch:name [ ]
+             ", either the @marks attribute should be used, or a paragraph of description provided\x{a}" ~
+             "        "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    ## (quotation marks) indicates whether or not quotation marks have been retained as content within the text.
+    attribute marks {
+      ## no quotation marks have been retained
+      "none" | ## some quotation marks have been retained
+        "some" | ## all quotation marks have been retained
+        "all"
+    }?,
+    empty
+  }
+
+dat_hyphenation =
+  ## (hyphenation) summarizes the way in which hyphenation in a source text has been treated in an encoded version of it. [2.3.3. The Editorial Practices Declaration 16.3.2. Declarable Elements]
+  element tei:hyphenation {
+    dat_model.pLike+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    ## (end-of-line) indicates whether or not end-of-line hyphenation has been retained in a text.
+    [ a:defaultValue = "some" ]
+    attribute eol {
+      ## all end-of-line hyphenation has been retained, even though the lineation of the original may not have been.
+      "all" | ## end-of-line hyphenation has been retained in some cases.
+        "some" | ## all soft end-of-line hyphenation has been removed: any remaining end-of-line hyphenation should be retained.
+        "hard" | ## all end-of-line hyphenation has been removed: any remaining hyphenation occurred within the line.
+        "none"
+    }?,
+    empty
+  }
+
+dat_segmentation =
+  ## (segmentation) describes the principles according to which the text has been segmented, for example into sentences, tone-units, graphemic strata, etc. [2.3.3. The Editorial Practices Declaration 16.3.2. Declarable Elements]
+  element tei:segmentation {
+    dat_model.pLike+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_stdVals =
+  ## (standard values) specifies the format used when standardized date or number values are supplied. [2.3.3. The Editorial Practices Declaration 16.3.2. Declarable Elements]
+  element tei:stdVals {
+    dat_model.pLike+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_interpretation =
+  ## (interpretation) describes the scope of any analytic or interpretive information added to the text in addition to the transcription. [2.3.3. The Editorial Practices Declaration]
+  element tei:interpretation {
+    dat_model.pLike+,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_punctuation =
+  ## specifies editorial practice adopted with respect to punctuation marks in the original. [2.3.3. The Editorial Practices Declaration 3.2. Treatment of Punctuation]
+  element tei:punctuation {
+    dat_model.pLike*,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    ## indicates whether or not punctation marks have been retained as content within the text.
+    attribute marks {
+      ## no punctuation marks have been retained
+      "none" | ## some punctuation marks have been retained
+        "some" | ## all punctuation marks have been retained
+        "all"
+    }?,
+    ## indicates the positioning of punctuation marks that are associated with marked up text as being encoded within the element surrounding the text or immediately before or after it.
+    attribute placement {
+      ## punctuation marks found at the start or end of a marked up text component are included within its surrounding element;
+      "internal" | ## punctuation marks found at the start or end of a marked up text component appear immediately before or after the surrounding element
+        "external"
+    }?,
+    empty
+  }
+
+dat_tagsDecl =
+  ## (tagging declaration) provides detailed information about the tagging applied to a document. [2.3.4. The Tagging Declaration 2.3. The Encoding Description]
+  element tei:tagsDecl {
+    (dat_rendition*, dat_namespace*),
+    dat_att.global.attributes,
+    [
+      a:documentation [
+        "indicates whether the element types listed exhaustively include all those found within "
+        ns1:code [ "<text>" ]
+        ", or represent only a subset."
+      ]
+    ]
+    attribute partial { xsd:boolean }?,
+    empty
+  }
+
+dat_tagUsage =
+  ## (element usage) documents the usage of a specific element within a specified document. [2.3.4. The Tagging Declaration]
+  element tei:tagUsage {
+    dat_macro.limitedContent,
+    dat_att.global.attributes,
+    dat_att.datcat.attributes,
+    [
+      a:documentation [
+        "(generic identifier) specifies the name (generic identifier) of the element indicated by the tag, within the namespace indicated by the parent "
+        ns1:code [ "<namespace>" ]
+        " element."
+      ]
+    ]
+    attribute gi { xsd:Name },
+    ## specifies the number of occurrences of this element within the text.
+    attribute occurs { xsd:nonNegativeInteger }?,
+    [
+      a:documentation [
+        "(with unique identifier) specifies the number of occurrences of this element within the text which bear a distinct value for the global "
+        ns1:code [ "@xml:id" ]
+        " attribute."
+      ]
+    ]
+    attribute withId { xsd:nonNegativeInteger }?,
+    empty
+  }
+
+dat_namespace =
+  ## (namespace) supplies the formal name of the namespace to which the elements documented by its children belong. [2.3.4. The Tagging Declaration]
+  element tei:namespace {
+    dat_tagUsage+,
+    dat_att.global.attributes,
+    ## specifies the full formal name of the namespace concerned.
+    attribute name {
+      xsd:anyURI { pattern = "\S+" }?
+    },
+    empty
+  }
+
+dat_rendition =
+  ## (rendition) supplies information about the rendition or appearance of one or more elements in the source text. [2.3.4. The Tagging Declaration]
+  element tei:rendition {
+    dat_macro.limitedContent,
+    dat_att.global.attributes,
+    dat_att.styleDef.attributes,
+    ## where CSS is used, provides a way of defining pseudo-elements, that is, styling rules applicable to specific sub-portions of an element.
+    ## Sample values include: 1] first-line; 2] first-letter; 3] before; 4] after
+    attribute scope {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    [
+      a:documentation [
+        "contains a selector or series of selectors specifying the elements to which the contained style description applies, expressed in the language specified in the "
+        ns1:code [ "@scheme" ]
+        " attribute."
+      ]
+    ]
+    attribute selector { xsd:string }?,
+    empty
+  }
+
+dat_styleDefDecl =
+  ## (style definition language declaration) specifies the name of the formal language in which style or renditional information is supplied elsewhere in the document. The specific version of the scheme may also be supplied. [2.3.5. The Default Style Definition Language Declaration]
+  element tei:styleDefDecl {
+    dat_model.pLike*,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    dat_att.styleDef.attributes,
+    empty
+  }
+
+dat_refsDecl =
+  ## (references declaration) specifies how canonical references are constructed for this text. [2.3.6.3. Milestone Method 2.3. The Encoding Description 2.3.6. The Reference System Declaration]
+  element tei:refsDecl {
+    (dat_model.pLike+
+     | dat_citeStructure+
+     | dat_cRefPattern+
+     | dat_refState+),
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_citeStructure =
+  ## (citation structure) declares a structure and method for citing the current document. [3.11.4. Declaring Reference Systems 17.2.5.4. Citation Structures]
+  element tei:citeStructure {
+    (dat_citeData*, dat_citeStructure*, dat_model.descLike*),
+    dat_att.global.attributes,
+    dat_att.citeStructurePart.attributes,
+    ## (delimiter) supplies a delimiting string preceding the structural component.
+    attribute delim {
+      xsd:string { pattern = ".+" }
+    }?,
+    [
+      a:documentation [
+        "(match) supplies an XPath selection pattern using the syntax defined in  which identifies a set of nodes which are citable structural components. The expression may be absolute (beginning with `/`) or relative. "
+        ns1:code [ "@match" ]
+        " on a "
+        ns1:code [ "<citeStructure>" ]
+        " without a "
+        ns1:code [ "<citeStructure>" ]
+        " parent must be an absolute XPath. If it is relative, its context is set by the "
+        ns1:code [ "@match" ]
+        " of the parent "
+        ns1:code [ "<citeStructure>" ]
+        "."
+      ]
+    ]
+    attribute match { text }
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-citeStructure-match-citestructure-outer-match-constraint-rule-26"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:citeStructure[not(parent::tei:citeStructure)]"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test = "starts-with(@match,'/')"
+             "An XPath in @match on the outer "
+             sch:name [ ]
+             " must start with '/'."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-citeStructure-match-citestructure-inner-match-constraint-rule-27"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:citeStructure[parent::tei:citeStructure]"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test = "not(starts-with(@match,'/'))"
+             "An XPath in @match must not start with '/' except on the outer "
+             sch:name [ ]
+             "."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    [
+      a:documentation [
+        "(unit) describes the structural unit indicated by the "
+        ns1:code [ "<citeStructure>" ]
+        ".\x{a}" ~
+        "Sample values include: 1] book; 2] chapter; 3] entry; 4] poem; 5] letter; 6] line; 7] section; 8] verse; 9] volume"
+      ]
+    ]
+    attribute unit {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_citeData =
+  ## (citation data) specifies how information may be extracted from citation structures. [3.11.4. Declaring Reference Systems 17.2.5.4. Citation Structures]
+  element tei:citeData {
+    empty,
+    dat_att.global.attributes,
+    dat_att.citeStructurePart.attributes,
+    ## (property) A URI indicating a property definition.
+    attribute property {
+      xsd:anyURI { pattern = "\S+" }
+    },
+    empty
+  }
+
+dat_cRefPattern =
+  ## (canonical reference pattern) specifies an expression and replacement pattern for transforming a canonical reference into a URI. [2.3.6.3. Milestone Method 2.3.6. The Reference System Declaration 2.3.6.2. Search-and-Replace Method]
+  element tei:cRefPattern {
+    dat_model.pLike*,
+    dat_att.global.attributes,
+    dat_att.patternReplacement.attributes,
+    empty
+  }
+
+dat_prefixDef =
+  ## (prefix definition) defines a prefixing scheme used in teidata.pointer values, showing how abbreviated URIs using the scheme may be expanded into full URIs. [17.2.3. Using Abbreviated Pointers]
+  element tei:prefixDef {
+    dat_model.pLike*,
+    dat_att.global.attributes,
+    dat_att.patternReplacement.attributes,
+    ## supplies a name which functions as the prefix for an abbreviated pointing scheme such as a private URI scheme. The prefix constitutes the text preceding the first colon.
+    attribute ident {
+      xsd:token { pattern = "[a-z][a-z0-9\+\.\-]*" }
+    },
+    empty
+  }
+
+dat_listPrefixDef =
+  ## (list of prefix definitions) contains a list of definitions of prefixing schemes used in teidata.pointer values, showing how abbreviated URIs using each scheme may be expanded into full URIs. [17.2.3. Using Abbreviated Pointers]
+  element tei:listPrefixDef {
+    (dat_desc*, (dat_prefixDef | dat_listPrefixDef)+),
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_refState =
+  ## (reference state) specifies one component of a canonical reference defined by the milestone method. [2.3.6.3. Milestone Method 2.3.6. The Reference System Declaration]
+  element tei:refState {
+    empty,
+    dat_att.global.attributes,
+    dat_att.edition.attributes,
+    dat_att.milestoneUnit.attributes,
+    ## specifies the fixed length of the reference component.
+    attribute length { xsd:nonNegativeInteger }?,
+    ## (delimiter) supplies a delimiting string following the reference component.
+    attribute delim { xsd:string }?,
+    empty
+  }
+
+dat_classDecl =
+  ## (classification declarations) contains one or more taxonomies defining any classificatory codes used elsewhere in the text. [2.3.7. The Classification Declaration 2.3. The Encoding Description]
+  element tei:classDecl {
+    dat_taxonomy+, dat_att.global.attributes, empty
+  }
+
+dat_taxonomy =
+  ## (taxonomy) defines a typology either implicitly, by means of a bibliographic citation, or explicitly by a structured taxonomy. [2.3.7. The Classification Declaration]
+  element tei:taxonomy {
+    (((dat_category | dat_taxonomy)+
+      | ((dat_model.descLike | dat_gloss)+,
+         (dat_category | dat_taxonomy)*))
+     | (dat_model.biblLike, (dat_category | dat_taxonomy)*)),
+    dat_att.global.attributes,
+    dat_att.datcat.attributes,
+    empty
+  }
+
+dat_category =
+  ## (category) contains an individual descriptive category, possibly nested within a superordinate category, within a user-defined taxonomy. [2.3.7. The Classification Declaration]
+  element tei:category {
+    ((dat_catDesc+ | (dat_model.descLike | dat_gloss)*),
+     dat_category*),
+    dat_att.global.attributes,
+    dat_att.datcat.attributes,
+    empty
+  }
+dat_catDesc =
+  [
+    a:documentation [
+      "(category description) describes some category within a taxonomy or text typology, either in the form of a brief prose description or in terms of the situational parameters used by the TEI formal "
+      ns1:code [ "<textDesc>" ]
+      ". [2.3.7. The Classification Declaration]"
+    ]
+  ]
+  element tei:catDesc {
+    (text | dat_model.limitedPhrase | dat_model.catDescPart)*,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    empty
+  }
+dat_geoDecl =
+  [
+    a:documentation [
+      "(geographic coordinates declaration) documents the notation and the datum used for geographic coordinates expressed as content of the "
+      ns1:code [ "<geo>" ]
+      " element elsewhere within the document. [2.3.8. The Geographic Coordinates Declaration]"
+    ]
+  ]
+  element tei:geoDecl {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    ## supplies a commonly used code name for the datum employed.
+    ## Suggested values include: 1] WGS84 (World Geodetic System); 2] MGRS (Military Grid Reference System); 3] OSGB36 (ordnance survey great britain); 4] ED50 (European Datum coordinate system)
+    [ a:defaultValue = "WGS84" ]
+    attribute datum {
+      ## (World Geodetic System) a pair of numbers to be interpreted as latitude followed by longitude according to the World Geodetic System.
+      "WGS84" | ## (Military Grid Reference System) values supplied follow the Military Grid Reference System, which designates grid zones in a string of letters and numbers that distinctly indicate each square meter on the planet.
+        "MGRS" | ## (ordnance survey great britain) the value supplied is to be interpreted as a British National Grid Reference.
+        "OSGB36" | ## (European Datum coordinate system) the value supplied is to be interpreted as latitude followed by longitude according to the European Datum coordinate system.
+        "ED50"
+      | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_unitDecl =
+  ## (unit declarations) provides information about units of measurement that are not members of the International System of Units. [2.3.9. The Unit Declaration]
+  element tei:unitDecl {
+    dat_unitDef+,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.datable.attributes,
+    empty
+  }
+
+dat_unitDef =
+  ## (unit definition) contains descriptive information related to a specific unit of measurement. [2.3.9. The Unit Declaration]
+  element tei:unitDef {
+    (dat_model.labelLike
+     | dat_model.placeNamePart?
+     | dat_conversion?
+     | dat_unit?)+,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.datable.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_conversion =
+  ## defines how to calculate one unit of measure in terms of another. [2.3.9. The Unit Declaration]
+  element tei:conversion {
+    empty,
+    dat_att.global.attributes,
+    dat_att.datable.attributes,
+    dat_att.formula.attributes,
+    dat_att.locatable.attributes,
+    [
+      a:documentation [
+        "indicates a source unit of measure that is to be converted into another unit indicated in "
+        ns1:code [ "@toUnit" ]
+        "."
+      ]
+    ]
+    attribute fromUnit {
+      xsd:anyURI { pattern = "\S+" }
+    },
+    [
+      a:documentation [
+        "the target unit of measurement for a conversion from a source unit referenced in "
+        ns1:code [ "@fromUnit" ]
+        "."
+      ]
+    ]
+    attribute toUnit {
+      xsd:anyURI { pattern = "\S+" }
+    },
+    empty
+  }
+
+dat_appInfo =
+  ## (application information) records information about an application which has edited the TEI file. [2.3.11. The Application Information Element]
+  element tei:appInfo {
+    dat_model.applicationLike+, dat_att.global.attributes, empty
+  }
+
+dat_application =
+  ## provides information about an application which has acted upon the document. [2.3.11. The Application Information Element]
+  element tei:application {
+    (dat_model.labelLike+, (dat_model.ptrLike* | dat_model.pLike*)),
+    dat_att.global.attributes,
+    dat_att.datable.attributes,
+    dat_att.typed.attributes,
+    ## supplies an identifier for the application, independent of its version number or display name.
+    attribute ident { xsd:Name },
+    ## supplies a version number for the application, independent of its identifier or display name.
+    attribute version {
+      xsd:token {
+        pattern = "[\d]+[a-z]*[\d]*(\.[\d]+[a-z]*[\d]*){0,3}"
+      }
+    },
+    empty
+  }
+
+dat_profileDesc =
+  ## (text-profile description) provides a detailed description of non-bibliographic aspects of a text, specifically the languages and sublanguages used, the situation in which it was produced, the participants and their setting. [2.4. The Profile Description 2.1.1. The TEI Header and Its Components]
+  element tei:profileDesc {
+    dat_model.profileDescPart*, dat_att.global.attributes, empty
+  }
+
+dat_abstract =
+  ## contains a summary or formal abstract prefixed to an existing source document by the encoder. [2.4.4. Abstracts]
+  element tei:abstract {
+    (dat_model.pLike | dat_model.listLike | dat_listBibl)+,
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_creation =
+  ## (creation) contains information about the creation of a text. [2.4.1. Creation 2.4. The Profile Description]
+  element tei:creation {
+    (text | dat_model.limitedPhrase | dat_listChange)*,
+    dat_att.global.attributes,
+    dat_att.datable.attributes,
+    empty
+  }
+
+dat_langUsage =
+  ## (language usage) describes the languages, sublanguages, registers, dialects, etc. represented within a text. [2.4.2. Language Usage 2.4. The Profile Description 16.3.2. Declarable Elements]
+  element tei:langUsage {
+    (dat_model.pLike+ | dat_language+),
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_language =
+  ## (language) characterizes a single language or sublanguage used within a text. [2.4.2. Language Usage]
+  element tei:language {
+    dat_macro.phraseSeq.limited,
+    dat_att.global.attributes,
+    dat_att.scope.attributes,
+    [
+      a:documentation [
+        "(identifier) Supplies a language code constructed as defined in "
+        ns1:a [ href = "https://tools.ietf.org/html/bcp47" "BCP 47" ]
+        " which is used to identify the language documented by this element, and which may be referenced by the global "
+        ns1:code [ "@xml:lang" ]
+        " attribute."
+      ]
+    ]
+    attribute ident {
+      xsd:language
+      | (
+         "")
+    },
+    ## specifies the approximate percentage of the text which uses this language.
+    attribute usage { xsd:nonNegativeInteger }?,
+    empty
+  }
+
+dat_textClass =
+  ## (text classification) groups information which describes the nature or topic of a text in terms of a standard classification scheme, thesaurus, etc. [2.4.3. The Text Classification]
+  element tei:textClass {
+    (dat_classCode | dat_catRef | dat_keywords)*,
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    empty
+  }
+
+dat_keywords =
+  ## (keywords) contains a list of keywords or phrases identifying the topic or nature of a text. [2.4.3. The Text Classification]
+  element tei:keywords {
+    (dat_term+ | dat_list),
+    dat_att.global.attributes,
+    [
+      a:documentation [
+        "identifies the controlled vocabulary within which the set of keywords concerned is defined, for example by a "
+        ns1:code [ "<taxonomy>" ]
+        " element, or by some other resource."
+      ]
+    ]
+    attribute scheme {
+      xsd:anyURI { pattern = "\S+" }
+    }?,
+    empty
+  }
+
+dat_classCode =
+  ## (classification code) contains the classification code used for this text in some standard classification system. [2.4.3. The Text Classification]
+  element tei:classCode {
+    dat_macro.phraseSeq.limited,
+    dat_att.global.attributes,
+    [
+      a:documentation [
+        "identifies the classification system in use, as defined by, e.g. a "
+        ns1:code [ "<taxonomy>" ]
+        " element, or some other resource."
+      ]
+    ]
+    attribute scheme {
+      xsd:anyURI { pattern = "\S+" }
+    },
+    empty
+  }
+
+dat_catRef =
+  ## (category reference) specifies one or more defined categories within some taxonomy or text typology. [2.4.3. The Text Classification]
+  element tei:catRef {
+    empty,
+    dat_att.global.attributes,
+    dat_att.pointing.attributes,
+    [
+      a:documentation [
+        "identifies the classification scheme within which the set of categories concerned is defined, for example by a "
+        ns1:code [ "<taxonomy>" ]
+        " element, or by some other resource."
+      ]
+    ]
+    attribute scheme {
+      xsd:anyURI { pattern = "\S+" }
+    }?,
+    empty
+  }
+
+dat_calendarDesc =
+  ## (calendar description) contains a description of the calendar system used in any dating expression found in the text. [2.4. The Profile Description 2.4.5. Calendar Description]
+  element tei:calendarDesc {
+    dat_calendar+, dat_att.global.attributes, empty
+  }
+
+dat_calendar =
+  ## (calendar) describes a calendar or dating system used in a dating formula in the text. [2.4.5. Calendar Description]
+  element tei:calendar {
+    dat_model.pLike+,
+    dat_att.global.attributes,
+    dat_att.pointing.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_correspDesc =
+  ## (correspondence description) contains a description of the actions related to one act of correspondence. [2.4.6. Correspondence Description]
+  element tei:correspDesc {
+    (dat_model.correspDescPart+ | dat_model.pLike+),
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.declarable.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_correspAction =
+  ## (correspondence action) contains a structured description of the place, the name of a person/organization and the date related to the sending/receiving of a message or any other action related to the correspondence. [2.4.6. Correspondence Description]
+  element tei:correspAction {
+    (dat_model.correspActionPart+ | dat_model.pLike+),
+    dat_att.global.attributes,
+    dat_att.sortable.attributes,
+    dat_att.typed.attribute.subtype,
+    ## describes the nature of the action.
+    ## Suggested values include: 1] sent; 2] received; 3] transmitted; 4] redirected; 5] forwarded
+    attribute type {
+      ## information concerning the sending or dispatch of a message.
+      "sent" | ## information concerning the receipt of a message.
+        "received" | ## information concerning the transmission of a message, i.e. between the dispatch and the next receipt, redirect or forwarding.
+        "transmitted" | ## information concerning the redirection of an unread message.
+        "redirected" | ## information concerning the forwarding of a message.
+        "forwarded"
+      | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_correspContext =
+  ## (correspondence context) provides references to preceding or following correspondence related to this piece of correspondence. [2.4.6. Correspondence Description]
+  element tei:correspContext {
+    dat_model.correspContextPart+, dat_att.global.attributes, empty
+  }
+
+dat_xenoData =
+  ## (non-TEI metadata) provides a container element into which metadata in non-TEI formats may be placed. [2.5. Non-TEI Metadata]
+  element tei:xenoData {
+    (text | anyElement_xenoData_1+),
+    dat_att.global.attributes,
+    dat_att.declarable.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_revisionDesc =
+  ## (revision description) summarizes the revision history for a file. [2.6. The Revision Description 2.1.1. The TEI Header and Its Components]
+  element tei:revisionDesc {
+    (dat_list+ | dat_listChange+ | dat_change+),
+    dat_att.global.attributes,
+    dat_att.docStatus.attributes,
+    empty
+  }
+
+dat_change =
+  ## (change) documents a change or set of changes made during the production of a source document, or during the revision of an electronic file. [2.6. The Revision Description 2.4.1. Creation 12.7. Identifying Changes and Revisions]
+  element tei:change {
+    dat_macro.specialPara,
+    dat_att.global.attributes,
+    dat_att.ascribed.attributes,
+    dat_att.datable.attributes,
+    dat_att.docStatus.attributes,
+    dat_att.typed.attributes,
+    ## (target) points to one or more elements that belong to this change.
+    attribute target {
+      list {
+        xsd:anyURI { pattern = "\S+" }+
+      }
+    }?,
+    empty
+  }
+
+dat_listChange =
+  ## groups a number of change descriptions associated with either the creation of a source text or the revision of an encoded text. [2.6. The Revision Description 12.7. Identifying Changes and Revisions]
+  element tei:listChange {
+    (dat_desc*, (dat_listChange | dat_change)+),
+    dat_att.global.attributes,
+    dat_att.sortable.attributes,
+    dat_att.typed.attributes,
+    [
+      a:defaultValue = "true"
+      a:documentation [
+        "indicates whether the ordering of its child "
+        ns1:code [ "<change>" ]
+        " elements is to be considered significant or not."
+      ]
+    ]
+    attribute ordered { xsd:boolean }?,
+    empty
+  }
+dat_TEI =
+  [
+    a:documentation [
+      "(TEI document) contains a single TEI-conformant document, combining a single TEI header with one or more members of the model.resource class. Multiple "
+      ns1:code [ "<TEI>" ]
+      " elements may be combined within a "
+      ns1:code [ "<TEI>" ]
+      " (or "
+      ns1:code [ "<teiCorpus>" ]
+      ") element. [4. Default Text Structure 16.1. Varieties of Composite Text]"
+    ]
+  ]
+  element tei:TEI {
+    (dat_teiHeader,
+     ((dat_model.resource+, dat_TEI*) | dat_TEI+)),
+    dat_att.global.attributes,
+    dat_att.typed.attributes,
+    ## specifies the version number of the TEI Guidelines against which this document is valid.
+    attribute version {
+      xsd:token { pattern = "[\d]+(\.[\d]+){0,2}" }
+    }?,
+    empty
+  }
+
+dat_text =
+  ## (text) contains a single text of any kind, whether unitary or composite, for example a poem or drama, a collection of essays, a novel, a dictionary, or a corpus sample. [4. Default Text Structure 16.1. Varieties of Composite Text]
+  element tei:text {
+    (dat_model.global*,
+     (dat_front, dat_model.global*)?,
+     (dat_body | dat_group),
+     dat_model.global*,
+     (dat_back, dat_model.global*)?),
+    dat_att.global.attributes,
+    dat_att.declaring.attributes,
+    dat_att.typed.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_body =
+  ## (text body) contains the whole body of a single unitary text, excluding any front or back matter. [4. Default Text Structure]
+  element tei:body {
+    (dat_model.global*,
+     (dat_model.divTop, (dat_model.global | dat_model.divTop)*)?,
+     (dat_model.divGenLike,
+      (dat_model.global | dat_model.divGenLike)*)?,
+     ((dat_model.divLike, (dat_model.global | dat_model.divGenLike)*)+
+      | (dat_model.div1Like,
+         (dat_model.global | dat_model.divGenLike)*)+
+      | (((dat_model.common), dat_model.global*)+,
+         ((dat_model.divLike,
+           (dat_model.global | dat_model.divGenLike)*)+
+          | (dat_model.div1Like,
+             (dat_model.global | dat_model.divGenLike)*)+)?)),
+     (dat_model.divBottom, dat_model.global*)*),
+    dat_att.global.attributes,
+    dat_att.declaring.attributes,
+    empty
+  }
+
+dat_group =
+  ## (group) contains the body of a composite text, grouping together a sequence of distinct texts (or groups of such texts) which are regarded as a unit for some purpose, for example the collected works of an author, a sequence of prose essays, etc. [4. Default Text Structure 4.3.1. Grouped Texts 16.1. Varieties of Composite Text]
+  element tei:group {
+    ((dat_model.divTop | dat_model.global)*,
+     ((dat_text | dat_group),
+      (dat_text | dat_group | dat_model.global)*),
+     dat_model.divBottom*),
+    dat_att.global.attributes,
+    dat_att.declaring.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_floatingText =
+  ## (floating text) contains a single text of any kind, whether unitary or composite, which interrupts the text containing it at any point and after which the surrounding text resumes. [4.3.2. Floating Texts]
+  element tei:floatingText {
+    (dat_model.global*,
+     (dat_front, dat_model.global*)?,
+     (dat_body | dat_group),
+     dat_model.global*,
+     (dat_back, dat_model.global*)?),
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+
+dat_div =
+  ## (text division) contains a subdivision of the front, body, or back of a text. [4.1. Divisions of the Body]
+  element tei:div {
+    ((dat_model.divTop | dat_model.global)*,
+     ((((dat_model.divLike | dat_model.divGenLike), dat_model.global*)+
+       | ((dat_model.common, dat_model.global*)+,
+          ((dat_model.divLike | dat_model.divGenLike),
+           dat_model.global*)*)),
+      (dat_model.divBottom, dat_model.global*)*)?)
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-div-abstractModel-structure-div-in-l-constraint-rule-28"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:l//tei:div"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test = "ancestor::tei:floatingText"
+             "\x{a}" ~
+             "          Abstract model violation: Metrical lines may not contain higher-level structural elements such as div, unless div is a descendant of floatingText.\x{a}" ~
+             "        "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-div-abstractModel-structure-div-in-ab-or-p-constraint-rule-29"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:div"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test =
+               "(ancestor::tei:p or ancestor::tei:ab) and not(ancestor::tei:floatingText)"
+             "\x{a}" ~
+             "          Abstract model violation: p and ab may not contain higher-level structural elements such as div, unless div is a descendant of floatingText.\x{a}" ~
+             "        "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.declaring.attributes,
+    dat_att.divLike.attributes,
+    dat_att.placement.attributes,
+    dat_att.typed.attribute.subtype,
+    dat_att.written.attributes,
+    attribute type {
+      "chapter" | "section" | "subsection"
+    }?,
+    empty
+  }
+
+dat_trailer =
+  ## contains a closing title or footer appearing at the end of a division of a text. [4.2.4. Content of Textual Divisions 4.2. Elements Common to All Divisions]
+  element tei:trailer {
+    (text
+     | dat_lg
+     | dat_model.gLike
+     | dat_model.phrase
+     | dat_model.inter
+     | dat_model.lLike
+     | dat_model.global)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.placement.attributes,
+    dat_att.typed.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_byline =
+  ## (byline) contains the primary statement of responsibility given for a work on its title page or at the head or end of the work. [4.2.2. Openers and Closers 4.5. Front Matter]
+  element tei:byline {
+    (text
+     | dat_model.gLike
+     | dat_model.phrase
+     | dat_docAuthor
+     | dat_model.global)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_dateline =
+  ## (dateline) contains a brief description of the place, date, time, etc. of production of a letter, newspaper story, or other work, prefixed or suffixed to it as a kind of heading or trailer. [4.2.2. Openers and Closers]
+  element tei:dateline {
+    (text
+     | dat_model.gLike
+     | dat_model.phrase
+     | dat_model.global
+     | dat_docDate)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_argument =
+  ## (argument) contains a formal list or prose description of the topics addressed by a subdivision of a text. [4.2. Elements Common to All Divisions 4.6. Title Pages]
+  element tei:argument {
+    ((dat_model.global | dat_model.headLike)*,
+     (dat_model.common, dat_model.global*)+),
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_epigraph =
+  ## (epigraph) contains a quotation, anonymous or attributed, appearing at the start or end of a section or on a title page. [4.2.3. Arguments, Epigraphs, and Postscripts 4.2. Elements Common to All Divisions 4.6. Title Pages]
+  element tei:epigraph {
+    (dat_model.common | dat_model.global)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_opener =
+  ## (opener) groups together dateline, byline, salutation, and similar phrases appearing as a preliminary group at the start of a division, especially of a letter. [4.2. Elements Common to All Divisions]
+  element tei:opener {
+    (text
+     | dat_model.gLike
+     | dat_model.phrase
+     | dat_argument
+     | dat_byline
+     | dat_dateline
+     | dat_epigraph
+     | dat_salute
+     | dat_signed
+     | dat_model.global)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_closer =
+  ## (closer) groups together salutations, datelines, bylines, and similar phrases appearing as a final group at the end of a division, especially of a letter. [4.2.2. Openers and Closers 4.2. Elements Common to All Divisions]
+  element tei:closer {
+    (text
+     | dat_model.gLike
+     | dat_byline
+     | dat_signed
+     | dat_dateline
+     | dat_salute
+     | dat_model.phrase
+     | dat_model.global)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_salute =
+  ## (salutation) contains a salutation or greeting prefixed to a foreword, dedicatory epistle, or other division of a text, or the salutation in the closing of a letter, preface, etc. [4.2.2. Openers and Closers]
+  element tei:salute {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_signed =
+  ## (signature) contains the closing salutation, etc., appended to a foreword, dedicatory epistle, or other division of a text. [4.2.2. Openers and Closers]
+  element tei:signed {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_postscript =
+  ## contains a postscript, e.g. to a letter. [4.2. Elements Common to All Divisions]
+  element tei:postscript {
+    ((dat_model.global | dat_model.divTopPart)*,
+     dat_model.common,
+     (dat_model.global | dat_model.common)*,
+     (dat_model.divBottomPart, dat_model.global*)*),
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.placement.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_titlePage =
+  ## (title page) contains the title page of a text, appearing within the front or back matter. [4.6. Title Pages]
+  element tei:titlePage {
+    (dat_model.global*,
+     dat_model.titlepagePart,
+     (dat_model.titlepagePart | dat_model.global)*),
+    dat_att.global.attributes,
+    dat_att.typed.attribute.subtype,
+    ## classifies the title page according to any convenient typology.
+    attribute type {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_docTitle =
+  ## (document title) contains the title of a document, including all its constituents, as given on a title page. [4.6. Title Pages]
+  element tei:docTitle {
+    (dat_model.global*, (dat_titlePart, dat_model.global*)+),
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    empty
+  }
+
+dat_titlePart =
+  ## (title part) contains a subsection or division of the title of a work, as indicated on a title page. [4.6. Title Pages]
+  element tei:titlePart {
+    dat_macro.paraContent,
+    dat_att.global.attributes,
+    dat_att.typed.attribute.subtype,
+    ## (type) specifies the role of this subdivision of the title.
+    ## Suggested values include: 1] main (main); 2] sub (subordinate); 3] alt (alternate); 4] short (short); 5] desc (descriptive)
+    [ a:defaultValue = "main" ]
+    attribute type {
+      ## (main) main title of the work
+      "main" | ## (subordinate) subtitle of the work
+        "sub" | ## (alternate) alternative title of the work
+        "alt" | ## (short) abbreviated form of title
+        "short" | ## (descriptive) descriptive paraphrase of the work
+        "desc"
+      | xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_docAuthor =
+  ## (document author) contains the name of the author of the document, as given on the title page (often but not always contained in a byline). [4.6. Title Pages]
+  element tei:docAuthor {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.canonical.attributes,
+    dat_att.cmc.attributes,
+    empty
+  }
+
+dat_imprimatur =
+  ## (imprimatur) contains a formal statement authorizing the publication of a work, sometimes required to appear on a title page or its verso. [4.6. Title Pages]
+  element tei:imprimatur {
+    dat_macro.paraContent, dat_att.global.attributes, empty
+  }
+
+dat_docEdition =
+  ## (document edition) contains an edition statement as presented on a title page of a document. [4.6. Title Pages]
+  element tei:docEdition {
+    dat_macro.paraContent, dat_att.global.attributes, empty
+  }
+
+dat_docImprint =
+  ## (document imprint) contains the imprint statement (place and date of publication, publisher name), as given (usually) at the foot of a title page. [4.6. Title Pages]
+  element tei:docImprint {
+    (text
+     | dat_model.gLike
+     | dat_model.phrase
+     | dat_pubPlace
+     | dat_docDate
+     | dat_publisher
+     | dat_sponsor
+     | dat_model.global)*,
+    dat_att.global.attributes,
+    empty
+  }
+
+dat_docDate =
+  ## (document date) contains the date of a document, as given on a title page or in a dateline. [4.6. Title Pages]
+  element tei:docDate {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.calendarSystem.attributes,
+    dat_att.cmc.attributes,
+    dat_att.datable.attributes,
+    empty
+  }
+
+dat_front =
+  ## (front matter) contains any prefatory matter (headers, abstracts, title page, prefaces, dedications, etc.) found at the start of a document, before the main body. [4.6. Title Pages 4. Default Text Structure]
+  element tei:front {
+    ((dat_model.frontPart
+      | dat_model.pLike
+      | dat_model.pLike.front
+      | dat_model.global)*,
+     (((dat_model.div1Like,
+        (dat_model.div1Like | dat_model.frontPart | dat_model.global)*)
+       | (dat_model.divLike,
+          (dat_model.divLike
+           | dat_model.frontPart
+           | dat_model.global)*)),
+      (dat_model.divBottom,
+       (dat_model.divBottom | dat_model.global)*)?)?),
+    dat_att.global.attributes,
+    dat_att.declaring.attributes,
+    empty
+  }
+
+dat_back =
+  ## (back matter) contains any appendixes, etc. following the main part of a text. [4.7. Back Matter 4. Default Text Structure]
+  element tei:back {
+    ((dat_model.frontPart
+      | dat_model.pLike.front
+      | dat_model.pLike
+      | dat_model.listLike
+      | dat_model.global)*,
+     ((dat_model.div1Like,
+       (dat_model.frontPart | dat_model.div1Like | dat_model.global)*)
+      | (dat_model.divLike,
+         (dat_model.frontPart
+          | dat_model.divLike
+          | dat_model.global)*))?,
+     (dat_model.divBottomPart,
+      (dat_model.divBottomPart | dat_model.global)*)?),
+    dat_att.global.attributes,
+    dat_att.declaring.attributes,
+    empty
+  }
+dat_att.global.linking.attributes =
+  dat_att.global.linking.attribute.corresp,
+  dat_att.global.linking.attribute.synch,
+  dat_att.global.linking.attribute.sameAs,
+  dat_att.global.linking.attribute.copyOf,
+  dat_att.global.linking.attribute.next,
+  dat_att.global.linking.attribute.prev,
+  dat_att.global.linking.attribute.exclude,
+  dat_att.global.linking.attribute.select
+dat_att.global.linking.attribute.corresp =
+  ## (corresponds) points to elements that correspond to the current element in some way.
+  attribute corresp {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.global.linking.attribute.synch =
+  ## (synchronous) points to elements that are synchronous with the current element.
+  attribute synch {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.global.linking.attribute.sameAs =
+  ## points to an element that is the same as the current element.
+  attribute sameAs {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_att.global.linking.attribute.copyOf =
+  ## points to an element of which the current element is a copy.
+  attribute copyOf {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_att.global.linking.attribute.next =
+  ## (next) points to the next element of a virtual aggregate of which the current element is part.
+  attribute next {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_att.global.linking.attribute.prev =
+  ## (previous) points to the previous element of a virtual aggregate of which the current element is part.
+  attribute prev {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_att.global.linking.attribute.exclude =
+  ## points to elements that are in exclusive alternation with the current element.
+  attribute exclude {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+dat_att.global.linking.attribute.select =
+  ## selects one or more alternants; if one alternant is selected, the ambiguity or uncertainty is marked as resolved. If more than one alternant is selected, the degree of ambiguity or uncertainty is marked as reduced by the number of alternants not selected.
+  attribute select {
+    list {
+      xsd:anyURI { pattern = "\S+" }+
+    }
+  }?
+
+dat_ab =
+  ## (anonymous block) contains any component-level unit of text, acting as a container for phrase or inter level elements analogous to, but without the same constraints as, a paragraph. [17.3. Blocks, Segments, and Anchors]
+  element tei:ab {
+    dat_macro.abContent
+    >> sch:pattern [
+         id =
+           "dates_and_times_in_DH-ab-abstractModel-structure-ab-in-l-constraint-rule-30"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:l//tei:ab"
+           "\x{a}" ~
+           "               "
+           sch:assert [
+             test =
+               "ancestor::tei:floatingText | parent::tei:figure | parent::tei:note"
+             "\x{a}" ~
+             "          Abstract model violation: Metrical lines may not contain higher-level divisions such as p or ab, unless ab is a child of figure or note, or is a descendant of floatingText.\x{a}" ~
+             "        "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.declaring.attributes,
+    dat_att.fragmentable.attributes,
+    dat_att.typed.attribute.subtype,
+    dat_att.written.attributes,
+    attribute type {
+      [
+        a:documentation [
+          "(formal data block) typically contains a sequence of "
+          ns1:code [ "<code>" ]
+          " children, each of which is intended to be displayed as what CSS calls a block."
+        ]
+      ]
+      "fdb"
+    }?,
+    empty
+  }
+dat_att.datable.custom.attributes =
+  dat_att.datable.custom.attribute.when-custom,
+  dat_att.datable.custom.attribute.notBefore-custom,
+  dat_att.datable.custom.attribute.notAfter-custom,
+  dat_att.datable.custom.attribute.from-custom,
+  dat_att.datable.custom.attribute.to-custom,
+  dat_att.datable.custom.attribute.datingPoint,
+  dat_att.datable.custom.attribute.datingMethod
+dat_att.datable.custom.attribute.when-custom =
+  ## supplies the value of a date or time in some custom standard form.
+  attribute when-custom {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.datable.custom.attribute.notBefore-custom =
+  ## specifies the earliest possible date for the event in some custom standard form.
+  attribute notBefore-custom {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.datable.custom.attribute.notAfter-custom =
+  ## specifies the latest possible date for the event in some custom standard form.
+  attribute notAfter-custom {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.datable.custom.attribute.from-custom =
+  ## indicates the starting point of the period in some custom standard form.
+  attribute from-custom {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.datable.custom.attribute.to-custom =
+  ## indicates the ending point of the period in some custom standard form.
+  attribute to-custom {
+    list {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }+
+    }
+  }?
+dat_att.datable.custom.attribute.datingPoint =
+  ## supplies a pointer to some location defining a named point in time with reference to which the datable item is understood to have occurred.
+  attribute datingPoint {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_att.datable.custom.attribute.datingMethod =
+  [
+    a:documentation [
+      "supplies a pointer to a "
+      ns1:code [ "<calendar>" ]
+      " element or other means of interpreting the values of the custom dating attributes."
+    ]
+  ]
+  attribute datingMethod {
+    xsd:anyURI { pattern = "\S+" }
+  }?
+dat_model.persNamePart = notAllowed
+dat_model.persNamePart_alternation = notAllowed
+dat_model.persNamePart_sequence = empty
+dat_model.persNamePart_sequenceOptional = empty
+dat_model.persNamePart_sequenceOptionalRepeatable = empty
+dat_model.persNamePart_sequenceRepeatable = notAllowed
+dat_att.datable.iso.attributes =
+  dat_att.datable.iso.attribute.when-iso,
+  dat_att.datable.iso.attribute.notBefore-iso,
+  dat_att.datable.iso.attribute.notAfter-iso,
+  dat_att.datable.iso.attribute.from-iso,
+  dat_att.datable.iso.attribute.to-iso
+dat_att.datable.iso.attribute.when-iso =
+  ## supplies the value of a date or time in a standard form.
+  attribute when-iso {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+    | xsd:token { pattern = "[\]\[\{\}0-9%?~.,CDHJKMPRSTOWYZ/:+\-]+" }
+  }?
+dat_att.datable.iso.attribute.notBefore-iso =
+  ## specifies the earliest possible date for the event in standard form, e.g. yyyy-mm-dd.
+  attribute notBefore-iso {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+    | xsd:token { pattern = "[\]\[\{\}0-9%?~.,CDHJKMPRSTOWYZ/:+\-]+" }
+  }?
+dat_att.datable.iso.attribute.notAfter-iso =
+  ## specifies the latest possible date for the event in standard form, e.g. yyyy-mm-dd.
+  attribute notAfter-iso {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+    | xsd:token { pattern = "[\]\[\{\}0-9%?~.,CDHJKMPRSTOWYZ/:+\-]+" }
+  }?
+dat_att.datable.iso.attribute.from-iso =
+  ## indicates the starting point of the period in standard form.
+  attribute from-iso {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+    | xsd:token { pattern = "[\]\[\{\}0-9%?~.,CDHJKMPRSTOWYZ/:+\-]+" }
+  }?
+dat_att.datable.iso.attribute.to-iso =
+  ## indicates the ending point of the period in standard form.
+  attribute to-iso {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+    | xsd:token { pattern = "[\]\[\{\}0-9%?~.,CDHJKMPRSTOWYZ/:+\-]+" }
+  }?
+
+dat_persName =
+  ## (personal name) contains a proper noun or proper-noun phrase referring to a person, possibly including one or more of the person's forenames, surnames, honorifics, added names, etc. [14.2.1. Personal Names]
+  element tei:persName {
+    dat_macro.phraseSeq,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.datable.attributes,
+    dat_att.editLike.attributes,
+    dat_att.personal.attributes,
+    dat_att.typed.attributes,
+    empty
+  }
+dat_att.translatable.attributes =
+  dat_att.translatable.attribute.versionDate
+dat_att.translatable.attribute.versionDate =
+  ## specifies the date on which the source text was extracted and sent to the translator
+  attribute versionDate {
+    xsd:date { pattern = "(19[789][0-9]|[2-9][0-9]{3}).*" }
+    | xsd:dateTime { pattern = "(19[789][0-9]|[2-9][0-9]{3}).*" }
+  }?
+
+dat_att =
+  ## (attribute) contains the name of an attribute appearing within running text. [23. Documentation Elements]
+  element tei:att {
+    xsd:Name,
+    dat_att.global.attributes,
+    ## (scheme) supplies an identifier for the scheme in which this name is defined.
+    ## Sample values include: 1] TEI (Text Encoding Initiative); 2] DBK (Docbook); 3] XX (unknown); 4] imaginary (imaginary); 5] XHTML (XHTML); 6] XML (XML); 7] XI (XI)
+    [ a:defaultValue = "TEI" ]
+    attribute scheme {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_code =
+  ## contains literal code from some formal language such as a programming language. [23.1.1. Phrase Level Terms]
+  element tei:code {
+    text,
+    dat_att.global.attributes,
+    ## (formal language) a name identifying the formal language in which the code is expressed
+    attribute lang {
+      ## (Invisible XML) A snippet of code in iXML
+      "ixml" | ## (regular expression) A W3C regular expression pattern
+        "regex"
+    }?,
+    empty
+  }
+dat_egXML =
+  [
+    a:documentation [
+      "(example of XML) a single XML fragment demonstrating the use of some XML, such as elements, attributes, or processing instructions, etc., in which the "
+      ns1:code [ "<egXML>" ]
+      " element functions as the root element. [23.1.1. Phrase Level Terms]"
+    ]
+  ]
+  element teix:egXML {
+    (text | anyElement_egXML_2)*,
+    dat_att.global.attributes,
+    ## indicates the intended validity of the example with respect to a schema.
+    [ a:defaultValue = "true" ]
+    attribute valid {
+      ## the example is intended to be fully valid, assuming that its root element, or a provided root element, could have been used as a possible root element in the schema concerned.
+      "true" | ## the example could be transformed into a valid document by inserting any number of valid attributes and child elements anywhere within it; or it is valid against a version of the schema concerned in which the provision of character data, list, element, or attribute values has been made optional.
+        "feasible" | ## the example is not intended to be valid, and contains deliberate errors.
+        "false"
+    }?,
+    empty
+  }
+
+dat_gi =
+  ## (element name) contains the name (generic identifier) of an element. [23. Documentation Elements 23.5. Element Specifications]
+  element tei:gi {
+    xsd:Name,
+    dat_att.global.attributes,
+    ## supplies the name of the scheme in which this name is defined.
+    ## Sample values include: 1] TEI; 2] DBK (docbook); 3] XX (unknown); 4] Schematron; 5] HTML
+    [ a:defaultValue = "TEI" ]
+    attribute scheme {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_tag =
+  ## (tag) contains text of a complete start- or end-tag, possibly including attribute specifications, but excluding the opening and closing markup delimiter characters. [23. Documentation Elements]
+  element tei:tag {
+    text,
+    dat_att.global.attributes,
+    dat_att.typed.attribute.subtype,
+    ## indicates the type of XML tag intended.
+    attribute type {
+      ## a start-tag, with delimiters < and > is intended
+      "start" | ## an end-tag, with delimiters </ and > is intended
+        "end" | ## an empty tag, with delimiters < and /> is intended
+        "empty" | ## a pi (processing instruction), with delimiters <? and ?> is intended
+        "pi" | ## a comment, with delimiters <!-- and --> is intended
+        "comment" | ## a marked-section, with delimiters <[CDATA[ and ]]> is intended
+        "ms"
+    }?,
+    ## supplies the name of the schema in which this tag is defined.
+    ## Sample values include: 1] TEI (text encoding initiative); 2] DBK (docbook); 3] XX (unknown); 4] Schematron; 5] HTML
+    [ a:defaultValue = "TEI" ]
+    attribute scheme {
+      xsd:token { pattern = "[^\p{C}\p{Z}]+" }
+    }?,
+    empty
+  }
+
+dat_val =
+  ## (value) contains a single attribute value. [23. Documentation Elements 23.5.3. Attribute List Specification]
+  element tei:val { text, dat_att.global.attributes, empty }
+
+dat_figure =
+  ## (figure) groups elements representing or containing graphic information such as an illustration, formula, or figure. [15.4. Specific Elements for Graphic Images]
+  element tei:figure {
+    (dat_model.headLike
+     | dat_model.common
+     | dat_model.graphicLike
+     | dat_model.global
+     | dat_model.divBottom)*,
+    dat_att.global.attributes,
+    dat_att.cmc.attributes,
+    dat_att.placement.attributes,
+    dat_att.typed.attributes,
+    dat_att.written.attributes,
+    empty
+  }
+
+dat_fix =
+  ## (fixed) contains characters that are to be reproduced as is in a temporal expression.
+  element fix {
+    dat_macro.paraContent, dat_att.global.attributes, empty
+  }
+
+dat_var =
+  ## (variable) contains characters that are to be replaced by a numeric value in a temporal expression.
+  element var {
+    dat_macro.paraContent, dat_att.global.attributes, empty
+  }
+start = dat_TEI
+sch:ns [ prefix = "tei" uri = "http://www.tei-c.org/ns/1.0" ]
+sch:ns [ prefix = "xs" uri = "http://www.w3.org/2001/XMLSchema" ]
+sch:ns [ prefix = "rng" uri = "http://relaxng.org/ns/structure/1.0" ]
+sch:ns [
+  prefix = "rna"
+  uri = "http://relaxng.org/ns/compatibility/annotations/1.0"
+]
+sch:ns [ prefix = "sch" uri = "http://purl.oclc.org/dsdl/schematron" ]
+sch:ns [ prefix = "sch1x" uri = "http://www.ascc.net/xml/schematron" ]
