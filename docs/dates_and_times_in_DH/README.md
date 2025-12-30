@@ -1,7 +1,9 @@
 # Dates and Times in DH
 ## An annotated application profile of ISO 8601:2019 for use with TEI and other DH systems
 
-This directory holds a technical report by Syd Bauman, including its source, ancillary files, and published output. It was sponsored by the Northeastern University [Digital Scholarship Group](https://dsg.northeastern.edu/) and has been published on the [WWP](https://www.wwp.neu.edu/) [website](FIXME!!).
+This directory holds the development copy of a technical report by Syd Bauman, including its source, ancillary files, and publishable output. As the development version, it may be in some parts incorrect, incomplete, invalid, or even (gasp!) ill-formed. On the other hand, it may have corrections and improvements over the published version.
+
+The published version is currently available (in XHTML5 only) on the [WWP website](FIXME!!). It was sponsored by the Northeastern University [Digital Scholarship Group](https://dsg.northeastern.edu/) and has been published on the [WWP](https://www.wwp.neu.edu/) [website](FIXME!!).
 
 Sarah Connell, Caitlin Pollack, and Karin Bredenberg provided document review and copy editing.
 
