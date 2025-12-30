@@ -8,4 +8,4 @@ This directory contains broadly-scoped documents which may be useful on their ow
 * __[oXygen like an Expert](oxygen-like-an-expert.md):__ an overview of oXygen and its features.
 * __[Setting up queries](setup-xquery.md):__ how to run an XQuery in oXygen and on the command line with Saxon.
 * __[Setting up transformations](setup-xslt.md):__ how to transform XML with an XSLT stylesheet on the command line and with eXist-DB.
-* __[Dates and Times in DH][dates_and_times_in_DH]:__ how to formally express dates and times including uncertainty, approximation, ranges, durations, and sets.
+* __[Dates and Times in DH](dates_and_times_in_DH):__ how to formally express dates and times including uncertainty, approximation, ranges, durations, and sets.
