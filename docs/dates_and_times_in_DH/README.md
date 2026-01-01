@@ -17,3 +17,8 @@ Sarah Connell, Caitlin Pollack, and Karin Bredenberg provided document review an
 * [dates_and_times_in_DH.isosch](dates_and_times_in_DH.isosch) — The Schematron schema generated from dates_and_times_in_DH.odd.
 * [dates_and_times_in_DH.doc.html](dates_and_times_in_DH.doc.html) — The schema documentation generated from dates_and_times_in_DH.odd.
 * [dates_and_times_in_DH_regex_generator.perl](dates_and_times_in_DH_regex_generator.perl) — An experimental Perl program that generates both a regular expression for testing that a temporal expression is valid with respect to this profile, and a test suite (in either Relax NG or XSLT) for testing said regular expression.
+
+Output for the WWP website can be generated with
+~~~bash
+$ saxon -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles='/ABSOLUTE/PATH/TO/dates_and_times_in_DH.css' numberBackFigures='true' showTitleAuthor='true' generationComment='true' verbose='true' footnoteBackLink='true' wrapLength=650 attLength=400 "?wwp=true()"
+~~~

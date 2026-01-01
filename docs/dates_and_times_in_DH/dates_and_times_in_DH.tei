@@ -46,7 +46,7 @@
 
     It would be quite reasonable to create a driver XSLT file for the
     TEI Stylesheets that handled the <w:fix> and <w:var> elements
-    (which is what I do to generate HTML for the web) or to create an
+    (which is what I do to generate HTML for the web¹) or to create an
     XSLT pre-processing step that converted those elements to <hi>
     elements before generating output using systems intended for
     TEI. But in fact, because these names are not similar to any TEI
@@ -64,6 +64,11 @@
     use and blazingly fast. (The execution of that command takes less
     than ½ of ⅒ of 1 second on a Raspberry Pi.) So it is what I do
     when generating output for proofreading.
+
+    note
+    ----
+    ¹ The commandline I currently use is:
+    $ saxon -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles='/ABSOLUTE/PATH/TO/dates_and_times_in_DH.css' numberBackFigures='true' showTitleAuthor='true' generationComment='true' verbose='true' footnoteBackLink='true' wrapLength=650 attLength=400 "?wwp=true()"
 
     previous notes-to-self
     -------- -------------
