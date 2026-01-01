@@ -34,6 +34,7 @@ figcaption.caption {
 div.content { grid-area: sidebar1-start / sidebar1-start / last-line / sidebar2-end; }
 
 /* Some other WWP over-rides */
+body.simple { margin: inherit; }
 div.content ul li {
     line-height: 1.0em;
     background: url('../../../../utils/gfx/wwp-list-bullet.png') 0 0.5em no-repeat;
