@@ -151,7 +151,7 @@
         <xsl:if test="$footnoteBackLink= 'true'">
           <xsl:text> </xsl:text>
           <a class="link_return" href="#{concat($identifier,'_return')}">
-            <span aria-hidden="true">↵</span>
+            <span aria-hidden="true">↵&#x20;</span>
             <span><xsl:sequence select="$returnString"/></span>
           </a>
         </xsl:if>
