@@ -58,6 +58,7 @@
 
   <!-- Are we generating output for use on WWP website? -->
   <xsl:param name="wwp" select="false()" as="xs:boolean" static="true"/>
+  <xsl:param name="returnString" select="'go back to text'" as="xs:string"/>
   
   <!-- Just easier to process LIT and LITA if you have variables: -->
   <xsl:variable name="quot" select="'&quot;'"/>
@@ -106,6 +107,53 @@
     </div>
   </xsl:template>
 
+  <!-- Override standard TEI TOC generation so we can make ours easily collapsable. -->
+  <xsl:template match="tei:divGen[ @type eq 'toc']">
+    <div class="tei_toc">
+      <summary class="TOC">
+        <xsl:sequence select="tei:i18n('tocWords')"/>
+      </summary>
+      <details class="TOC">
+	<xsl:call-template name="mainTOC"/>
+      </details>
+    </div>
+  </xsl:template>
+
+  <!-- OVerride standard TEI generation of footnotes so we can use an accessible return link -->
+  <xsl:template name="makeaNote">
+    <xsl:variable name="identifier">
+      <xsl:call-template name="noteID"/>
+    </xsl:variable>
+    <xsl:if test="$verbose='true'">
+      <xsl:message>Make note <xsl:value-of select="$identifier"/></xsl:message>
+    </xsl:if>
+    <div class="note">
+      <xsl:if test="$identifier castable as xs:integer  and  10 > $identifier">
+	<xsl:text>&#x2007;</xsl:text>
+      </xsl:if>
+      <xsl:call-template name="makeAnchor">
+        <xsl:with-param name="name" select="$identifier"/>
+      </xsl:call-template>
+      <span class="noteLabel">
+        <xsl:call-template name="noteN"/>
+        <xsl:if test="matches(@n,'[0-9]')">
+          <xsl:text>.</xsl:text>
+        </xsl:if>
+        <xsl:text> </xsl:text>
+      </span>
+      <div class="noteBody">
+        <xsl:apply-templates/>
+      </div>
+      <xsl:if test="$footnoteBackLink= 'true'">
+        <xsl:text> </xsl:text>
+        <a class="link_return" title="Go back to text" href="#{concat($identifier,'_return')}">
+	  <xsl:sequence select="$returnString"/>
+	</a>
+      </xsl:if>
+    </div>
+  </xsl:template>
+  
+  <!-- Our local <fix> and <var> elements need to be handled (but are easy) -->
   <xsl:template match="wd:fix|wd:var" expand-text="yes">
     <span class="{local-name(.)}">{.}</span>
   </xsl:template>
