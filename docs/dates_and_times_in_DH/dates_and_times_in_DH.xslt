@@ -40,8 +40,12 @@
     To use the “normal” stylesheets the way I generate proofing copies
     see the header comment to the dates_and_times_in_DH.tei file.
   -->
+
+  <!-- Thanks to Ash Clark for assistance, support, and contributing
+       some bits. -->
   
   <xsl:import href="/home/syd/Documents/Stylesheets/profiles/default/html5/to.xsl"/>
+  <!--<xsl:import href="/Users/aclark/Documents/TEI/TEIC-Stylesheets/profiles/default/html5/to.xsl"/>-->
   <!--
       Of course it would be preferable to grab stylesheet off the web:
       <xsl:import href=
@@ -114,12 +118,15 @@
         <xsl:sequence select="tei:i18n('tocWords')"/>
       </summary>
       <details class="TOC">
-	<xsl:call-template name="mainTOC"/>
+        <xsl:call-template name="mainTOC"/>
       </details>
     </div>
   </xsl:template>
 
-  <!-- OVerride standard TEI generation of footnotes so we can use an accessible return link -->
+  <!-- Override the "makeaNote" template from the standard TEI
+       Stylesheets (html/html_core.xsl) for better back links
+       (readable by screen readers). Also, moved the return link into
+       the .noteBody for styling purposes. -->
   <xsl:template name="makeaNote">
     <xsl:variable name="identifier">
       <xsl:call-template name="noteID"/>
@@ -128,9 +135,6 @@
       <xsl:message>Make note <xsl:value-of select="$identifier"/></xsl:message>
     </xsl:if>
     <div class="note">
-      <xsl:if test="$identifier castable as xs:integer  and  10 > $identifier">
-	<xsl:text>&#x2007;</xsl:text>
-      </xsl:if>
       <xsl:call-template name="makeAnchor">
         <xsl:with-param name="name" select="$identifier"/>
       </xsl:call-template>
@@ -143,13 +147,15 @@
       </span>
       <div class="noteBody">
         <xsl:apply-templates/>
+        <!-- Changed from TEI template: -->
+        <xsl:if test="$footnoteBackLink= 'true'">
+          <xsl:text> </xsl:text>
+          <a class="link_return" href="#{concat($identifier,'_return')}">
+            <span aria-hidden="true">↵</span>
+            <span><xsl:sequence select="$returnString"/></span>
+          </a>
+        </xsl:if>
       </div>
-      <xsl:if test="$footnoteBackLink= 'true'">
-        <xsl:text> </xsl:text>
-        <a class="link_return" title="Go back to text" href="#{concat($identifier,'_return')}">
-	  <xsl:sequence select="$returnString"/>
-	</a>
-      </xsl:if>
     </div>
   </xsl:template>
   
@@ -348,9 +354,10 @@
   <xsl:template match="tei:titlePart/tei:title[ @type ]">
     <xsl:call-template name="makeInline">
       <xsl:with-param name="style">
-	<xsl:value-of select="('titlem', @type, @rend )" separator=" "/>
+        <xsl:value-of select="('titlem', @type, @rend )" separator=" "/>
       </xsl:with-param>
     </xsl:call-template>
   </xsl:template>
+  
 
 </xsl:stylesheet>
