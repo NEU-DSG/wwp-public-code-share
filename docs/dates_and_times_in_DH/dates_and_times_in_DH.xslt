@@ -42,6 +42,7 @@
   -->
   
   <xsl:import href="/home/syd/Documents/Stylesheets/profiles/default/html5/to.xsl"/>
+  <!--<xsl:import href="/Users/aclark/Documents/TEI/TEIC-Stylesheets/profiles/default/html5/to.xsl"/>-->
   <!--
       Of course it would be preferable to grab stylesheet off the web:
       <xsl:import href=
@@ -303,6 +304,39 @@
 	<xsl:value-of select="('titlem', @type, @rend )" separator=" "/>
       </xsl:with-param>
     </xsl:call-template>
+  </xsl:template>
+  
+  <!-- Override TEI stylesheet html/html_core.xsl's "makeaNote" for better back 
+    links (readable by screen readers). Also, moved the return link into the 
+    .noteBody for styling purposes. -->
+  <xsl:template name="makeaNote">
+    <xsl:variable name="identifier">
+      <xsl:call-template name="noteID"/>
+    </xsl:variable>
+    <xsl:if test="$verbose='true'">
+      <xsl:message>Make note <xsl:value-of select="$identifier"/></xsl:message>
+    </xsl:if>
+    <div class="note">
+      <xsl:call-template name="makeAnchor">
+        <xsl:with-param name="name" select="$identifier"/>
+      </xsl:call-template>
+      <span class="noteLabel">
+        <xsl:call-template name="noteN"/>
+        <xsl:if test="matches(@n,'[0-9]')">
+          <xsl:text>.</xsl:text>
+        </xsl:if>
+        <xsl:text> </xsl:text>
+      </span>
+      <div class="noteBody">
+        <xsl:apply-templates/>
+        <!-- Changed from TEI template: -->
+        <xsl:if test="$footnoteBackLink= 'true'">
+          <xsl:text> </xsl:text>
+          <a class="link_return" href="#{concat($identifier,'_return')}"
+            ><span aria-hidden="true">↵</span> Go back to text</a>
+        </xsl:if>
+      </div>
+    </div>
   </xsl:template>
 
 </xsl:stylesheet>
