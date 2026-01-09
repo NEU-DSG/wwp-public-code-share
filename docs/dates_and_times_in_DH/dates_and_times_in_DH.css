@@ -11,39 +11,60 @@
 
 
 /* --------- phrase-level markup for tagdocs --------- */
-span.gi { font-family: monospace; }
-span.val { font-family: monospace; }
-span.att { font-family: monospace; }
-span.att:before { content: "@"; } /* The TEI uses CSS for preceding attr names with ampersat, so we do, too */
-span[class|="tag"] { font-family: monospace; }
-span.head span.gi { font-size: larger; } /* I do not understand why this is needed */
+.gi { font-family: monospace; }
+.val { font-family: monospace; }
+.att { font-family: monospace; }
+.att:before { content: "@"; } /* The TEI uses CSS for preceding attr names with ampersat, so we do, too */
+[class|="tag"] { font-family: monospace; }
+.head .gi { font-size: larger; } /* I do not understand why this is needed */
 /* --------- and for boutique elements for this document --------- */
-span.fix { color: red; }
-span.var { color: green; }
-p.fineprint { font-size: 75%; }
+.fix, .var {
+  font-size: 1.125em;
+}
+.fix { color: #87761c; }
+.var { color: #950aa1; }
+p.fineprint { font-size: 85%; }
 
 pre.pre_eg { margin: 0em 0em 1.5em 1em; }
 
 figcaption.caption {
-    text-align: center;
+    text-align: left;
     font-weight: bold;
 }
+section > header { margin-top: 2em; }
 
 /* I want to over-ride the _really_ narrow columnar feeling of normal
    WWP style, and per Ash Clark, this is how to do it. */
 div.content { grid-area: sidebar1-start / sidebar1-start / last-line / sidebar2-end; }
 
 /* Some other WWP over-rides */
+sub, sup {
+    font-size: 0.9em;
+    line-height: 0.9em;
+}
+sub { vertical-align: sub; }
+sup { vertical-align: super; }
 body.simple { margin: inherit; }
+div.main h2 {
+  margin-top: 1em;
+}
 div.content ul li {
-    line-height: 1.0em;
     background: url('../../../../utils/gfx/wwp-list-bullet.png') 0 0.5em no-repeat;
+    line-height: unset;
 }
 div.content .tei_toc ul li {
     line-height: 1.2em;
     background: white;
 }
-sub { vertical-align: revert; }
+div.content figure {
+    align-items: start;
+}
+
+/* Definition lists */
+dl { margin-bottom: 1em; }
+dd { margin-left: 1.25em; }
+dd + dt { margin-top: 0.5em; }
+
 
 /* No point in having anchorlinks, as for now they only appear on
    <eg>, of which this document only has 2, neither of which are worth
@@ -78,15 +99,22 @@ span[class~="titlem"][class~="sub"] {
 span:lang(fr) { font-style: italic; }
 
 /* tei.css has an entry for span.listhead, but the Stylesheets produce div.listhead */
-div.listhead {
-    display:block;
-    margin-top:0em;
-    margin-right:1em;
-    padding-left:3px;
-    padding-right:3px;
-    font-weight:bold;
-    /* same as TEI for span.listhead, above; added below */
-    text-decoration-line: underline;
+/* Ash modified the rules below to allow the style on any tag with the "listhead" class,
+ * merging the TEI's styles with the WWP's. */
+.listhead,
+div.noteHeading {
+    color: rgb(49,69,89);
+    display: block;
+    font-family: var(--header-font); /* Gill Sans */
+    font-size: 1.125em;
+    margin-bottom: 0.25em;
+    text-decoration: underline;
+    text-underline-position: under;
+}
+
+/* Notes section */
+div.note {
+  margin: 0.5rem 2rem;
 }
 
 /* --------- egXML --------- */
@@ -98,22 +126,19 @@ for which are mostly taken from oXygen.
 
 /* <figure> itself needs to look a bit better … */
 figure.figure {
-                display: block;
-                border-top:solid 1pt blue;
-                border-bottom:solid 1pt blue;
+    display: block;
+    border-top:solid 1pt blue;
+    border-bottom:solid 1pt blue;
 }
 
 /* Allow user to scroll wide examples L & R */
 pre { overflow: auto; }
 
 pre.egXML {
- display: pre;
- margin-left: 1em;
- padding-left: 1em;
- border-left: 0.5ex solid #A0BEBE;
- margin: 0em 0em 1.5em 0em;
- padding-top: .75em;
- padding-bottom: .75em;
+ display: block;
+ border: thin solid #A0BEBE;
+ margin: 0em;
+ padding: 0.75em 1em;
  font-family: monospace;
  white-space: pre;
  line-height: 120%;
