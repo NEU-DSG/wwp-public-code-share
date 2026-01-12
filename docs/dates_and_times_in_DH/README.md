@@ -20,5 +20,5 @@ Sarah Connell, Caitlin Pollack, and Karin Bredenberg provided document review an
 
 Output for the WWP website can be generated with
 ~~~bash
-$ saxon -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles='/ABSOLUTE/PATH/TO/dates_and_times_in_DH.css' numberBackFigures='true' showTitleAuthor='true' generationComment='true' verbose='true' footnoteBackLink='true' wrapLength=650 attLength=400 "?wwp=true()"
+$ saxon -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles='/ABSOLUTE/PATH/TO/dates_and_times_in_DH.css' numberBackFigures='true' showTitleAuthor='true' generationComment='true' verbose='true' footnoteBackLink='true' "?wwp=true()"
 ~~~
