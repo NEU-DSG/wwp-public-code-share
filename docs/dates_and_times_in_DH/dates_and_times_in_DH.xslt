@@ -114,10 +114,10 @@
   <!-- Override standard TEI TOC generation so we can make ours easily collapsable. -->
   <xsl:template match="tei:divGen[ @type eq 'toc']">
     <div class="tei_toc">
-      <summary class="TOC">
-        <xsl:sequence select="tei:i18n('tocWords')"/>
-      </summary>
-      <details class="TOC">
+      <details class="TOC" open="true">
+	<summary class="TOC">
+          <xsl:sequence select="tei:i18n('tocWords')"/>
+	</summary>
         <xsl:call-template name="mainTOC"/>
       </details>
     </div>
