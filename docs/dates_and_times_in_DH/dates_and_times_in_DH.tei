@@ -509,8 +509,8 @@
           a part number are references to the two parts combined.</p>
           <p>When written in this document, the portions of a
           representation that are placeholders for the actual values
-          in an expression appear <w:var>like this</w:var> and
-          portions that are static appear <w:fix>like this</w:fix>.
+          in an expression appear <w:var>in blue</w:var> and
+          portions that are static appear <w:fix>in red</w:fix>.
           E.g., the general format for a date &amp; time (without a
           time shift representation) is
           <w:fix>⊖</w:fix><w:var>YYYY</w:var><w:fix>-</w:fix><w:var>MM</w:var><w:fix>-</w:fix><w:var>DD</w:var><w:fix>T</w:fix><w:var>hh</w:var><w:fix>:</w:fix><w:var>mm</w:var><w:fix>:</w:fix><w:var>ss</w:var>.

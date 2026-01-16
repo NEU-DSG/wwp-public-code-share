@@ -11,18 +11,18 @@
 
 
 /* --------- phrase-level markup for tagdocs --------- */
-.gi { font-family: monospace; }
-.val { font-family: monospace; }
-.att { font-family: monospace; }
+.gi, .val, .att { font-family: monospace; }
 .att:before { content: "@"; } /* The TEI uses CSS for preceding attr names with ampersat, so we do, too */
 [class|="tag"] { font-family: monospace; }
 .head .gi { font-size: larger; } /* I do not understand why this is needed */
 /* --------- and for boutique elements for this document --------- */
 .fix, .var {
   font-size: 1.125em;
+  letter-spacing: 0.025em;
+  padding: 0 0.05em;
 }
-.fix { color: #87761c; }
-.var { color: #950aa1; }
+.fix { color: #ab392e; }
+.var { color: #160aa1; }
 p.fineprint { font-size: 85%; }
 
 pre.pre_eg { margin: 0em 0em 1.5em 1em; }
