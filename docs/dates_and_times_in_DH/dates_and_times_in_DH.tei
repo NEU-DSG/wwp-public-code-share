@@ -1222,7 +1222,7 @@
           expression. These possibilities are not covered by the above
           list. Qualification characters can also be used in ordinal
           dates (e.g., <val>1934?-016</val><!-- _The Night of January
-          16th premeried (as _Woman on Trial_) in 1934 -->) or week
+          16th premiered (as _Woman on Trial_) in 1934 -->) or week
           dates (e.g., <val>2025-W04-~2</val>).<!-- Donald Trump plans
           to do a lot of damage to the USA on 2025-01-21 give or take
           a day --></p>
@@ -1235,12 +1235,12 @@
           <val>07:45?+03</val> or with <val>07:45+03?</val>.
           <!-- Israel launched the 6-day war 1967-06-05T07:45+03 -->
           Logically the former seems more appropriate, as the
-          uncertainty does not apply to the time zone. On the other
-          hand, the only sentence that seems to apply says <quote>a
-          qualification symbol occurring at the rightmost end of the
-          expression</quote>; and there is no indication in ISO
-          8601:2019 that a qualification may be applied to a time
-          shift.</p>
+          uncertainty does not apply to the time zone; and there is no
+          indication in ISO 8601:2019 that a qualification may be
+          applied to a time shift. On the other hand, the only
+          sentence that seems to apply says <quote>a qualification
+          symbol occurring at the <emph>rightmost end</emph> of the
+          expression</quote>. (Emphasis added.)</p>
         </div>
       </div>
       <div type="chapter"> 
