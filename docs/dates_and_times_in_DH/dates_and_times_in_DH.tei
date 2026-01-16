@@ -116,6 +116,10 @@
           <resp>Review and copy editing</resp>
           <name>Karin Bredenberg</name>
         </respStmt>
+        <respStmt xml:id="aclark.ash">
+          <resp>accessility and readability improvements</resp>
+          <name>Ash Clark</name>
+        </respStmt>
         <sponsor>Northeastern University Digital Scholarship Group</sponsor>
       </titleStmt>
       <editionStmt>
@@ -342,8 +346,10 @@
         University Library</ref>’s <ref
         target="https://dsg.northeastern.edu/">Digital Scholarship
         Group</ref>. The author is particularly indebted to Patrick
-        Yott for his vision; and to Sarah Connell, Caitlin Pollock,
-        and Karin Bredenberg for review and copy editing.</p>
+        Yott for his vision; to Sarah Connell, Caitlin Pollock,
+        and Karin Bredenberg for review and copy editing; and to Ash
+        Clark for making the result more visually appealing and
+        more accessible.</p>
       </div>
     </front>
     <body>
