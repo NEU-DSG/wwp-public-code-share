@@ -272,10 +272,10 @@
           </tbody>
         </table>
         <p>Total characters: <xsl:sequence select="format-number( count( $seq ),'#,###,###,##0')"/>.
-	<br/>Distinct characters: <xsl:sequence select="format-number( map:size($count_by_decimal_char_num),'#,###,##0')"/>.</p>
+        <br/>Distinct characters: <xsl:sequence select="format-number( map:size($count_by_decimal_char_num),'#,###,##0')"/>.</p>
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
         <hr/>
-        <p name="fn1">¹ <xsl:value-of select="$me"/></p>
+        <p xsl:expand-text="yes"><a name="fn1">¹</a> {$me}.</p>
       </body>
     </html>
   </xsl:template>
@@ -391,16 +391,17 @@
   <xd:doc>
     <xd:desc>
       <xd:p>Given a code point, return the Unicode name(s) of a character.</xd:p>
-      <xd:p>In the UCD, each character (other than those in certain groups of
-      CJK, Tangut, or Nüshu ideographic characters) has at least one name;
-      many have two names. The names are typically expressed on the
-      <tt>@na</tt> attribute, and second names on the <tt>@na1</tt>
-      attribute. But in some cases the only one name is expressed on
-      <tt>@na1</tt>. Furthermore, when a name is not expressed on a
-      <tt>@na</tt> or <tt>@na1</tt> attribute, sometimes the attribute
-      is still present but just has no value. However, <tt>@na</tt>
-      is only specified without a value for characters we should never
-      see: DELETE and the PUA block.</xd:p>
+      <xd:p>In the UCD, each character (other than those in certain
+      groups of CJK, Tangut, or Nüshu ideographic characters) has at
+      least one name; many have two names. The names are typically
+      expressed on the <code>@na</code> attribute, and second names on
+      the <code>@na1</code> attribute. But in some cases the only one
+      name is expressed on <code>@na1</code>. Furthermore, when a name
+      is not expressed on a <code>@na</code> or <code>@na1</code>
+      attribute, sometimes the attribute is still present but just has
+      no value. However, <code>@na</code> is only specified without a
+      value for characters we should never see: DELETE and the PUA
+      block.</xd:p>
     </xd:desc>
     <xd:param name="thisCodePoint">a 4-digit positive hexadecimal integer
       (expressed as a 4-character long xs:string).</xd:param>
@@ -413,7 +414,6 @@
     <xsl:choose>
       <xsl:when test="not( exists( $thisChar) )">
         <xsl:variable name="msg" select="'Unable to ascertain Unicode name for '||$thisCodePoint"/>
-        <xsl:message select="$msg"/>
         <xsl:value-of select="$msg"/>
       </xsl:when>
       <!-- both @na and @na1 -->
@@ -445,11 +445,10 @@
   </xd:doc>
   <xsl:template name="html_head">
     <head>
-      <xsl:variable name="title" select="'chars in '||$fileName"/>
-      <title><xsl:value-of select="'Character counts in '||$fileName"/></title>
+      <title xsl:expand-text="yes">Character counts in {$fileName}</title>
       <meta name="generated_by" content="table_of_Unicode_codepoint_counts.xslt"/>
       <meta name="generated_at" content="{current-dateTime()}"/>
-      <script type="application/javascript" src="http://www.wwp.neu.edu/utils/bin/javascript/sorttable.js"/>
+      <script type="application/javascript" src="https://www.wwp.neu.edu/utils/bin/javascript/sorttable.js"/>
       <style type="text/css">
         <xsl:text disable-output-escaping="yes">
             body {
@@ -496,14 +495,14 @@
     used, and indicates which were actually used.</xd:desc>
   </xd:doc>
   <xsl:template name="explain_params">
-    <p>Character counts in <tt><xsl:value-of
-      select="$fileName"/></tt><a href="#fn1">¹</a>, using the
-      following parameters:</p>
+    <p>Character counts in
+      <code xsl:expand-text="yes">{$fileName}</code><a href="#fn1">¹</a>,
+      using the following parameters:</p>
     <dl>
       <dt><span class="param">attrs</span></dt>
       <dd>
         <ul>
-          <li class="{$attrs eq 0}"><span class="val">0</span>: drop <emph>all</emph> attributes</li>
+          <li class="{$attrs eq 0}"><span class="val">0</span>: drop <em>all</em> attributes</li>
           <li class="{$attrs eq 1}"><span class="val">1</span>: 
             <xsl:choose>
               <xsl:when test="$input/tei:*">
@@ -530,7 +529,7 @@
               </xsl:otherwise>
             </xsl:choose> [default]
           </li>
-          <li class="{$attrs eq 9}"><span class="val">9</span>: keep <emph>all</emph> attributes</li>
+          <li class="{$attrs eq 9}"><span class="val">9</span>: keep <em>all</em> attributes</li>
         </ul>
       </dd>
       <dt><span class="param">fold</span></dt>
@@ -545,14 +544,20 @@
       <dt><span class="param">skip</span></dt>
       <dd>
         <ul>
-          <li class="{$skip eq 0}"><span class="val">0</span>: process entire document, including comments and processing instructions</li>
-          <li class="{$skip eq 1}"><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
-          <li class="{$skip eq 2}"><span class="val">2</span>: do 1, and also strip out metadata (<tt>&lt;teiHeader></tt> or <tt>&lt;html:head></tt>)</li>
-          <li class="{$skip eq 3}"><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<tt>&lt;tei:fw></tt>, <tt>&lt;wwp:mw></tt>, <tt>&lt;figDesc></tt>) [default]</li>
-          <li class="{$skip eq 4}"><span class="val">4</span>: do 3, and also take <tt>&lt;corr&gt;</tt> over <tt>&lt;sic&gt;</tt>, <tt>&lt;expan&gt;</tt> over
-            <tt>&lt;abbr&gt;</tt>, <tt>&lt;reg&gt;</tt> over <tt>&lt;orig&gt;</tt> and the first <tt>&lt;supplied&gt;</tt> or
-            <tt>&lt;unclear&gt;</tt> in a <tt>&lt;choice&gt;</tt> (only makes sense for TEI and WWP; and for WWP this
-            means counting the regularized version of each <tt>&lt;vuji></tt> character)</li>
+          <li class="{$skip eq 0}"><span class="val">0</span>:
+            process entire document, including comments and processing instructions</li>
+          <li class="{$skip eq 1}"><span class="val">1</span>:
+            process entire document <em>excluding</em> comments and processing instructions</li>
+          <li class="{$skip eq 2}"><span class="val">2</span>:
+            do 1, and also strip out metadata (<code>&lt;teiHeader></code> or <code>&lt;html:head></code>)</li>
+          <li class="{$skip eq 3}"><span class="val">3</span>:
+            do 2, and also strip out printing artifacts, etc. (<code>&lt;tei:fw></code>, <code>&lt;wwp:mw></code>, <code>&lt;figDesc></code>) [default]</li>
+          <li class="{$skip eq 4}"><span class="val">4</span>:
+            do 3, and also take <code>&lt;corr&gt;</code> over <code>&lt;sic&gt;</code>, <code>&lt;expan&gt;</code> over
+            <code>&lt;abbr&gt;</code>, <code>&lt;reg&gt;</code> over <code>&lt;orig&gt;</code> and the first
+            <code>&lt;supplied&gt;</code> or <code>&lt;unclear&gt;</code> in a <code>&lt;choice&gt;</code> (only makes
+            sense for TEI and WWP; and for WWP this means counting the regularized version of each <code>&lt;vuji></code>
+            character)</li>
         </ul>
       </dd>
       <dt><span class="param">whitespace</span></dt>
