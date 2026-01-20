@@ -1,0 +1,76 @@
+<project xmlns:if="ant:if" xmlns:unless="ant:unless"
+   default="release" 
+   name="word-vector-interface">
+  
+  <!--
+    Apache Ant buildfile for generating ZIPs of the R and Python walkthroughs, intended for publication 
+    on GitHub.
+    
+    Run a build with `ant` in the command line.
+    -->
+  
+<!-- 
+    PROPERTIES
+  -->
+  <property name="build.dir" value="releases"/>
+  
+<!-- 
+    ANT TASKS
+  -->
+  
+  <!-- Prompt the user to provide an versioning string for the filename. -->
+  <target name="name-release" unless="version">
+    <input message="Input the date to use in the ZIP filename:" addproperty="version"/>
+  </target>
+  
+  <!-- Create a ZIP file of the customizable WVI app. -->
+  <target name="release"
+          description="Create a ZIP file of the customizable WVI app.">
+    <mkdir dir="${build.dir}"/>
+    <antcall target="zip-jupyter-notebooks"/>
+    <antcall target="zip-rmds"/>
+  </target>
+  
+  <target name="zip-jupyter-notebooks" depends="name-release"
+          description="Zip the Python walkthroughs.">
+    <zip destfile="${build.dir}/WordVectors_Python_${version}.zip">
+      <!-- Artifacts of the Ant build are excluded from packaging, as are git artifacts. -->
+      <fileset dir="python" excludes=".gitignore .DS_Store legacy/**"/>
+    </zip>
+  </target>
+  
+  <target name="get-local-wvi-path">
+    <input message="Paste the filepath to your copy of the Word Vector Interface:" addproperty="wvi-path"/>
+    <condition property="wvi-path.usable">
+      <available property="wwo-bin.found" file="${wvi-path}/data/wwo.bin"/>
+    </condition>
+  </target>
+  
+  <target name="zip-rmds" depends="get-local-wvi-path, zip-rmds-with-wvi-models, zip-rmds-alone"
+          description="Zip the R walkthroughs"/>
+  
+  <target name="zip-rmds-with-wvi-models" depends="name-release" if="${wvi-path.usable}">
+    <echo message="Path OK, building ZIP with sample models!"/>
+    <zip destfile="${build.dir}/WordVectors_R_${version}.zip">
+      <!-- Artifacts of the Ant build are excluded from packaging, as are git artifacts. The Python 
+        folder is skipped. -->
+      <fileset dir="." 
+        excludes="${build.dir}/** build.xml maintenance.md .gitignore python/** template.html .DS_Store .Rproj.user/**"/>
+      <zipfileset dir="${wvi-path}/data" prefix="data"
+        includes="wwo.bin cavendish.bin vep-ecco.bin vep-evans.bin vep-em1080.bin vwwp.bin"/>
+    </zip>
+  </target>
+  
+  <target name="zip-rmds-alone" depends="name-release" unless="${wvi-path.usable}">
+    <echo message="Could not find path: ${wvi-path}/data"/>
+    <echo message="Building the ZIP without models."/>
+    <zip destfile="${build.dir}/WordVectors_R_${version}.zip">
+      <!-- Artifacts of the Ant build are excluded from packaging, as are git artifacts. The Python 
+        folder is skipped. -->
+      <fileset dir="." 
+        excludes="${build.dir}/** build.xml maintenance.md .gitignore python/** template.html .DS_Store .Rproj.user/**"/>
+    </zip>
+    <echo message="To try this build with a different path, run `ant zip-rmds`"/>
+  </target>
+  
+</project>
