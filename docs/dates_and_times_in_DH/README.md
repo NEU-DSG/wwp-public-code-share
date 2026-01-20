@@ -10,7 +10,7 @@ may have corrections and improvements over the published version.
 This work was sponsored by the Northeastern University [Digital
 Scholarship Group](https://dsg.northeastern.edu/). The published
 version is currently available (in XHTML5 only) on the
-[WWP](https://www.wwp.neu.edu/) [website](FIXME!!).
+[WWP](https://www.wwp.neu.edu/) [website](https://www.wwp.neu.edu/research/publications/documentation/other/dates_and_times_in_DH.xhtml).
 
 Sarah Connell, Caitlin Pollock, and Karin Bredenberg provided document
 review and copy editing; Ash Clark significantly improved the look
@@ -19,7 +19,7 @@ improvements expected in the near future.
 
 * [dates_and_times_in_DH.tei](dates_and_times_in_DH.tei) — The source document. If you are used to TEI, there are advantages to reading the source directly. On the other hand, the encoded temporal expression patterns are **much** easier to read in the HTML.
 * [dates_and_times_in_DH.xslt](dates_and_times_in_DH.xslt) — The driver XSLT file which, along with the [TEI Stylesheets](https://github.com/TEIC/Stylesheets), generates the output HTML.
-* [dates_and_times_in_DH.xhtml](dates_and_times_in_DH.xhtml) — The output HTML. (Also available on the [WWP website](FIXME!!).)
+* [dates_and_times_in_DH.xhtml](dates_and_times_in_DH.xhtml) — The output HTML. (Also available on the [WWP website](https://www.wwp.neu.edu/research/publications/documentation/other/dates_and_times_in_DH.xhtml).
 * [dates_and_times_in_DH.css](dates_and_times_in_DH.css) — The custom CSS used by the HTML file. (It may be called by the HTML, or it may be copied into the HTML, depending on how the processing of the TEI is performed. In either case the default [TEI CSS](https://www.tei-c.org/release/xml/tei/stylesheet/tei.css) and common [WWP styles](https://www.wwp.neu.edu/utils/includes/styles.ssi) are also used. 
 * [dates_and_times_in_DH.odd](dates_and_times_in_DH.odd) — The TEI customization ODD file that defines the schema to which dates_and_times_in_DH.tei should conform.
 * [dates_and_times_in_DH.rnc](dates_and_times_in_DH.rnc) — The Relax NG (compact syntax) schema generated from dates_and_times_in_DH.odd.
