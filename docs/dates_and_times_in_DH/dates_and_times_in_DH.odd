@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: dates_and_times_in_DH.odd 3848 2025-12-26 14:12:39Z syd $ -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="en">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>dates and times in DH schema</title>
+        <author xml:id="sbauman.emt">
+          <persName>Syd Bauman</persName>
+        </author>
+      </titleStmt>
+      <publicationStmt>
+        <p>Unpublished first draft </p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>Derived from <ref
+        target="https://www.tei-c.org/Vault/P5/current/xml/tei/odd/p5subset.odd">TEI
+        P5 v. 4.5.0</ref> after an analysis of the
+        dates_and_times_in_DH.tei file by odd2example.xsl, then
+        extensively modified by hand — in fact, almost nothing of the
+        original output of that routine remains.</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <p>Not much to say here, as most of the explanation is in a PI
+      near the top of the one and onluy document that is supposed to
+      be valid against this schema.</p>
+    </body>
+    <back>
+      <schemaSpec ident="dates_and_times_in_DH" prefix="dat_" start="TEI">
+        <desc>Schema specificly for my <name
+        type="file">dates_and_times_in_DH.tei</name> document.</desc>
+        <moduleRef key="core"/>
+        <moduleRef key="header"/>
+        <moduleRef key="textstructure" except="div1 div2 div3 div4 div5 div6 div7 div8"/>
+        <elementSpec ident="div" module="textstructure" mode="change">
+          <attList>
+            <attDef ident="type" mode="replace">
+              <datatype minOccurs="1" maxOccurs="1">
+                <dataRef key="teidata.enumerated"/>
+              </datatype>
+              <valList type="closed">
+                <valItem ident="chapter"/>
+                <valItem ident="section"/>
+                <valItem ident="subsection"/>
+              </valList>
+            </attDef>
+          </attList>
+        </elementSpec>
+        <elementSpec module="textstructure" ident="docImprint" mode="change">
+          <content>         
+            <alternate minOccurs="0" maxOccurs="unbounded">
+              <textNode/>
+              <classRef key="model.gLike"/>
+              <classRef key="model.phrase"/>
+              <elementRef key="pubPlace"/>
+              <elementRef key="docDate"/>
+              <elementRef key="publisher"/>
+              <elementRef key="sponsor"/> <!-- <=== only change -->
+              <classRef key="model.global"/>
+            </alternate>
+          </content>
+        </elementSpec>
+        <moduleRef key="tei"/>
+        <moduleRef key="linking" include="ab"/>
+        <elementSpec ident="ab" module="linking" mode="change">
+          <attList>
+            <attDef ident="type" mode="replace">
+              <datatype minOccurs="1" maxOccurs="1">
+                <dataRef key="teidata.enumerated"/>
+              </datatype>
+              <valList type="closed">
+                <valItem ident="fdb">
+                  <gloss>formal data block</gloss>
+                  <desc>typically contains a sequence of <gi>code</gi>
+                  children, each of which is intended to be displayed
+                  as what CSS calls a block.</desc>
+                </valItem>
+              </valList>
+            </attDef>
+          </attList>
+        </elementSpec>
+        <moduleRef key="namesdates" include="persName"/>
+        <moduleRef key="tagdocs" include="att code gi val tag egXML"/>
+        <moduleRef key="figures" include="figure"/>
+        <elementSpec ident="code" module="tagdocs" mode="change">
+          <attList>
+            <attDef ident="lang" mode="replace">
+              <gloss versionDate="2007-07-04" xml:lang="en">formal language</gloss>
+              <desc versionDate="2006-02-06" xml:lang="en">a name identifying the formal language in which  the code is expressed</desc>
+              <datatype minOccurs="1" maxOccurs="1">
+                <dataRef key="teidata.enumerated"/>
+              </datatype>
+              <valList type="closed">
+                <valItem ident="ixml">
+                  <gloss>Invisible XML</gloss>
+                  <desc>A snippet of code in iXML</desc>
+                  <remarks>
+                    <p>See <ptr
+                    target="https://invisiblexml.org/"/>. When used
+                    inside a <tag>ab type="fdb"</tag> the content is
+                    intended to be a clause of Invisible XML that,
+                    when all non-terminals on the right hand side have
+                    been defeined as specified either herein or in <ref
+                    target="https://github.com/invisibleXML/ixml/tree/master/samples/ISO-8601-2004">sample
+                    iXML grammar for ISO 8601:2004</ref> by Norman
+                    Tovey-Walsh or in the current document, should be
+                    a complete grammar for a specific temporal
+                    representation.</p>
+                  </remarks>
+                </valItem>
+                <valItem ident="regex">
+                  <gloss>regular expression</gloss>
+                  <desc>A W3C regular expression pattern</desc>
+                  <remarks>
+                    <p>See <ptr
+                    target="https://www.w3.org/TR/xmlschema-2/#regexs"/>. When
+                    used inside a <tag>ab type="fdb"</tag> the content
+                    is intended to be a pattern that can be used to
+                    validate whether or not a string can be used as a
+                    particular specific temporal representation, but
+                    not necessarily to parse it.</p>
+                  </remarks>
+                </valItem>
+              </valList>
+            </attDef>
+          </attList>
+        </elementSpec>
+        <elementSpec ns="http://www.wwp.northeastern.edu/ns/internal_documentation/1.0" ident="fix">
+          <gloss>fixed</gloss>
+          <desc>contains characters that are to be reproduced as is in
+          a temporal expression.</desc>
+          <classes>
+            <memberOf key="att.global"/>
+            <memberOf key="model.emphLike"/>
+          </classes>
+          <content>
+            <macroRef key="macro.paraContent"/>
+          </content>
+        </elementSpec>
+        <elementSpec ns="http://www.wwp.northeastern.edu/ns/internal_documentation/1.0" ident="var">
+          <gloss>variable</gloss>
+          <desc>contains characters that are to be replaced by a
+          numeric value in a temporal expression.</desc>
+          <classes>
+            <memberOf key="att.global"/>
+            <memberOf key="model.emphLike"/>
+          </classes>
+          <content>
+            <macroRef key="macro.paraContent"/>
+          </content>
+        </elementSpec>
+        <dataSpec module="tei" ident="teidata.temporal.iso" mode="change">
+          <content>
+            <alternate>
+              <dataRef name="date"/>
+              <dataRef name="gYear"/>
+              <dataRef name="gMonth"/>
+              <dataRef name="gDay"/>
+              <dataRef name="gYearMonth"/>
+              <dataRef name="gMonthDay"/>
+              <dataRef name="time"/>
+              <dataRef name="dateTime"/>
+              <!-- Only change to content is to loosen this regexp: -->
+              <dataRef name="token" restriction="[\]\[\{\}0-9%?~.,CDHJKMPRSTOWYZ/:+\-]+"/>
+            </alternate>
+          </content>
+        </dataSpec>
+
+      </schemaSpec>
+    </back>
+  </text>
+</TEI>

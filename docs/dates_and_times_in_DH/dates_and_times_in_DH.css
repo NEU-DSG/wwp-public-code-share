@@ -1,0 +1,170 @@
+/*
+ This is a CSS file to be used with “dates_and_times_in_DH” in
+ addition to the standard WWP CSS. I am using it because there are
+ elements of the TEI styling I want, but do not want to load the
+ entirety of tei.css. So I am tucking them in here and inserting them
+ in my output using the cssInlineFiles parameter. The inline CSS *may*
+ have been replaced by a link to this file, but if it hasn’t, making a
+ change here in the CSS file will not change the output appearence
+ until you re-build the HTML.  — Syd
+*/
+
+
+/* --------- phrase-level markup for tagdocs --------- */
+.gi, .val, .att { font-family: monospace; }
+.att:before { content: "@"; } /* The TEI uses CSS for preceding attr names with ampersat, so we do, too */
+[class|="tag"] { font-family: monospace; }
+.head .gi { font-size: larger; } /* I do not understand why this is needed */
+/* --------- and for boutique elements for this document --------- */
+.fix, .var {
+  font-size: 1.125em;
+  letter-spacing: 0.025em;
+  padding: 0 0.05em;
+}
+.fix { color: #ab392e; }
+.var { color: #160aa1; }
+p.fineprint { font-size: 85%; }
+
+pre.pre_eg { margin: 0em 0em 1.5em 1em; }
+
+figcaption.caption {
+    text-align: left;
+    font-weight: bold;
+}
+section > header { margin-top: 2em; }
+
+/* I want to over-ride the _really_ narrow columnar feeling of normal
+   WWP style, and per Ash Clark, this is how to do it. */
+div.content { grid-area: sidebar1-start / sidebar1-start / last-line / sidebar2-end; }
+
+/* Some other WWP over-rides */
+sub, sup {
+    font-size: 0.9em;
+    line-height: 0.9em;
+}
+sub { vertical-align: sub; }
+sup { vertical-align: super; }
+body.simple { margin: inherit; }
+div.main h2 {
+  margin-top: 1em;
+}
+div.content ul li {
+    background: url('../../../../utils/gfx/wwp-list-bullet.png') 0 0.5em no-repeat;
+    line-height: unset;
+}
+div.content .tei_toc ul li {
+    line-height: 1.2em;
+    background: white;
+}
+div.content figure {
+    align-items: start;
+}
+
+/* Definition lists */
+dl { margin-bottom: 1em; }
+dd { margin-left: 1.25em; }
+dd + dt { margin-top: 0.5em; }
+
+
+/* No point in having anchorlinks, as for now they only appear on
+   <eg>, of which this document only has 2, neither of which are worth
+   having a link to. */
+a.anchorlink {  display: none; margin: 0 0 0 1em; }
+
+div.titlePage {
+    text-align: center;
+}
+div.docAuthor {
+    font-size: 80%;
+}
+div.docTitle {
+    font-size: 150%;
+    font-style: italic;
+}
+div.docImprint {
+    font-size: 110%;
+}
+div.docDate {
+    font-size: 90%;
+}
+
+/* special-case our title */
+span[class~="titlem"][class~="sub"] {
+  display: inline-block;
+  font-size: 75%;
+  line-height: 1;
+}
+
+/* make sure foreign things (in our case, all French) are italicized */
+span:lang(fr) { font-style: italic; }
+
+/* tei.css has an entry for span.listhead, but the Stylesheets produce div.listhead */
+/* Ash modified the rules below to allow the style on any tag with the "listhead" class,
+ * merging the TEI's styles with the WWP's. */
+.listhead,
+div.noteHeading {
+    color: rgb(49,69,89);
+    display: block;
+    font-family: var(--header-font); /* Gill Sans */
+    font-size: 1.125em;
+    margin-bottom: 0.25em;
+    text-decoration: underline;
+    text-underline-position: under;
+}
+
+/* Notes section */
+div.note {
+  margin: 0.5rem 2rem;
+}
+
+/* --------- egXML --------- */
+/*
+XML-serialization, large portions of which are modified from John
+Walsh's teibp.css, a part of the TEI boilerplate system; and colors
+for which are mostly taken from oXygen.
+*/
+
+/* <figure> itself needs to look a bit better … */
+figure.figure {
+    display: block;
+    border-top:solid 1pt blue;
+    border-bottom:solid 1pt blue;
+}
+
+/* Allow user to scroll wide examples L & R */
+pre { overflow: auto; }
+
+pre.egXML {
+ display: block;
+ border: thin solid #A0BEBE;
+ margin: 0em;
+ padding: 0.75em 1em;
+ font-family: monospace;
+ white-space: pre;
+ line-height: 120%;
+ }
+.eg-tag {
+color: #0064C8;
+}
+.eg-tei {
+color: #000096;
+}
+.eg-com {
+color: #006400;
+}
+.eg-attrName, .eg-nsdecl {
+color: #F5844C;
+}
+.eg-attrVal, .eg-ns {
+color: #993300;
+}
+.eg-content {
+color: #000000;
+}
+.eg-lit {
+color: #969600;
+}
+.eg-pi {
+color: #8B26C9;
+}
+/* --------- */
