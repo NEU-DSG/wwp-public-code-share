@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-model href="./dates_and_times_in_DH.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <?xml-model href="./dates_and_times_in_DH.isosch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
-<!-- $Id: dates_and_times_in_DH.tei 3848 2025-12-26 14:12:39Z syd $ -->
 <TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="en"
      xmlns:w="http://www.wwp.northeastern.edu/ns/internal_documentation/1.0">
   <?README
@@ -173,7 +172,7 @@
       that are descendants of an <gi>egXML</gi> are either immediately
       preceded by or followed by a ZERO WIDTH SPACE (U+200B). This
       character is invisible to the reader for two reasons: it has no
-      width, and even if it did it is a space. So you cannot easily
+      width; and even if it did, it is a space. So you cannot easily
       tell that these characters are there. They are there to force
       the parser to consider some elements that would otherwise be
       considered element-only content to be mixed content, so the
@@ -181,6 +180,10 @@
       requires the whitespace, so this hack works around that
       problem. But it does mean you should not copy-and-paste directly
       from an example, at least not without deleting occurences of
+      U+200B. The cases of <gi>egXML</gi> that have these characters
+      are flagged with a <tag type="pi">dsg ICW</tag> processing
+      instruction, but the code that generates the visible warning in
+      the HTML output does not read that flag, rather it searches for
       U+200B.</p>
       <p>Note that, in general, XML examples are enclosed in an
       <gi>egXML</gi> that is itself inside a <gi>figure</gi>. This is
@@ -335,7 +338,7 @@
           <!-- publisher>Northeastern University Women Writers Project</publisher -->
         </docImprint>
         <docDate>
-          <date when="2025-12-26">2025-12-26</date>
+          <date when="2026-01-21">2026-01-21</date>
         </docDate>
       </titlePage>
       <divGen type="toc"/>
@@ -779,7 +782,7 @@
           <val>15:10</val> as <q>10 minutes past three in the
           afternoon</q> or as <q>an interval of time lasting 15 hours
           plus 10 minutes</q>. Keep in mind, though, that a time shift
-          indicatation cannot be appended to a representation of
+          indication cannot be appended to a representation of
           duration. (An interval of 15 hours and 10 minutes lasts 910
           minutes whether you are in Victoria, BC or A Coruña,
           Spain<!-- Hometowns of MDH & HBS, respectively -->.)</p>
@@ -790,13 +793,13 @@
           ordinal day number within the year. The year is (as usual)
           expressed as a 4-digit number; the ordinal day is expressed
           as a 3-digit number (1–366, where 366 is only used for leap
-          years); and the two are separated by a hyphen.  For example,
-          Valentine’s Day this year was <val>2024-045</val>; it is on
-          the 45th day of every year.  May Day, on the other hand, was
-          <val>2024-122</val> this year, but was on
-          <val>2023-121</val> last year and will be on
-          <val>2025-121</val> again next year, because 2024 is a leap
-          year.</p>
+          years); and the two are separated by a hyphen. For example,
+          Valentine’s Day of 2024 was on the 45th day, thus
+          <val>2024-045</val>; it is on the 45th day of every
+          year. May Day, on the other hand, was <val>2024-122</val>
+          that year, but was on <val>2023-121</val> the year before
+          and on <val>2025-121</val> the year after, because 2024 was
+          a leap year.</p>
           <p>An ordinal date may also be combined with a time. Thus
           the following formats may be used to express an ordinal
           date, each of which could have a time shift indication
@@ -1235,7 +1238,7 @@
           <p>Note that ISO 8601:2019 does not seem to say whether a
           qualification character applied to a time or date &amp; time
           that has a time shift indicated is placed before the time
-          shift representation or after. That is, it is inconclusiave
+          shift representation or after. That is, it is inconclusive
           as to whether <quote>around quarter to eight in the
           morning</quote> in Jerusalem should be represented with
           <val>07:45?+03</val> or with <val>07:45+03?</val>.
@@ -1465,10 +1468,10 @@
           the expressions are in some useful order (e.g.,
           chronologic), but the set has the same
           <emph>meaning</emph> no matter what the order.</p>
-          <p><label style="font-weight: bold;">Syntactic
-          note</label>: Whitespace may not be used to make the set
-          more readable. Expressions are separated by a comma, not
-          by a comma and a space. In fact, since the comma-separated
+          <p><label style="font-weight: bold;">Syntactic note</label>:
+          Whitespace may <emph>not</emph> be used to make the set more
+          readable. Expressions are separated by a comma, not by a
+          comma and a space. In fact, since the comma-separated
           expressions have no internal whitespace, there is no
           whitespace in the entire set.</p>
           <p><label style="font-weight: bold;">Underspecification
@@ -1532,6 +1535,12 @@
             of global warming</date> that we have done nothing is a
             day of shame.
           </egXML>
+          <!-- James Hansen, in testimonay at a public hearing before
+               a U.S. Senate committee, discussed “Human causation of
+               observed global warming and dangers of unmitigated
+               warming” (Wikipedia). Worth noting that scientists had
+               known for at least decaides if not centuries by that
+               point. -->
         </figure>
         </p> 
         <p>The “on or before” and the “on or after” representations
