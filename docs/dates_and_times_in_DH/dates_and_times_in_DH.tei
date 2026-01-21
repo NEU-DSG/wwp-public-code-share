@@ -517,9 +517,9 @@
           representation that are placeholders for the actual values
           in an expression appear <w:var>in blue</w:var> and
           portions that are static appear <w:fix>in red</w:fix>.
-          E.g., the general format for a date &amp; time (without a
+          E.g., the general format for a modern date &amp; time (without a
           time shift representation) is
-          <w:fix>⊖</w:fix><w:var>YYYY</w:var><w:fix>-</w:fix><w:var>MM</w:var><w:fix>-</w:fix><w:var>DD</w:var><w:fix>T</w:fix><w:var>hh</w:var><w:fix>:</w:fix><w:var>mm</w:var><w:fix>:</w:fix><w:var>ss</w:var>.
+          <w:var>YYYY</w:var><w:fix>-</w:fix><w:var>MM</w:var><w:fix>-</w:fix><w:var>DD</w:var><w:fix>T</w:fix><w:var>hh</w:var><w:fix>:</w:fix><w:var>mm</w:var><w:fix>:</w:fix><w:var>ss</w:var>.
           (As you might guess, the actual formatting is not determined
           by the author of this document, but rather by the
           stylesheets applied to it.)
