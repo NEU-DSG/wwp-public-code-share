@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-model href="./dates_and_times_in_DH.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <?xml-model href="./dates_and_times_in_DH.isosch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
-<!-- $Id: dates_and_times_in_DH.tei 3848 2025-12-26 14:12:39Z syd $ -->
 <TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="en"
      xmlns:w="http://www.wwp.northeastern.edu/ns/internal_documentation/1.0">
   <?README
@@ -339,7 +338,7 @@
           <!-- publisher>Northeastern University Women Writers Project</publisher -->
         </docImprint>
         <docDate>
-          <date when="2025-12-26">2025-12-26</date>
+          <date when="2026-01-21">2026-01-21</date>
         </docDate>
       </titlePage>
       <divGen type="toc"/>
