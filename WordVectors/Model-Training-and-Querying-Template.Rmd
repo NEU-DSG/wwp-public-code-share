@@ -270,7 +270,7 @@ results <- structure(data_list,
 )
 
 #If you want to give your results document a more specific name; you can edit "model-test-results" below. 
-write.csv(file="output/model-test-refsults.csv", x=results)
+write.csv(file="output/model-test-results.csv", x=results)
 
 ```
 
