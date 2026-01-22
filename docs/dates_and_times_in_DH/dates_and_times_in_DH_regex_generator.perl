@@ -23,7 +23,7 @@
 # check @when-iso, @valid, and @invalid; it can be used to validate
 # itself for debugging.
 # Alternate to STDOUT: by changing the final "print STDOUT" statement,
-# you can isntead get a small XSLT program which uses said regexp to
+# you can instead get a small XSLT program which uses said regexp to
 # check //@valid and //@invalid which can be used to transform itself
 # for debugging.
 # NOTE: Plans are to create a switch for whether the XSLT or RELAX NG
