@@ -66,9 +66,12 @@
 
     note
     ----
-    ¹ The commandline I currently use is:
-    $ saxon -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles=$(pwd)/dates_and_times_in_DH.css numberBackFigures=true showTitleAuthor=true generationComment=true verbose=true footnoteBackLink=true "?wwp=true()"
-    or with final parameter set to false().
+    ¹ The commandline I would currently like to use is:
+    $ saxon -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles=$(pwd)/dates_and_times_in_DH.css numberBackFigures=true showTitleAuthor=true generationComment=true verbose=true footnoteBackLink=true returnString="go back to main text" "?wwp=true()"
+    or with final parameter set to false(). However, I have not
+    figured out how to pass the spaces in the returnString parameter
+    through the `saxon` front-end, so I end up using something like
+    $ java -Xmx2g -jar /usr/local/bin/saxon-he-12.8.jar -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles=/home/syd/Documents/wwp-public-code-share/docs/dates_and_times_in_DH/dates_and_times_in_DH.css numberBackFigures=true showTitleAuthor=true generationComment=true verbose=true footnoteBackLink=true returnString="go back to main text" "?wwp=true()"
 
     previous notes-to-self
     -------- -------------
