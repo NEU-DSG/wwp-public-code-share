@@ -579,7 +579,7 @@
             <!--
                 Imprecise because a month may have 28, 29, 30, or 31
                 days. Personally I would like it if we defined “month”
-                in situations like this as 1 Julian year / 12, or
+                in situations like this as 1 Julian year ÷ 12, or
                 2,629,800 s.
 
                 But some might argue that we should instead be using
@@ -1012,7 +1012,7 @@
           </list>
           <figure  xml:id="datidhfig05">
             <egXML xml:id="datidhxmp05" xmlns="http://www.tei-c.org/ns/Examples"
-                   source="https://www.vqronline.org/essay/white-house-spokesman">
+                   source="https://web.archive.org/web/20240226032043/https://www.vqronline.org/essay/white-house-spokesman">
               ​<div type="article">
                 ​<head>The White House Spokesman​</head>
                 ​<byline>By ​<persName>Lindsay Rogers​</persName>​</byline>
@@ -1542,7 +1542,7 @@
                a U.S. Senate committee, discussed “Human causation of
                observed global warming and dangers of unmitigated
                warming” (Wikipedia). Worth noting that scientists had
-               known for at least decaides if not centuries by that
+               known for at least decades if not centuries by that
                point. -->
         </figure>
         </p> 
