@@ -272,7 +272,7 @@
           </tbody>
         </table>
         <p>Total characters counted: <xsl:sequence select="format-number( count( $seq ),'#,###,###,##0')"/>.
-        <br/>Distinct characters: <xsl:sequence select="format-number(map:size( $count_by_decimal_char_num ),'#,###,##0')"/>.</p>
+        <br/>Distinct characters counted: <xsl:sequence select="format-number( map:size( $count_by_decimal_char_num ),'#,###,##0')"/>.</p>
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
         <hr/>
         <p xsl:expand-text="yes"><a name="fn1">¹</a> {$me}.</p>
@@ -495,7 +495,7 @@
     used, and indicates which were actually used.</xd:desc>
   </xd:doc>
   <xsl:template name="explain_params">
-  <p>Character counts in
+    <p>Character counts in
       <code xsl:expand-text="yes">{$fileName}</code><a href="#fn1">¹</a>,
       using the following parameters:</p>
     <dl>
