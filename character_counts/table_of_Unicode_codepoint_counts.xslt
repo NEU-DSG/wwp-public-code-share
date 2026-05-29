@@ -254,7 +254,7 @@
               <xsl:variable name="hexNum4digit" select="substring('0000', string-length($hexNum) + 1)||$hexNum"/>
               <tr>
                 <td class="cnt">
-                  <xsl:value-of select="$count_by_decimal_char_num(.)"/>
+                  <xsl:value-of select="$count_by_decimal_char_num(.) => format-integer('###,###,###,##0')"/>
                 </td>
                 <td class="Ucp">
                   <xsl:value-of select="'U+'||$hexNum4digit"/>
@@ -271,8 +271,8 @@
             </xsl:for-each>
           </tbody>
         </table>
-        <p>Total characters: <xsl:sequence select="format-number( count( $seq ),'#,###,###,##0')"/>.
-        <br/>Distinct characters: <xsl:sequence select="format-number( map:size($count_by_decimal_char_num),'#,###,##0')"/>.</p>
+        <p>Total characters counted: <xsl:sequence select="format-number( count( $seq ),'#,###,###,##0')"/>.
+        <br/>Distinct characters counted: <xsl:sequence select="format-number( map:size( $count_by_decimal_char_num ),'#,###,##0')"/>.</p>
         <p>This table generated <xsl:value-of select="current-dateTime()"/>.</p>
         <hr/>
         <p xsl:expand-text="yes"><a name="fn1">¹</a> {$me}.</p>
@@ -391,17 +391,16 @@
   <xd:doc>
     <xd:desc>
       <xd:p>Given a code point, return the Unicode name(s) of a character.</xd:p>
-      <xd:p>In the UCD, each character (other than those in certain
-      groups of CJK, Tangut, or Nüshu ideographic characters) has at
-      least one name; many have two names. The names are typically
-      expressed on the <code>@na</code> attribute, and second names on
-      the <code>@na1</code> attribute. But in some cases the only one
-      name is expressed on <code>@na1</code>. Furthermore, when a name
-      is not expressed on a <code>@na</code> or <code>@na1</code>
-      attribute, sometimes the attribute is still present but just has
-      no value. However, <code>@na</code> is only specified without a
-      value for characters we should never see: DELETE and the PUA
-      block.</xd:p>
+      <xd:p>In the UCD, each character (other than those in certain groups of
+      CJK, Tangut, or Nüshu ideographic characters) has at least one name;
+      many have two names. The names are typically expressed on the
+      <code>@na</code> attribute, and second names on the <code>@na1</code>
+      attribute. But in some cases the only one name is expressed on
+      <code>@na1</code>. Furthermore, when a name is not expressed on a
+      <code>@na</code> or <code>@na1</code> attribute, sometimes the attribute
+      is still present but just has no value. However, <code>@na</code>
+      is only specified without a value for characters we should never
+      see: DELETE and the PUA block.</xd:p>
     </xd:desc>
     <xd:param name="thisCodePoint">a 4-digit positive hexadecimal integer
       (expressed as a 4-character long xs:string).</xd:param>
@@ -414,6 +413,7 @@
     <xsl:choose>
       <xsl:when test="not( exists( $thisChar) )">
         <xsl:variable name="msg" select="'Unable to ascertain Unicode name for '||$thisCodePoint"/>
+        <xsl:message select="$msg"/>
         <xsl:value-of select="$msg"/>
       </xsl:when>
       <!-- both @na and @na1 -->
@@ -537,27 +537,20 @@
         <ul>
           <li class="{$fold eq 0}"><span class="val">0</span>: no case folding [default]</li>
           <li class="{$fold eq 1}"><span class="val">1</span>: case folding (upper to lower, but A–Z <em>only</em>)</li>
-          <li class="{$fold eq 2}"><span class="val">2</span>: case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S
-            into LATIN SMALL LETTER S</li>
+          <li class="{$fold eq 2}"><span class="val">2</span>: case folding (including Greek, etc.) and also fold LATIN SMALL LETTER LONG S into LATIN SMALL LETTER S</li>
         </ul>
       </dd>
       <dt><span class="param">skip</span></dt>
       <dd>
         <ul>
-          <li class="{$skip eq 0}"><span class="val">0</span>:
-            process entire document, including comments and processing instructions</li>
-          <li class="{$skip eq 1}"><span class="val">1</span>:
-            process entire document <em>excluding</em> comments and processing instructions</li>
-          <li class="{$skip eq 2}"><span class="val">2</span>:
-            do 1, and also strip out metadata (<code>&lt;teiHeader></code> or <code>&lt;html:head></code>)</li>
-          <li class="{$skip eq 3}"><span class="val">3</span>:
-            do 2, and also strip out printing artifacts, etc. (<code>&lt;tei:fw></code>, <code>&lt;wwp:mw></code>, <code>&lt;figDesc></code>) [default]</li>
-          <li class="{$skip eq 4}"><span class="val">4</span>:
-            do 3, and also take <code>&lt;corr&gt;</code> over <code>&lt;sic&gt;</code>, <code>&lt;expan&gt;</code> over
-            <code>&lt;abbr&gt;</code>, <code>&lt;reg&gt;</code> over <code>&lt;orig&gt;</code> and the first
-            <code>&lt;supplied&gt;</code> or <code>&lt;unclear&gt;</code> in a <code>&lt;choice&gt;</code> (only makes
-            sense for TEI and WWP; and for WWP this means counting the regularized version of each <code>&lt;vuji></code>
-            character)</li>
+          <li class="{$skip eq 0}"><span class="val">0</span>: process entire document, including comments and processing instructions</li>
+          <li class="{$skip eq 1}"><span class="val">1</span>: process entire document <em>excluding</em> comments and processing instructions</li>
+          <li class="{$skip eq 2}"><span class="val">2</span>: do 1, and also strip out metadata (<code>&lt;teiHeader></code> or <code>&lt;html:head></code>)</li>
+          <li class="{$skip eq 3}"><span class="val">3</span>: do 2, and also strip out printing artifacts, etc. (<code>&lt;tei:fw></code>, <code>&lt;wwp:mw></code>, <code>&lt;figDesc></code>) [default]</li>
+          <li class="{$skip eq 4}"><span class="val">4</span>: do 3, and also take <code>&lt;corr&gt;</code> over <code>&lt;sic&gt;</code>, <code>&lt;expan&gt;</code> over
+            <code>&lt;abbr&gt;</code>, <code>&lt;reg&gt;</code> over <code>&lt;orig&gt;</code> and the first <code>&lt;supplied&gt;</code> or
+            <code>&lt;unclear&gt;</code> in a <code>&lt;choice&gt;</code> (only makes sense for TEI and WWP; and for WWP this
+            means counting the regularized version of each <code>&lt;vuji></code> character)</li>
         </ul>
       </dd>
       <dt><span class="param">whitespace</span></dt>
