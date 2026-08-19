@@ -795,7 +795,7 @@
           <p>A date may instead be represented by a year and the
           ordinal day number within the year. The year is (as usual)
           expressed as a 4-digit number; the ordinal day is expressed
-          as a 3-digit number (1–366, where 366 is only used for leap
+          as a 3-digit number (001–366, where 366 is only used for leap
           years); and the two are separated by a hyphen. For example,
           Valentine’s Day of 2024 was on the 45th day, thus
           <val>2024-045</val>; it is on the 45th day of every
@@ -820,8 +820,8 @@
           <p>Although it is feasible to think of <q>6543-210</q> as a
           period of 6,543 years plus 210 days, ISO 8601:2019 does not
           permit using ordinal dates as durations. (Instead you would
-          have to use something like <q>0210.574948665</q>,
-          <q>0210-06.9</q>, or <q>0210-06-27.375</q>, or the explicit
+          have to use something like <q>6543.574948665</q>,
+          <q>6543-06.9</q>, or <q>6543-06-27.375</q>, or the explicit
           format (<q>6543Y210D</q>)).</p>
         </div>
         <div type="section">
