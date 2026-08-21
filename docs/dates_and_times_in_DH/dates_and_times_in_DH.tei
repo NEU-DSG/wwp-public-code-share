@@ -66,9 +66,12 @@
 
     note
     ----
-    ¹ The commandline I currently use is:
-    $ saxon -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles=$(pwd)/dates_and_times_in_DH.css numberBackFigures=true showTitleAuthor=true generationComment=true verbose=true footnoteBackLink=true "?wwp=true()"
-    or with final parameter set to false().
+    ¹ The commandline I would currently like to use is:
+    $ saxon -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles=$(pwd)/dates_and_times_in_DH.css numberBackFigures=true showTitleAuthor=true generationComment=true verbose=true footnoteBackLink=true returnString="go back to main text" "?wwp=true()"
+    or with final parameter set to false(). However, I have not
+    figured out how to pass the spaces in the returnString parameter
+    through the `saxon` front-end, so I end up using something like
+    $ java -Xmx2g -jar /usr/local/bin/saxon-he-12.8.jar -xsl:./dates_and_times_in_DH.xslt -s:./dates_and_times_in_DH.tei -o:./dates_and_times_in_DH.xhtml cssInlineFiles=/home/syd/Documents/wwp-public-code-share/docs/dates_and_times_in_DH/dates_and_times_in_DH.css numberBackFigures=true showTitleAuthor=true generationComment=true verbose=true footnoteBackLink=true returnString="go back to main text" "?wwp=true()"
 
     previous notes-to-self
     -------- -------------
@@ -576,7 +579,7 @@
             <!--
                 Imprecise because a month may have 28, 29, 30, or 31
                 days. Personally I would like it if we defined “month”
-                in situations like this as 1 Julian year / 12, or
+                in situations like this as 1 Julian year ÷ 12, or
                 2,629,800 s.
 
                 But some might argue that we should instead be using
@@ -792,7 +795,7 @@
           <p>A date may instead be represented by a year and the
           ordinal day number within the year. The year is (as usual)
           expressed as a 4-digit number; the ordinal day is expressed
-          as a 3-digit number (1–366, where 366 is only used for leap
+          as a 3-digit number (001–366, where 366 is only used for leap
           years); and the two are separated by a hyphen. For example,
           Valentine’s Day of 2024 was on the 45th day, thus
           <val>2024-045</val>; it is on the 45th day of every
@@ -817,8 +820,8 @@
           <p>Although it is feasible to think of <q>6543-210</q> as a
           period of 6,543 years plus 210 days, ISO 8601:2019 does not
           permit using ordinal dates as durations. (Instead you would
-          have to use something like <q>0210.574948665</q>,
-          <q>0210-06.9</q>, or <q>0210-06-27.375</q>, or the explicit
+          have to use something like <q>6543.574948665</q>,
+          <q>6543-06.9</q>, or <q>6543-06-27.375</q>, or the explicit
           format (<q>6543Y210D</q>)).</p>
         </div>
         <div type="section">
@@ -1009,7 +1012,7 @@
           </list>
           <figure  xml:id="datidhfig05">
             <egXML xml:id="datidhxmp05" xmlns="http://www.tei-c.org/ns/Examples"
-                   source="https://www.vqronline.org/essay/white-house-spokesman">
+                   source="https://web.archive.org/web/20240226032043/https://www.vqronline.org/essay/white-house-spokesman">
               ​<div type="article">
                 ​<head>The White House Spokesman​</head>
                 ​<byline>By ​<persName>Lindsay Rogers​</persName>​</byline>
@@ -1539,7 +1542,7 @@
                a U.S. Senate committee, discussed “Human causation of
                observed global warming and dangers of unmitigated
                warming” (Wikipedia). Worth noting that scientists had
-               known for at least decaides if not centuries by that
+               known for at least decades if not centuries by that
                point. -->
         </figure>
         </p> 

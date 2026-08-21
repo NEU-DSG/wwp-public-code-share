@@ -93,7 +93,7 @@
       <xsl:comment>#include virtual="../../../../utils/includes/banner.ssi"</xsl:comment>
       <div class="main">
         <xsl:comment>#include virtual="../../../../utils/includes/area_navigation.ssi"</xsl:comment>
-        <div class="content">
+        <div class="content" id="wwp-page-content">
           <xsl:comment> TEI &lt;front> (from dates_and_times_in_DH.xslt version of "simpleBody" template) </xsl:comment>
           <xsl:apply-templates select="tei:text/tei:front"/>
           <xsl:if test="$autoToc = 'true' and (descendant::tei:div or descendant::tei:div1) and not(descendant::tei:divGen[@type = 'toc'])">
