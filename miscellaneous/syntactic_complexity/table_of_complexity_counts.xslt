@@ -9,7 +9,7 @@
 
   <xsl:output method="xhtml" indent="yes"/>
 
-  <!--
+  <?doc
       $0
       🄯 2026 Syd Bauman and the Northeastern University Digital Scholarship Group
 
@@ -23,29 +23,31 @@
       structures are reported. In general you probably do not want the
       output of `xmlstarlet`, the input to this program, to be counted
       by this program; thus best to name it with an extension other
-      than “.xml”. E.g.:
+      than “.xml” or to use a shell pipleline. E.g.:
       $ xmlstarlet list > ./files.list
-                        && saxon.bash /PATH/TO/table_of_complexity_counts.xslt ./files.list
+                        && saxon.bash $0 ./files.list
                         > syntactic_complexity_of_this_dir.xhtml
+      OR
+      $ xmlstarlet list | saxon.bash $0 - > syntactic_complexity_of_this_dir.xhtml
       Although setting $dataSel may accomplish the same goal in many
       circumstances. E.g.:
       $ xmlstarlet list > ./fileslist.xml
-                        && saxon -xsl:/PATH/TO/table_of_complexity_counts.xslt
-                        -s:./fileslist.xml
-                        -o:./syntactic_complexity_of_this_dir.xhtml
-                        dataSel='select=tei_*.xml;'
+                        && saxon -xsl:$0
+                                 -s:./fileslist.xml
+                                 -o:./syntactic_complexity_of_this_dir.xhtml
+                                 dataSel='select=tei_*.xml;'
       Furthermore, we do not really need to test for validity, so
-      &#x2D;&#x2D;parserFeature?uri=http%3A//apache.org/xml/features/nonvalidating/load-external-dtd:false
+      --parserFeature?uri=http%3A//apache.org/xml/features/nonvalidating/load-external-dtd:false
       is useful if the DTD is not where the DOCTYPE declaration says
       it is.
 
       NOTE: It should be quite easy to change this program so that it
       expects as input the output of `tree -N -X -s` instead, which
-      would allow it to also use recurse=yes on the
-      collection(). (Note that if you are using `tree -X` for fun
-      rather than as input here, you might want &#x2D;&#x2D;si instead
-      of -s, and probably want &#x2D;&#x2D;du in addition.)
-  -->
+      would allow it to also use recurse=yes on the collection().
+      (Note that if you are using `tree -X` for fun rather than as
+      input here, you might want --si instead of -s, and probably want
+      --du in addition.)
+  ?>
 
   <!-- Remember the specified input for later use -->
   <xsl:variable name="input" select="/" as="document-node()"/>
@@ -63,14 +65,24 @@
   <xsl:param name="collect_us" select="$dataDir||'?'||$dataSel||$dataParams => escape-html-uri()" as="xs:string"/>
   <xsl:variable name="input_files" select="collection( $collect_us )"/>
   
-  <!-- path to table sorting routine -->
+  <!--
+    URL to the table sorting routine we use. Typically one of either
+    * for running from WWP server:
+      /utils/bin/javascript/sorttable.js
+    * for running from some other server, when you put sorttable.js in the same directory
+      as our output:
+      ./sorttable.js
+    * for running from home, which may be quite problematic due to cross-query security
+      issues:
+      https://www.wwp.northeastern.edu/utils/bin/javascript/sorttable.js
+  -->
   <xsl:param name="sorttable" select="'/utils/bin/javascript/sorttable.js'" as="xs:string"/>
   
   <!-- “picture”s for use in calls to format-number() -->
-  <xsl:param name="intNpic"  select="'#,###,###,##0&#xA0;&#xA0;&#xA0;'" as="xs:string"/>
-  <xsl:param name="fracNpic" select="    '#,###,##0.00'"                as="xs:string"/>
-  <!-- The non-digit characters we need to remove from numbers formatted with the pictures,
-       above, to be able to cast them back them back into numbers for calculation. -->
+  <xsl:param name="intNpic"  select="'#,###,###,##0&#xA0;&#xA0;&#xA0;'" as="xs:string"/> <!-- not currently used -->
+  <xsl:param name="fracNpic" select="    '#,###,##0.00'" as="xs:string"/>
+  <!-- The non-digit characters we need to remove from numbers formatted with the
+       pictures, above, to be able to cast them back to numbers for calculation. -->
   <xsl:param name="nonDigs" select="',&#xA0;'" as="xs:string"/>
   
   <!--
@@ -133,7 +145,7 @@
           background-color: #FBFBFA;
           padding: 12px 15px;
           text-align: left;
-          border-bottom: 1px solid #e0e0e0;
+          border-bottom: 1px solid #E0E0E0;
           }
         td:nth-child(1) , th:nth-child(1) {
           position: sticky;
@@ -399,5 +411,4 @@
     </xsl:variable>
     <xsl:sequence select="string-join( $me )"/>
   </xsl:function>
-
 </xsl:stylesheet>
